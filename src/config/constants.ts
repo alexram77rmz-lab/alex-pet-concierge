@@ -14,6 +14,7 @@ import {
  */
 export const WHATSAPP_PHONE = '523321222772';
 export const WHATSAPP_DISPLAY = '33 2122 2772';
+export const ADMIN_PIN = '2772';
 
 export const INSTAGRAM_URL = 'https://instagram.com/petconciergeservice';
 
@@ -64,106 +65,39 @@ export const ALL_ZONES: ZoneName[] = [
   'Otra zona (Confirmar por WhatsApp)',
 ];
 
-/**
- * Horario de 10:00 a.m. a 9:00 p.m. (Lunes a Viernes).
- * Los bloques están diseñados para preferir horas separadas y el sistema bloquea automáticamente
- * horas pegadas cuando hay cambio de zona (ej. si termina 4:00 p.m. en Av. Patria, separa la siguiente hora).
- */
-export const WEEKLY_CALENDAR: CalendarDay[] = [
-  {
-    id: 'lun',
-    dayShort: 'Lun',
-    dayName: 'Lunes',
-    isWeekend: false,
-    slots: [
-      { id: 'lun-10', startHour24: 10, timeRange: '10:00 a.m. – 11:00 a.m.', status: 'booked', bookedZone: 'Puerta de Hierro' },
-      { id: 'lun-12', startHour24: 12, timeRange: '12:00 p.m. – 1:00 p.m.', status: 'available' },
-      { id: 'lun-15', startHour24: 15, timeRange: '3:00 p.m. – 4:00 p.m.', status: 'booked', bookedZone: 'Av. Patria' },
-      { id: 'lun-16', startHour24: 16, timeRange: '4:00 p.m. – 5:00 p.m.', status: 'available' },
-      { id: 'lun-17', startHour24: 17, timeRange: '5:00 p.m. – 6:00 p.m.', status: 'available' },
-      { id: 'lun-19', startHour24: 19, timeRange: '7:00 p.m. – 8:00 p.m.', status: 'available' },
-      { id: 'lun-20', startHour24: 20, timeRange: '8:00 p.m. – 9:00 p.m.', status: 'available' },
-    ],
-  },
-  {
-    id: 'mar',
-    dayShort: 'Mar',
-    dayName: 'Martes',
-    isWeekend: false,
-    slots: [
-      { id: 'mar-10', startHour24: 10, timeRange: '10:00 a.m. – 11:00 a.m.', status: 'available' },
-      { id: 'mar-12', startHour24: 12, timeRange: '12:00 p.m. – 1:00 p.m.', status: 'booked', bookedZone: 'Valle Real' },
-      { id: 'mar-14', startHour24: 14, timeRange: '2:00 p.m. – 3:00 p.m.', status: 'available' },
-      { id: 'mar-16', startHour24: 16, timeRange: '4:00 p.m. – 5:00 p.m.', status: 'available' },
-      { id: 'mar-18', startHour24: 18, timeRange: '6:00 p.m. – 7:00 p.m.', status: 'booked', bookedZone: 'Jardín Real' },
-      { id: 'mar-20', startHour24: 20, timeRange: '8:00 p.m. – 9:00 p.m.', status: 'available' },
-    ],
-  },
-  {
-    id: 'mie',
-    dayShort: 'Mié',
-    dayName: 'Miércoles',
-    isWeekend: false,
-    slots: [
-      { id: 'mie-10', startHour24: 10, timeRange: '10:00 a.m. – 11:00 a.m.', status: 'booked', bookedZone: 'Puerta de Hierro' },
-      { id: 'mie-12', startHour24: 12, timeRange: '12:00 p.m. – 1:00 p.m.', status: 'available' },
-      { id: 'mie-15', startHour24: 15, timeRange: '3:00 p.m. – 4:00 p.m.', status: 'booked', bookedZone: 'Av. Patria' },
-      { id: 'mie-16', startHour24: 16, timeRange: '4:00 p.m. – 5:00 p.m.', status: 'available' },
-      { id: 'mie-17', startHour24: 17, timeRange: '5:00 p.m. – 6:00 p.m.', status: 'available' },
-      { id: 'mie-20', startHour24: 20, timeRange: '8:00 p.m. – 9:00 p.m.', status: 'available' },
-    ],
-  },
-  {
-    id: 'jue',
-    dayShort: 'Jue',
-    dayName: 'Jueves',
-    isWeekend: false,
-    slots: [
-      { id: 'jue-10', startHour24: 10, timeRange: '10:00 a.m. – 11:00 a.m.', status: 'available' },
-      { id: 'jue-12', startHour24: 12, timeRange: '12:00 p.m. – 1:00 p.m.', status: 'booked', bookedZone: 'Jardín Real' },
-      { id: 'jue-14', startHour24: 14, timeRange: '2:00 p.m. – 3:00 p.m.', status: 'available' },
-      { id: 'jue-16', startHour24: 16, timeRange: '4:00 p.m. – 5:00 p.m.', status: 'available' },
-      { id: 'jue-18', startHour24: 18, timeRange: '6:00 p.m. – 7:00 p.m.', status: 'available' },
-      { id: 'jue-20', startHour24: 20, timeRange: '8:00 p.m. – 9:00 p.m.', status: 'available' },
-    ],
-  },
-  {
-    id: 'vie',
-    dayShort: 'Vie',
-    dayName: 'Viernes',
-    isWeekend: false,
-    slots: [
-      { id: 'vie-10', startHour24: 10, timeRange: '10:00 a.m. – 11:00 a.m.', status: 'booked', bookedZone: 'Valle Real' },
-      { id: 'vie-12', startHour24: 12, timeRange: '12:00 p.m. – 1:00 p.m.', status: 'booked', bookedZone: 'Jardín Real' },
-      { id: 'vie-15', startHour24: 15, timeRange: '3:00 p.m. – 4:00 p.m.', status: 'booked', bookedZone: 'Av. Patria' },
-      { id: 'vie-16', startHour24: 16, timeRange: '4:00 p.m. – 5:00 p.m.', status: 'available' },
-      { id: 'vie-17', startHour24: 17, timeRange: '5:00 p.m. – 6:00 p.m.', status: 'available' },
-      { id: 'vie-19', startHour24: 19, timeRange: '7:00 p.m. – 8:00 p.m.', status: 'available' },
-    ],
-  },
-  {
-    id: 'sab',
-    dayShort: 'Sáb',
-    dayName: 'Sábado',
-    isWeekend: true,
-    slots: [],
-  },
-  {
-    id: 'dom',
-    dayShort: 'Dom',
-    dayName: 'Domingo',
-    isWeekend: true,
-    slots: [],
-  },
+const createCleanDaySlots = (prefix: string) => [
+  { id: `${prefix}-10`, startHour24: 10, timeRange: '10:00 a.m. – 11:00 a.m.', status: 'available' as const },
+  { id: `${prefix}-12`, startHour24: 12, timeRange: '12:00 p.m. – 1:00 p.m.', status: 'available' as const },
+  { id: `${prefix}-14`, startHour24: 14, timeRange: '2:00 p.m. – 3:00 p.m.', status: 'available' as const },
+  { id: `${prefix}-16`, startHour24: 16, timeRange: '4:00 p.m. – 5:00 p.m.', status: 'available' as const },
+  { id: `${prefix}-17`, startHour24: 17, timeRange: '5:00 p.m. – 6:00 p.m.', status: 'available' as const },
+  { id: `${prefix}-18`, startHour24: 18, timeRange: '6:00 p.m. – 7:00 p.m.', status: 'available' as const },
+  { id: `${prefix}-20`, startHour24: 20, timeRange: '8:00 p.m. – 9:00 p.m.', status: 'available' as const },
 ];
 
 /**
- * Automatiza la separación de horarios:
- * Si un bloque termina a las 4:00 p.m. en "Av. Patria", el bloque pegado de 4:00 p.m. – 5:00 p.m.
- * se bloquea automáticamente por traslado hacia "Jardín Real", "Valle Real" o "Puerta de Hierro",
- * recomendando la siguiente hora separada (ej. 5:00 p.m. – 6:00 p.m.).
+ * Calendario semanal limpio (sin fechas ocupadas falsas de ejemplo).
+ * Tú puedes marcar qué horas se van ocupando desde tu Panel Admin oculto (PIN: 2772).
+ */
+export const WEEKLY_CALENDAR: CalendarDay[] = [
+  { id: 'lun', dayShort: 'Lun', dayName: 'Lunes', isWeekend: false, slots: createCleanDaySlots('lun') },
+  { id: 'mar', dayShort: 'Mar', dayName: 'Martes', isWeekend: false, slots: createCleanDaySlots('mar') },
+  { id: 'mie', dayShort: 'Mié', dayName: 'Miércoles', isWeekend: false, slots: createCleanDaySlots('mie') },
+  { id: 'jue', dayShort: 'Jue', dayName: 'Jueves', isWeekend: false, slots: createCleanDaySlots('jue') },
+  { id: 'vie', dayShort: 'Vie', dayName: 'Viernes', isWeekend: false, slots: createCleanDaySlots('vie') },
+  { id: 'sab', dayShort: 'Sáb', dayName: 'Sábado', isWeekend: true, slots: [] },
+  { id: 'dom', dayShort: 'Dom', dayName: 'Domingo', isWeekend: true, slots: [] },
+];
+
+/**
+ * Automatiza la separación de horarios y el límite de 5 horas al día:
+ * 1) Si ya hay 5 bloques ocupados en el día, el resto se marca como "Cupo de 5 hrs lleno".
+ * 2) Si un bloque está ocupado en otra zona distinta y el siguiente bloque está pegado (diferencia <= 1 hr),
+ *    se separa automáticamente como "Tiempo de traslado".
  */
 export function evaluateDaySlotsWithAutoBuffer(day: CalendarDay, clientZone: ZoneName) {
+  const bookedCount = day.slots.filter((s) => s.status === 'booked').length;
+
   return day.slots.map((slot, idx, arr) => {
     if (slot.status === 'booked') {
       return {
@@ -173,7 +107,14 @@ export function evaluateDaySlotsWithAutoBuffer(day: CalendarDay, clientZone: Zon
       };
     }
 
-    // Revisamos si la hora inmediatamente anterior (startHour24 - 1) está ocupada en otra zona distinta
+    if (bookedCount >= MAX_DAILY_HOURS) {
+      return {
+        ...slot,
+        effectiveStatus: 'auto_buffer' as const,
+        reasonLabel: 'Cupo diario de 5 hrs completo',
+      };
+    }
+
     const prevSlot = idx > 0 ? arr[idx - 1] : null;
     if (
       prevSlot &&
@@ -189,10 +130,25 @@ export function evaluateDaySlotsWithAutoBuffer(day: CalendarDay, clientZone: Zon
       };
     }
 
+    const nextSlot = idx < arr.length - 1 ? arr[idx + 1] : null;
+    if (
+      nextSlot &&
+      nextSlot.status === 'booked' &&
+      nextSlot.startHour24 - slot.startHour24 <= 1 &&
+      nextSlot.bookedZone &&
+      nextSlot.bookedZone !== clientZone
+    ) {
+      return {
+        ...slot,
+        effectiveStatus: 'auto_buffer' as const,
+        reasonLabel: `Separado por traslado hacia ${nextSlot.bookedZone}`,
+      };
+    }
+
     return {
       ...slot,
       effectiveStatus: 'available' as const,
-      reasonLabel: 'Disponible (Con margen de traslado)',
+      reasonLabel: 'Disponible',
     };
   });
 }
@@ -236,7 +192,7 @@ export function calculateQuote(params: {
     specialNotes.push('Fin de semana (sujeto a disponibilidad y ajuste con Alex)');
   }
   if (params.isExtraSlot) {
-    specialNotes.push('Horario especial fuera de los bloques libres (sujeto a confirmación)');
+    specialNotes.push('Fecha u horario especial (sujeto a confirmación)');
   }
   if (params.zone === 'Otra zona (Confirmar por WhatsApp)') {
     specialNotes.push('Zona fuera del polígono base (confirmar si aplica traslado)');
@@ -274,6 +230,7 @@ export function buildWhatsAppMessage(params: {
   zone: ZoneName;
   customZoneText?: string;
   dayName: string;
+  specificDate?: string;
   slotLabel: string;
   quote: QuoteBreakdown;
 }): string {
@@ -286,18 +243,22 @@ export function buildWhatsAppMessage(params: {
       ? `${params.customZoneText.trim()} (fuera de zona base)`
       : params.zone;
 
+  const datePart = params.specificDate?.trim()
+    ? `${params.dayName} (${params.specificDate.trim()})`
+    : params.dayName;
+
   const { petCount, hours, ratePerPetAfterDiscount, discountPercentage, total, isSpecialRequest } =
     params.quote;
 
   const extraNotice = isSpecialRequest
-    ? ' (Sé que es horario/zona especial, me confirmas disponibilidad o si aplica algún extra)'
+    ? ' (Me confirmas disponibilidad o si aplica algún ajuste por horario/zona)'
     : '';
 
   return `Hola Alex, vi Pet Concierge Service y quiero agendar ${params.service} para ${cleanPetName} (${petCount} ${
     petCount === 1 ? 'mascota' : 'mascotas'
-  } a $${ratePerPetAfterDiscount} MXN c/u) por ${finalZone}. Me interesa el ${
-    params.dayName
-  } en el horario de ${params.slotLabel} (${hours} ${
+  } a $${ratePerPetAfterDiscount} MXN c/u) por ${finalZone}. Me interesa el ${datePart} en el horario de ${
+    params.slotLabel
+  } (${hours} ${
     hours === 1 ? 'hora' : 'horas'
   }, ${discountPercentage}% desc. — Total base: $${total.toLocaleString(
     'es-MX'
@@ -310,6 +271,7 @@ export function buildWhatsAppBookingUrl(params: {
   zone: ZoneName;
   customZoneText?: string;
   dayName: string;
+  specificDate?: string;
   slotLabel: string;
   quote: QuoteBreakdown;
 }): string {

@@ -5,19 +5,26 @@ import {
   Car,
   CheckCircle2,
   Clock,
+  CloudUpload,
   Copy,
   Dog,
   Home,
   Info,
+  KeyRound,
+  Lock,
   MapPin,
   MessageCircle,
   Minus,
   PawPrint,
   Plus,
+  RotateCcw,
+  Unlock,
 } from 'lucide-react';
 import {
+  ADMIN_PIN,
   ALL_ZONES,
   BASE_HOURLY_RATE,
+  PRIORITY_ZONES,
   SERVICE_OPTIONS,
   WEEKLY_CALENDAR,
   WHATSAPP_DISPLAY,
@@ -27,38 +34,83 @@ import {
   evaluateDaySlotsWithAutoBuffer,
   formatMXN,
 } from '../config/constants';
-import { ServiceType, ZoneName } from '../types/concierge';
+import { CalendarDay, ServiceType, ZoneName } from '../types/concierge';
 
 interface PricingCalculatorProps {
   onShowToast: (message: string) => void;
 }
 
+const STORAGE_KEY_CALENDAR = 'pcs_calendar_v2';
+const STORAGE_KEY_GH_TOKEN = 'pcs_gh_token_v1';
+const GITHUB_REPO = 'alexram77rmz-lab/alex-pet-concierge';
+const GITHUB_FILE_PATH = 'public/schedule.json';
+
 export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToast }) => {
   const [selectedService, setSelectedService] = useState<ServiceType>('Paseo Privado (Perros)');
   const [petCount, setPetCount] = useState<number>(1);
   const [hours, setHours] = useState<number>(1);
-  const [zone, setZone] = useState<ZoneName>('Jardín Real');
+  const [zone, setZone] = useState<ZoneName>('Puerta de Hierro');
   const [customZoneText, setCustomZoneText] = useState<string>('');
   const [petName, setPetName] = useState<string>('');
+  const [specificDate, setSpecificDate] = useState<string>('');
 
-  // Calendario (Lunes a Domingo, de 10:00 a.m. a 9:00 p.m.)
+  // Estado del calendario semanal (empieza 100% libre sin fechas ocupadas de ejemplo)
+  const [calendarDays, setCalendarDays] = useState<CalendarDay[]>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY_CALENDAR);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length === 7) return parsed;
+      }
+    } catch {
+      // ignore
+    }
+    return WEEKLY_CALENDAR;
+  });
+
   const [selectedDayId, setSelectedDayId] = useState<string>('lun');
-  const [selectedSlotRange, setSelectedSlotRange] = useState<string>('12:00 p.m. – 1:00 p.m.');
+  const [selectedSlotRange, setSelectedSlotRange] = useState<string>('10:00 a.m. – 11:00 a.m.');
   const [requestExtraSlot, setRequestExtraSlot] = useState<boolean>(false);
 
+  // Estado del Panel Admin Oculto (Solo para Alex con PIN 2772)
+  const [showPinPrompt, setShowPinPrompt] = useState<boolean>(false);
+  const [pinInput, setPinInput] = useState<string>('');
+  const [adminUnlocked, setAdminUnlocked] = useState<boolean>(false);
+  const [adminSelectedZone, setAdminSelectedZone] = useState<ZoneName>('Puerta de Hierro');
+  const [ghToken, setGhToken] = useState<string>(() => localStorage.getItem(STORAGE_KEY_GH_TOKEN) || '');
+  const [isPublishingCloud, setIsPublishingCloud] = useState<boolean>(false);
+
+  // Carga en vivo el archivo schedule.json desde GitHub para que todos los clientes vean los horarios reales
+  useEffect(() => {
+    const fetchLiveSchedule = async () => {
+      try {
+        const rawUrl = `https://raw.githubusercontent.com/${GITHUB_REPO}/main/${GITHUB_FILE_PATH}?t=${Date.now()}`;
+        const res = await fetch(rawUrl, { cache: 'no-store' });
+        if (res.ok) {
+          const data = await res.json();
+          if (data && Array.isArray(data.days)) {
+            setCalendarDays(data.days);
+            localStorage.setItem(STORAGE_KEY_CALENDAR, JSON.stringify(data.days));
+          }
+        }
+      } catch {
+        // Fallback silencioso a localStorage o WEEKLY_CALENDAR limpio
+      }
+    };
+    fetchLiveSchedule();
+  }, []);
+
   const activeDay = useMemo(
-    () => WEEKLY_CALENDAR.find((d) => d.id === selectedDayId) || WEEKLY_CALENDAR[0],
-    [selectedDayId]
+    () => calendarDays.find((d) => d.id === selectedDayId) || calendarDays[0],
+    [calendarDays, selectedDayId]
   );
 
-  // Evalúa automáticamente qué horas se separan por traslado según la zona elegida
+  // Evalúa automáticamente la separación de horarios según la zona del cliente y el tope de 5 horas
   const evaluatedSlots = useMemo(
     () => evaluateDaySlotsWithAutoBuffer(activeDay, zone),
     [activeDay, zone]
   );
 
-  // Si el usuario cambia de zona y la hora que tenía elegida ahora queda pegada a otra zona distinta,
-  // el sistema la mueve automáticamente a la siguiente hora separada disponible.
   useEffect(() => {
     if (activeDay.isWeekend || requestExtraSlot) return;
     const current = evaluatedSlots.find((s) => s.timeRange === selectedSlotRange);
@@ -72,7 +124,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
 
   const handleSelectDay = (dayId: string) => {
     setSelectedDayId(dayId);
-    const dayObj = WEEKLY_CALENDAR.find((d) => d.id === dayId);
+    const dayObj = calendarDays.find((d) => d.id === dayId);
     if (!dayObj) return;
     if (dayObj.isWeekend) {
       setRequestExtraSlot(true);
@@ -85,16 +137,114 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
     }
   };
 
+  // Funciones Admin de Alex
+  const handleVerifyPin = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (pinInput.trim() === ADMIN_PIN) {
+      setAdminUnlocked(true);
+      setShowPinPrompt(false);
+      setPinInput('');
+      onShowToast('Modo Admin de Alex activado.');
+    } else {
+      onShowToast('PIN incorrecto.');
+    }
+  };
+
+  const handleToggleSlotAdmin = (dayId: string, slotId: string) => {
+    setCalendarDays((prev) => {
+      const updated = prev.map((day) => {
+        if (day.id !== dayId) return day;
+        return {
+          ...day,
+          slots: day.slots.map((slot) => {
+            if (slot.id !== slotId) return slot;
+            const nextStatus = slot.status === 'available' ? ('booked' as const) : ('available' as const);
+            return {
+              ...slot,
+              status: nextStatus,
+              bookedZone: nextStatus === 'booked' ? adminSelectedZone : undefined,
+            };
+          }),
+        };
+      });
+      localStorage.setItem(STORAGE_KEY_CALENDAR, JSON.stringify(updated));
+      return updated;
+    });
+  };
+
+  const handleResetAllSlotsAdmin = () => {
+    setCalendarDays(WEEKLY_CALENDAR);
+    localStorage.setItem(STORAGE_KEY_CALENDAR, JSON.stringify(WEEKLY_CALENDAR));
+    onShowToast('Todos los horarios de la semana quedaron 100% libres.');
+  };
+
+  const handlePublishToGitHub = async () => {
+    const cleanToken = ghToken.trim();
+    if (!cleanToken) {
+      onShowToast('Ingresa tu Token de GitHub para publicar a todos los clientes.');
+      return;
+    }
+    localStorage.setItem(STORAGE_KEY_GH_TOKEN, cleanToken);
+    setIsPublishingCloud(true);
+
+    try {
+      const apiUrl = `https://api.github.com/repos/${GITHUB_REPO}/contents/${GITHUB_FILE_PATH}`;
+      const getRes = await fetch(apiUrl, {
+        headers: {
+          Authorization: `Bearer ${cleanToken}`,
+          Accept: 'application/vnd.github+json',
+        },
+      });
+
+      let sha: string | undefined;
+      if (getRes.ok) {
+        const fileData = await getRes.json();
+        sha = fileData.sha;
+      }
+
+      const payloadObj = {
+        updatedAt: new Date().toISOString(),
+        days: calendarDays,
+      };
+      const contentBase64 = btoa(unescape(encodeURIComponent(JSON.stringify(payloadObj, null, 2))));
+
+      const putRes = await fetch(apiUrl, {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${cleanToken}`,
+          Accept: 'application/vnd.github+json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: 'chore(schedule): update live availability from Admin Panel',
+          content: contentBase64,
+          sha,
+          branch: 'main',
+        }),
+      });
+
+      if (putRes.ok) {
+        onShowToast('¡Horarios publicados en vivo para todos tus clientes!');
+      } else {
+        onShowToast('Guardado en este dispositivo. Revisa el token si deseas sincronizar en la nube.');
+      }
+    } catch {
+      onShowToast('Guardado localmente en este dispositivo.');
+    } finally {
+      setIsPublishingCloud(false);
+    }
+  };
+
   const quote = useMemo(
     () =>
       calculateQuote({
         petCount,
         hours,
         isWeekend: activeDay.isWeekend,
-        isExtraSlot: requestExtraSlot,
+        isExtraSlot: requestExtraSlot || Boolean(specificDate),
         zone,
       }),
-    [petCount, hours, activeDay.isWeekend, requestExtraSlot, zone]
+    [petCount, hours, activeDay.isWeekend, requestExtraSlot, specificDate, zone]
   );
 
   const whatsappMessage = useMemo(
@@ -105,10 +255,21 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
         zone,
         customZoneText,
         dayName: activeDay.dayName,
+        specificDate,
         slotLabel: requestExtraSlot ? 'Horario Especial / Extra' : selectedSlotRange,
         quote,
       }),
-    [selectedService, petName, zone, customZoneText, activeDay.dayName, requestExtraSlot, selectedSlotRange, quote]
+    [
+      selectedService,
+      petName,
+      zone,
+      customZoneText,
+      activeDay.dayName,
+      specificDate,
+      requestExtraSlot,
+      selectedSlotRange,
+      quote,
+    ]
   );
 
   const whatsappUrl = useMemo(
@@ -119,10 +280,21 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
         zone,
         customZoneText,
         dayName: activeDay.dayName,
+        specificDate,
         slotLabel: requestExtraSlot ? 'Horario Especial / Extra' : selectedSlotRange,
         quote,
       }),
-    [selectedService, petName, zone, customZoneText, activeDay.dayName, requestExtraSlot, selectedSlotRange, quote]
+    [
+      selectedService,
+      petName,
+      zone,
+      customZoneText,
+      activeDay.dayName,
+      specificDate,
+      requestExtraSlot,
+      selectedSlotRange,
+      quote,
+    ]
   );
 
   const handleCopyQuote = async () => {
@@ -157,7 +329,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* Columna Izquierda: Controles y Calendario Inteligente (7 cols) */}
+        {/* Columna Izquierda: Controles y Calendario (7 cols) */}
         <div className="lg:col-span-7 rounded-3xl bg-white dark:bg-[#141A17] border border-[#E5E0D8] dark:border-white/10 shadow-card p-5 sm:p-8 space-y-7">
           {/* 1. Servicio */}
           <div className="space-y-2.5">
@@ -258,10 +430,10 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
             </div>
           </div>
 
-          {/* 3. Zona (Activa la separación automática de horas según ubicación) */}
+          {/* 3. Zona */}
           <div className="space-y-2.5 pt-2 border-t border-[#E5E0D8]/80 dark:border-white/10">
             <label className="text-xs font-bold uppercase tracking-wider text-[#57534E] dark:text-stone-400 block">
-              3. Selecciona tu Zona (El calendario separa horas automáticamente según traslado)
+              3. Selecciona tu Zona
             </label>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {ALL_ZONES.map((z) => {
@@ -297,18 +469,119 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
             )}
           </div>
 
-          {/* 4. Calendario Semanal con Separación Automática (10:00 a.m. a 9:00 p.m.) */}
+          {/* 4. Calendario Semanal (10:00 a.m. a 9:00 p.m.) */}
           <div className="space-y-3.5 pt-2 border-t border-[#E5E0D8]/80 dark:border-white/10">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <label className="text-xs font-bold uppercase tracking-wider text-[#57534E] dark:text-stone-400 flex items-center gap-1.5">
                 <Calendar className="w-4 h-4 text-[#1E3A2F] dark:text-emerald-400" />
-                <span>4. Horarios (10:00 a.m. a 9:00 p.m. • Separados para puntualidad)</span>
+                <span>4. Horarios Disponibles (10:00 a.m. a 9:00 p.m.)</span>
               </label>
+
+              {/* Acceso discreto para Alex (PIN 2772) */}
+              {!adminUnlocked ? (
+                <button
+                  type="button"
+                  onClick={() => setShowPinPrompt((prev) => !prev)}
+                  className="text-[11px] text-[#57534E]/60 hover:text-[#1E3A2F] dark:text-stone-500 inline-flex items-center gap-1 transition-colors"
+                  title="Acceso Admin para gestionar horas ocupadas"
+                >
+                  <Lock className="w-3 h-3" />
+                  <span>Admin</span>
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setAdminUnlocked(false)}
+                  className="px-2.5 py-1 rounded-lg bg-[#18181B] text-[#FAF9F6] text-[11px] font-bold inline-flex items-center gap-1"
+                >
+                  <Unlock className="w-3 h-3 text-emerald-400" />
+                  <span>Salir de Admin</span>
+                </button>
+              )}
             </div>
+
+            {/* Prompt de PIN 2772 cuando Alex toca "Admin" */}
+            {showPinPrompt && !adminUnlocked && (
+              <form
+                onSubmit={handleVerifyPin}
+                className="p-3.5 rounded-2xl bg-[#FAF9F6] dark:bg-[#0E1210] border border-[#DCD6CC] dark:border-white/15 flex items-center gap-2"
+              >
+                <KeyRound className="w-4 h-4 text-[#1E3A2F] shrink-0" />
+                <input
+                  type="password"
+                  value={pinInput}
+                  onChange={(e) => setPinInput(e.target.value)}
+                  placeholder="PIN de Alex (4 dígitos)"
+                  className="min-h-[38px] flex-1 px-3 rounded-lg bg-white dark:bg-[#161D19] border border-[#DCD6CC] dark:border-white/15 text-xs"
+                />
+                <button
+                  type="submit"
+                  className="min-h-[38px] px-4 rounded-lg bg-[#1E3A2F] text-[#FAF9F6] text-xs font-bold"
+                >
+                  Entrar
+                </button>
+              </form>
+            )}
+
+            {/* Barra de herramientas Admin (Solo visible cuando Alex mete su PIN 2772) */}
+            {adminUnlocked && (
+              <div className="p-4 rounded-2xl bg-[#18181B] text-[#FAF9F6] space-y-3 border border-white/15">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <span className="text-xs font-bold uppercase tracking-wider text-emerald-400">
+                    Panel de Alex — Toca cualquier hora abajo para marcarla Ocupada / Libre
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleResetAllSlotsAdmin}
+                    className="min-h-[34px] px-3 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-xs font-semibold inline-flex items-center gap-1"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" />
+                    <span>Liberar Toda la Semana</span>
+                  </button>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2 text-xs">
+                  <span className="text-[#E5E0D8]/80">Zona cuando marques ocupado:</span>
+                  {PRIORITY_ZONES.map((pz) => (
+                    <button
+                      key={pz}
+                      type="button"
+                      onClick={() => setAdminSelectedZone(pz)}
+                      className={`px-2.5 py-1 rounded-lg font-semibold ${
+                        adminSelectedZone === pz
+                          ? 'bg-emerald-600 text-white'
+                          : 'bg-white/10 text-[#E5E0D8]'
+                      }`}
+                    >
+                      {pz}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="pt-2 border-t border-white/10 flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                  <input
+                    type="password"
+                    value={ghToken}
+                    onChange={(e) => setGhToken(e.target.value)}
+                    placeholder="Token de GitHub (opcional para sincronizar en vivo a todos)"
+                    className="min-h-[38px] flex-1 px-3 rounded-lg bg-white/10 border border-white/15 text-xs text-white placeholder:text-white/40"
+                  />
+                  <button
+                    type="button"
+                    onClick={handlePublishToGitHub}
+                    disabled={isPublishingCloud}
+                    className="min-h-[38px] px-4 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold inline-flex items-center justify-center gap-1.5"
+                  >
+                    <CloudUpload className="w-4 h-4" />
+                    <span>{isPublishingCloud ? 'Publicando...' : 'Publicar Cambios en Vivo'}</span>
+                  </button>
+                </div>
+              </div>
+            )}
 
             {/* Pestañas de días Lun - Dom */}
             <div className="grid grid-cols-7 gap-1.5">
-              {WEEKLY_CALENDAR.map((day) => {
+              {calendarDays.map((day) => {
                 const isSelected = selectedDayId === day.id;
                 const smartSlots = evaluateDaySlotsWithAutoBuffer(day, zone);
                 const freeCount = smartSlots.filter((s) => s.effectiveStatus === 'available').length;
@@ -343,7 +616,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
               })}
             </div>
 
-            {/* Horas del día seleccionado con Separación Automática */}
+            {/* Horas del día seleccionado */}
             {activeDay.isWeekend ? (
               <div className="p-4 rounded-2xl bg-[#FAF9F6] dark:bg-[#0E1210] border border-[#E5E0D8] dark:border-white/10 space-y-2 text-xs sm:text-sm">
                 <p className="font-bold text-[#18181B] dark:text-[#FAF9F6]">
@@ -351,7 +624,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
                 </p>
                 <p className="text-[#57534E] dark:text-stone-300">
                   Los fines de semana normalmente no laboro, pero puedes enviarme tu solicitud por WhatsApp y
-                  acordamos si tengo espacio.
+                  acordamos disponibilidad.
                 </p>
               </div>
             ) : (
@@ -365,16 +638,20 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
                       <button
                         key={slot.id}
                         type="button"
-                        disabled={isUnavailable}
+                        disabled={!adminUnlocked && isUnavailable}
                         onClick={() => {
-                          setRequestExtraSlot(false);
-                          setSelectedSlotRange(slot.timeRange);
+                          if (adminUnlocked) {
+                            handleToggleSlotAdmin(activeDay.id, slot.id);
+                          } else {
+                            setRequestExtraSlot(false);
+                            setSelectedSlotRange(slot.timeRange);
+                          }
                         }}
                         className={`min-h-[54px] px-3.5 py-2.5 rounded-xl border text-left flex flex-col justify-center transition-all ${
                           slot.effectiveStatus === 'booked'
-                            ? 'bg-[#E5E0D8]/40 dark:bg-white/5 border-[#E5E0D8] dark:border-white/5 text-[#57534E]/60 dark:text-stone-500 cursor-not-allowed'
+                            ? 'bg-[#E5E0D8]/45 dark:bg-white/5 border-[#E5E0D8] dark:border-white/5 text-[#57534E]/65 dark:text-stone-500'
                             : slot.effectiveStatus === 'auto_buffer'
-                            ? 'bg-amber-950/5 dark:bg-amber-950/20 border-dashed border-amber-600/30 text-[#57534E]/75 dark:text-stone-400 cursor-not-allowed'
+                            ? 'bg-amber-950/5 dark:bg-amber-950/20 border-dashed border-amber-600/30 text-[#57534E]/75 dark:text-stone-400'
                             : isSelected
                             ? 'bg-[#1E3A2F] text-[#FAF9F6] border-[#1E3A2F] shadow-sm'
                             : 'bg-[#FAF9F6] dark:bg-[#0E1210] text-[#18181B] dark:text-[#FAF9F6] border-[#E5E0D8] dark:border-white/10 hover:border-[#1E3A2F]/50'
@@ -393,7 +670,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
                           <span
                             className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
                               slot.effectiveStatus === 'booked'
-                                ? 'bg-stone-300/50 dark:bg-white/5 text-[#57534E] dark:text-stone-400'
+                                ? 'bg-stone-300/60 dark:bg-white/10 text-[#57534E] dark:text-stone-300'
                                 : slot.effectiveStatus === 'auto_buffer'
                                 ? 'bg-amber-500/15 text-amber-800 dark:text-amber-300'
                                 : isSelected
@@ -413,55 +690,53 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
 
                         {slot.effectiveStatus === 'auto_buffer' && (
                           <span className="text-[10px] text-amber-800 dark:text-amber-300/90 mt-0.5">
-                            {slot.reasonLabel} — usa la siguiente hora libre
+                            {slot.reasonLabel}
                           </span>
                         )}
                       </button>
                     );
                   })}
                 </div>
-
-                {/* Botón simple por si quieren pedir otro horario entre 10am y 9pm */}
-                <button
-                  type="button"
-                  onClick={() => {
-                    setRequestExtraSlot((prev) => !prev);
-                    setSelectedSlotRange('Otro horario entre 10:00 a.m. y 9:00 p.m.');
-                  }}
-                  className={`min-h-[46px] w-full px-4 py-2 rounded-xl border border-dashed text-left flex items-center justify-between transition-all ${
-                    requestExtraSlot
-                      ? 'bg-[#1E3A2F] text-[#FAF9F6] border-[#1E3A2F]'
-                      : 'bg-[#FAF9F6] dark:bg-[#0E1210] text-[#57534E] dark:text-stone-300 border-[#DCD6CC] dark:border-white/15'
-                  }`}
-                >
-                  <span className="text-xs font-bold">
-                    ¿Necesitas otro horario específico entre 10:00 a.m. y 9:00 p.m.?
-                  </span>
-                  <span className="text-[11px] font-semibold underline">
-                    {requestExtraSlot ? 'Solicitado ✓' : 'Solicitar por WhatsApp'}
-                  </span>
-                </button>
               </div>
             )}
           </div>
 
-          {/* 5. Nombre de la mascota */}
-          <div className="space-y-1.5 pt-2 border-t border-[#E5E0D8]/80 dark:border-white/10">
-            <label
-              htmlFor="pet-name-input"
-              className="text-xs font-bold uppercase tracking-wider text-[#57534E] dark:text-stone-400 flex items-center gap-1.5"
-            >
-              <PawPrint className="w-3.5 h-3.5 text-[#1E3A2F] dark:text-emerald-400" />
-              <span>5. Nombre de tu(s) mascota(s) (Opcional)</span>
-            </label>
-            <input
-              id="pet-name-input"
-              type="text"
-              value={petName}
-              onChange={(e) => setPetName(e.target.value)}
-              placeholder="Ej. Bruno, Kira..."
-              className="min-h-[46px] w-full px-4 py-2 rounded-xl bg-[#FAF9F6] dark:bg-[#0E1210] border border-[#DCD6CC] dark:border-white/15 text-sm text-[#18181B] dark:text-[#FAF9F6]"
-            />
+          {/* 5. Nombre de la mascota y Fecha específica opcional */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-[#E5E0D8]/80 dark:border-white/10">
+            <div className="space-y-1.5">
+              <label
+                htmlFor="pet-name-input"
+                className="text-xs font-bold uppercase tracking-wider text-[#57534E] dark:text-stone-400 flex items-center gap-1.5"
+              >
+                <PawPrint className="w-3.5 h-3.5 text-[#1E3A2F] dark:text-emerald-400" />
+                <span>5. Nombre de tu(s) mascota(s)</span>
+              </label>
+              <input
+                id="pet-name-input"
+                type="text"
+                value={petName}
+                onChange={(e) => setPetName(e.target.value)}
+                placeholder="Ej. Bruno, Kira..."
+                className="min-h-[46px] w-full px-4 py-2 rounded-xl bg-[#FAF9F6] dark:bg-[#0E1210] border border-[#DCD6CC] dark:border-white/15 text-sm text-[#18181B] dark:text-[#FAF9F6]"
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <label
+                htmlFor="specific-date-input"
+                className="text-xs font-bold uppercase tracking-wider text-[#57534E] dark:text-stone-400 flex items-center gap-1.5"
+              >
+                <Calendar className="w-3.5 h-3.5 text-[#1E3A2F] dark:text-emerald-400" />
+                <span>¿Otra fecha en específico? (Opcional)</span>
+              </label>
+              <input
+                id="specific-date-input"
+                type="date"
+                value={specificDate}
+                onChange={(e) => setSpecificDate(e.target.value)}
+                className="min-h-[46px] w-full px-4 py-2 rounded-xl bg-[#FAF9F6] dark:bg-[#0E1210] border border-[#DCD6CC] dark:border-white/15 text-sm text-[#18181B] dark:text-[#FAF9F6]"
+              />
+            </div>
           </div>
         </div>
 
@@ -473,12 +748,11 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
             </p>
             <h3 className="text-xl font-bold">{selectedService}</h3>
             <p className="text-xs text-[#E5E0D8]">
-              {activeDay.dayName} • {requestExtraSlot ? 'Horario Especial a confirmar' : selectedSlotRange} •{' '}
-              {zone}
+              {activeDay.dayName} {specificDate ? `(${specificDate})` : ''} •{' '}
+              {requestExtraSlot ? 'Horario Especial a confirmar' : selectedSlotRange} • {zone}
             </p>
           </div>
 
-          {/* Desglose claro */}
           <div className="space-y-3 text-sm">
             <div className="flex items-center justify-between text-[#FAF9F6]/85">
               <span>
@@ -526,7 +800,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
             <div className="p-3.5 rounded-2xl bg-white/10 border border-white/15 flex items-start gap-2.5 text-xs text-[#E5E0D8]">
               <Info className="w-4 h-4 text-amber-300 shrink-0 mt-0.5" />
               <div className="space-y-1">
-                <p className="font-bold text-white">Solicitud por confirmar en WhatsApp:</p>
+                <p className="font-bold text-white">Detalles a confirmar en WhatsApp:</p>
                 <ul className="list-disc list-inside space-y-0.5">
                   {quote.specialNotes.map((note) => (
                     <li key={note}>{note}</li>
@@ -537,7 +811,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
           ) : (
             <div className="p-3.5 rounded-2xl bg-black/20 border border-white/10 flex items-center gap-2 text-xs text-[#E5E0D8]">
               <CheckCircle2 className="w-4 h-4 text-emerald-300 shrink-0" />
-              <span>Horario con margen de traslado verificado y zona sin cargos extra.</span>
+              <span>Horario disponible y zona dentro de cobertura normal (sin cargos extra).</span>
             </div>
           )}
 
