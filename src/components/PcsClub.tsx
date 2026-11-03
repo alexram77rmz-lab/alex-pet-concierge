@@ -242,8 +242,8 @@ export const PcsClub: React.FC = () => {
                 <span>Programa de Vecinos &amp; Anfitrión PCS</span>
               </div>
               <p className="text-xs sm:text-sm text-[#1E3A2F] dark:text-stone-200 leading-relaxed">
-                <strong>Invita a un vecino de tu zona</strong> y, cuando complete su primer servicio, ambos
-                reciben un paseo de cortesía. Con tu tercer referido eres{' '}
+                <strong>Invita a un vecino de tu zona</strong> y él se gana un{' '}
+                <strong>paseo de cortesía de 30 min</strong> para conocer el servicio. Con tu tercer referido eres{' '}
                 <strong>Anfitrión PCS</strong> y conservas prioridad fija de horarios.
               </p>
               <p className="text-[11px] italic text-[#57534E] dark:text-stone-400 pt-1">

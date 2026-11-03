@@ -68,9 +68,9 @@ export const PCS_CLUB_CONTENT = {
     'Detalle especial en el cumpleaños de tu mascota',
   ],
   referralText:
-    'Invita a un vecino de tu zona y, cuando complete su primer servicio, ambos reciben un paseo de cortesía. Con tu tercer referido eres Anfitrión PCS y conservas prioridad de horarios.',
+    'Invita a un vecino de tu zona y él se gana un paseo de cortesía de 30 min para conocer el servicio. Con tu tercer referido eres Anfitrión PCS y conservas prioridad de horarios.',
   finePrint:
-    'Tu QR personal de PCS Club se entrega en tu primer servicio. Descuentos del 25% (paseo 5) y 50% (paseo 10) válidos en horarios disponibles. Cortesías de vecino: máx. 1 por mes en la misma zona.',
+    'Tu QR personal de PCS Club se entrega en tu primer servicio. Descuentos del 25% (paseo 5) y 50% (paseo 10) válidos en horarios disponibles. Cortesía de 30 min para vecino previa valoración.',
 };
 
 export const SERVICE_OPTIONS: {
@@ -406,7 +406,7 @@ export const FAQ_ITEMS: FaqItem[] = [
     id: 'pcs-club-faq',
     question: '¿Cómo funciona la tarjeta y el código QR de PCS Club?',
     answer:
-      'Desde tu primer servicio te entrego personalmente tu tarjeta con QR de miembro PCS Club. Cada paseo suma un sello: en tu 5º paseo obtienes 25% de descuento y en tu 10º paseo obtienes 50% de descuento. Además, al invitar a un vecino que complete su primer servicio, ambos reciben un paseo de cortesía.',
+      'Desde tu primer servicio te entrego personalmente tu tarjeta con QR de miembro PCS Club. Cada paseo suma un sello: en tu 5º paseo obtienes 25% de descuento y en tu 10º paseo obtienes 50% de descuento. Además, al invitar a un vecino de tu zona, él se gana un paseo de cortesía de 30 min para conocer el servicio.',
     highlightTag: 'Paseo 5 (-25%) • Paseo 10 (-50%)',
   },
   {
