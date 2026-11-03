@@ -1,14 +1,43 @@
-export type ServiceType = 'Paseo Privado (Perros)' | 'Cuidado en Casa (Gatos / Perros)';
+export type ServiceType = 'Paseo Privado / Manada Familiar (Perros)' | 'Cuidado en Casa (Gatos / Perros)';
 
-export type DiscountTierKey = 'single' | 'package_5' | 'package_10';
+export type ZoneName =
+  | 'Puerta de Hierro'
+  | 'Av. Patria'
+  | 'Jardín Real'
+  | 'Valle Real'
+  | 'Otra zona cercana (Cargo extra traslado)';
+
+export type DayCategory = 'weekday' | 'weekend';
+
+export type DiscountTierKey = 'standard_200' | 'duo_190' | 'pack_180';
+
+export interface TimeSlotItem {
+  id: string;
+  slotNumber: number;
+  timeRange: string;
+  startTime: string;
+  endTime: string;
+  bufferAfter: string;
+  status: 'available' | 'booked';
+  bookedZone?: ZoneName;
+  bookedPetNote?: string;
+}
 
 export interface QuoteBreakdown {
+  petCount: number;
   hours: number;
-  baseRate: number;
+  baseRatePerPet: number;
   discountPercentage: number;
-  finalHourlyRate: number;
-  subtotal: number;
+  ratePerPetAfterDiscount: number;
+  subtotalBase: number;
   discountAmount: number;
+  isWeekend: boolean;
+  isExtraOvertimeSlot: boolean;
+  isOutZone: boolean;
+  weekendSurcharge: number;
+  extraSlotSurcharge: number;
+  outZoneSurcharge: number;
+  totalSurcharges: number;
   total: number;
   tierKey: DiscountTierKey;
   tierBadge: string;

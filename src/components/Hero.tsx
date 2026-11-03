@@ -41,7 +41,7 @@ export const Hero: React.FC = () => {
             <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-[#E5E0D8]/70 dark:bg-white/10 border border-[#DCD6CC] dark:border-white/15">
               <span className="w-2 h-2 rounded-full bg-[#1E3A2F] dark:bg-emerald-400 animate-pulse" />
               <span className="text-xs sm:text-sm font-semibold tracking-wide text-[#1E3A2F] dark:text-[#E5E0D8]">
-                Servicio Exclusivo 1 a 1 • Cero Manadas Masivas
+                Cupo Exclusivo: Solo 5 Horas al Día • Cero Manadas Ajenas
               </span>
             </div>
 
@@ -55,8 +55,8 @@ export const Hero: React.FC = () => {
 
             {/* Subtitle */}
             <p className="text-base sm:text-lg lg:text-xl text-[#57534E] dark:text-stone-300 leading-relaxed max-w-2xl">
-              Paseos personalizados para perros y visitas de cuidado en casa para gatos. Monitoreo GPS en vivo,
-              hidratación y reporte fotográfico en cada sesión.
+              Cobertura exclusiva en <strong>Puerta de Hierro, Av. Patria, Jardín Real y Valle Real</strong>.
+              Paseos solo para tus mascotas ($200 individual, $190 c/u por 2-3, $180 c/u por 4+) con 30 min de margen entre bloques, GPS en vivo y reporte fotográfico.
             </p>
 
             {/* Primary & Secondary CTA Buttons (Mobile-First >= 48px height) */}
@@ -187,10 +187,10 @@ export const Hero: React.FC = () => {
                 <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
                   <span className="px-3 py-1.5 rounded-full backdrop-blur-md bg-[#FAF9F6]/90 text-[#18181B] text-xs font-semibold inline-flex items-center gap-1.5 shadow-sm">
                     <span className="w-2 h-2 rounded-full bg-emerald-600 animate-ping" />
-                    {previewMode === 'walk' ? 'GPS Activo • Parque Lincoln' : 'En Domicilio • Roma Norte'}
+                    {previewMode === 'walk' ? 'GPS Activo • Puerta de Hierro' : 'En Domicilio • Jardín Real'}
                   </span>
                   <span className="px-2.5 py-1 rounded-full backdrop-blur-md bg-[#18181B]/75 text-[#FAF9F6] text-xs font-medium">
-                    100% Privado
+                    Solo tu Hogar
                   </span>
                 </div>
 

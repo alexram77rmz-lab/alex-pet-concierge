@@ -37,19 +37,19 @@ export const Footer: React.FC = () => {
           <div className="lg:col-span-3 space-y-3">
             <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-[#E5E0D8]">
               <Clock className="w-4 h-4 text-emerald-400" />
-              <span>Horarios de Atención</span>
+              <span>Horarios y Cupo Diario</span>
             </div>
             <ul className="space-y-2 text-sm text-[#FAF9F6]/85">
               <li className="flex justify-between border-b border-white/10 pb-1.5">
                 <span className="text-[#E5E0D8]/75">Lunes a Viernes</span>
-                <span className="font-semibold">07:00 – 20:00 hrs</span>
+                <span className="font-semibold">Solo 5 bloques / día</span>
               </li>
               <li className="flex justify-between border-b border-white/10 pb-1.5">
                 <span className="text-[#E5E0D8]/75">Sábados y Domingos</span>
-                <span className="font-semibold">08:00 – 19:00 hrs</span>
+                <span className="font-semibold text-amber-300">Descanso (Solo Extra)</span>
               </li>
               <li className="text-xs text-emerald-300 pt-1">
-                * Horarios matutinos y vespertinos ajustables según temperatura del asfalto.
+                * 30 min de margen entre bloques para traslado seguro entre Av. Patria, Puerta de Hierro, Valle Real y Jardín Real.
               </li>
             </ul>
           </div>
