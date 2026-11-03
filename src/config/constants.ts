@@ -10,15 +10,30 @@ import {
 } from '../types/concierge';
 
 /**
- * Número directo de WhatsApp de Alex Pet Concierge: 33 2122 2772
+ * WhatsApp directo: 33 2122 2772
  */
 export const WHATSAPP_PHONE = '523321222772';
 export const WHATSAPP_DISPLAY = '33 2122 2772';
 
-export const INSTAGRAM_URL = 'https://instagram.com/alexpetconcierge';
+export const INSTAGRAM_URL = 'https://instagram.com/petconciergeservice';
 
-export const BASE_HOURLY_RATE = 200; // $200 MXN por mascota / hora
-export const MAX_DAILY_HOURS = 5; // 5 bloques al día (Lunes a Viernes)
+export const BRAND_NAME = 'PET CONCIERGE SERVICE';
+export const BRAND_SHORT = 'PCS';
+
+export const FOUNDER_BIO = {
+  badge: 'ATENCIÓN PERSONAL Y DIRECTA',
+  title: 'Hola, soy Alex — Tu encargado directo en cada paseo y visita',
+  description:
+    'No somos una app masiva ni envío desconocidos a tu casa. Yo personalmente paso por tus mascotas, cuido su paseo o visita de principio a fin, te comparto mi ubicación en vivo por WhatsApp y te las regreso tranquilas, hidratadas y con sus patitas limpias con espuma.',
+  highlights: [
+    'Trato directo conmigo por WhatsApp (33 2122 2772)',
+    'Horario de 10:00 a.m. a 9:00 p.m. (máximo 5 servicios al día)',
+    'Citas separadas automáticamente para llegar siempre puntual a tu zona',
+  ],
+};
+
+export const BASE_HOURLY_RATE = 200; // $200 MXN base por mascota / hora
+export const MAX_DAILY_HOURS = 5; // Máximo 5 horas trabajadas por día
 
 export const SERVICE_OPTIONS: {
   id: ServiceType;
@@ -50,8 +65,9 @@ export const ALL_ZONES: ZoneName[] = [
 ];
 
 /**
- * Calendario semanal informativo (5 horas por día de Lunes a Viernes, con 30 min entre bloques
- * para traslados tranquilos entre Puerta de Hierro, Av. Patria, Jardín Real y Valle Real).
+ * Horario de 10:00 a.m. a 9:00 p.m. (Lunes a Viernes).
+ * Los bloques están diseñados para preferir horas separadas y el sistema bloquea automáticamente
+ * horas pegadas cuando hay cambio de zona (ej. si termina 4:00 p.m. en Av. Patria, separa la siguiente hora).
  */
 export const WEEKLY_CALENDAR: CalendarDay[] = [
   {
@@ -60,11 +76,13 @@ export const WEEKLY_CALENDAR: CalendarDay[] = [
     dayName: 'Lunes',
     isWeekend: false,
     slots: [
-      { id: 'lun-1', timeRange: '09:00 – 10:00', status: 'booked', zoneNote: 'Ocupado (Puerta de Hierro)' },
-      { id: 'lun-2', timeRange: '10:30 – 11:30', status: 'available' },
-      { id: 'lun-3', timeRange: '12:00 – 13:00', status: 'available' },
-      { id: 'lun-4', timeRange: '15:00 – 16:00', status: 'booked', zoneNote: 'Ocupado (Av. Patria)' },
-      { id: 'lun-5', timeRange: '16:30 – 17:30', status: 'available' },
+      { id: 'lun-10', startHour24: 10, timeRange: '10:00 a.m. – 11:00 a.m.', status: 'booked', bookedZone: 'Puerta de Hierro' },
+      { id: 'lun-12', startHour24: 12, timeRange: '12:00 p.m. – 1:00 p.m.', status: 'available' },
+      { id: 'lun-15', startHour24: 15, timeRange: '3:00 p.m. – 4:00 p.m.', status: 'booked', bookedZone: 'Av. Patria' },
+      { id: 'lun-16', startHour24: 16, timeRange: '4:00 p.m. – 5:00 p.m.', status: 'available' },
+      { id: 'lun-17', startHour24: 17, timeRange: '5:00 p.m. – 6:00 p.m.', status: 'available' },
+      { id: 'lun-19', startHour24: 19, timeRange: '7:00 p.m. – 8:00 p.m.', status: 'available' },
+      { id: 'lun-20', startHour24: 20, timeRange: '8:00 p.m. – 9:00 p.m.', status: 'available' },
     ],
   },
   {
@@ -73,11 +91,12 @@ export const WEEKLY_CALENDAR: CalendarDay[] = [
     dayName: 'Martes',
     isWeekend: false,
     slots: [
-      { id: 'mar-1', timeRange: '09:00 – 10:00', status: 'available' },
-      { id: 'mar-2', timeRange: '10:30 – 11:30', status: 'booked', zoneNote: 'Ocupado (Valle Real)' },
-      { id: 'mar-3', timeRange: '12:00 – 13:00', status: 'available' },
-      { id: 'mar-4', timeRange: '15:00 – 16:00', status: 'available' },
-      { id: 'mar-5', timeRange: '16:30 – 17:30', status: 'booked', zoneNote: 'Ocupado (Jardín Real)' },
+      { id: 'mar-10', startHour24: 10, timeRange: '10:00 a.m. – 11:00 a.m.', status: 'available' },
+      { id: 'mar-12', startHour24: 12, timeRange: '12:00 p.m. – 1:00 p.m.', status: 'booked', bookedZone: 'Valle Real' },
+      { id: 'mar-14', startHour24: 14, timeRange: '2:00 p.m. – 3:00 p.m.', status: 'available' },
+      { id: 'mar-16', startHour24: 16, timeRange: '4:00 p.m. – 5:00 p.m.', status: 'available' },
+      { id: 'mar-18', startHour24: 18, timeRange: '6:00 p.m. – 7:00 p.m.', status: 'booked', bookedZone: 'Jardín Real' },
+      { id: 'mar-20', startHour24: 20, timeRange: '8:00 p.m. – 9:00 p.m.', status: 'available' },
     ],
   },
   {
@@ -86,11 +105,12 @@ export const WEEKLY_CALENDAR: CalendarDay[] = [
     dayName: 'Miércoles',
     isWeekend: false,
     slots: [
-      { id: 'mie-1', timeRange: '09:00 – 10:00', status: 'booked', zoneNote: 'Ocupado (Puerta de Hierro)' },
-      { id: 'mie-2', timeRange: '10:30 – 11:30', status: 'available' },
-      { id: 'mie-3', timeRange: '12:00 – 13:00', status: 'available' },
-      { id: 'mie-4', timeRange: '15:00 – 16:00', status: 'booked', zoneNote: 'Ocupado (Av. Patria)' },
-      { id: 'mie-5', timeRange: '16:30 – 17:30', status: 'available' },
+      { id: 'mie-10', startHour24: 10, timeRange: '10:00 a.m. – 11:00 a.m.', status: 'booked', bookedZone: 'Puerta de Hierro' },
+      { id: 'mie-12', startHour24: 12, timeRange: '12:00 p.m. – 1:00 p.m.', status: 'available' },
+      { id: 'mie-15', startHour24: 15, timeRange: '3:00 p.m. – 4:00 p.m.', status: 'booked', bookedZone: 'Av. Patria' },
+      { id: 'mie-16', startHour24: 16, timeRange: '4:00 p.m. – 5:00 p.m.', status: 'available' },
+      { id: 'mie-17', startHour24: 17, timeRange: '5:00 p.m. – 6:00 p.m.', status: 'available' },
+      { id: 'mie-20', startHour24: 20, timeRange: '8:00 p.m. – 9:00 p.m.', status: 'available' },
     ],
   },
   {
@@ -99,11 +119,12 @@ export const WEEKLY_CALENDAR: CalendarDay[] = [
     dayName: 'Jueves',
     isWeekend: false,
     slots: [
-      { id: 'jue-1', timeRange: '09:00 – 10:00', status: 'available' },
-      { id: 'jue-2', timeRange: '10:30 – 11:30', status: 'available' },
-      { id: 'jue-3', timeRange: '12:00 – 13:00', status: 'booked', zoneNote: 'Ocupado (Jardín Real)' },
-      { id: 'jue-4', timeRange: '15:00 – 16:00', status: 'available' },
-      { id: 'jue-5', timeRange: '16:30 – 17:30', status: 'available' },
+      { id: 'jue-10', startHour24: 10, timeRange: '10:00 a.m. – 11:00 a.m.', status: 'available' },
+      { id: 'jue-12', startHour24: 12, timeRange: '12:00 p.m. – 1:00 p.m.', status: 'booked', bookedZone: 'Jardín Real' },
+      { id: 'jue-14', startHour24: 14, timeRange: '2:00 p.m. – 3:00 p.m.', status: 'available' },
+      { id: 'jue-16', startHour24: 16, timeRange: '4:00 p.m. – 5:00 p.m.', status: 'available' },
+      { id: 'jue-18', startHour24: 18, timeRange: '6:00 p.m. – 7:00 p.m.', status: 'available' },
+      { id: 'jue-20', startHour24: 20, timeRange: '8:00 p.m. – 9:00 p.m.', status: 'available' },
     ],
   },
   {
@@ -112,11 +133,12 @@ export const WEEKLY_CALENDAR: CalendarDay[] = [
     dayName: 'Viernes',
     isWeekend: false,
     slots: [
-      { id: 'vie-1', timeRange: '09:00 – 10:00', status: 'booked', zoneNote: 'Ocupado (Valle Real)' },
-      { id: 'vie-2', timeRange: '10:30 – 11:30', status: 'booked', zoneNote: 'Ocupado (Jardín Real)' },
-      { id: 'vie-3', timeRange: '12:00 – 13:00', status: 'available' },
-      { id: 'vie-4', timeRange: '15:00 – 16:00', status: 'booked', zoneNote: 'Ocupado (Av. Patria)' },
-      { id: 'vie-5', timeRange: '16:30 – 17:30', status: 'available' },
+      { id: 'vie-10', startHour24: 10, timeRange: '10:00 a.m. – 11:00 a.m.', status: 'booked', bookedZone: 'Valle Real' },
+      { id: 'vie-12', startHour24: 12, timeRange: '12:00 p.m. – 1:00 p.m.', status: 'booked', bookedZone: 'Jardín Real' },
+      { id: 'vie-15', startHour24: 15, timeRange: '3:00 p.m. – 4:00 p.m.', status: 'booked', bookedZone: 'Av. Patria' },
+      { id: 'vie-16', startHour24: 16, timeRange: '4:00 p.m. – 5:00 p.m.', status: 'available' },
+      { id: 'vie-17', startHour24: 17, timeRange: '5:00 p.m. – 6:00 p.m.', status: 'available' },
+      { id: 'vie-19', startHour24: 19, timeRange: '7:00 p.m. – 8:00 p.m.', status: 'available' },
     ],
   },
   {
@@ -136,12 +158,45 @@ export const WEEKLY_CALENDAR: CalendarDay[] = [
 ];
 
 /**
- * Regla de Precios Simple y Transparente:
- * - 1 mascota (1 hr): $200 MXN c/u (0% desc)
- * - 2 a 3 mascotas (o 2 a 3 hrs): $190 MXN c/u (5% desc)
- * - 4 o más mascotas (o 4 a 5+ hrs): $180 MXN c/u (10% desc)
- * Si es otra zona lejana, fin de semana o espacio extra, Alex confirma directamente por WhatsApp si aplica algún ajuste.
+ * Automatiza la separación de horarios:
+ * Si un bloque termina a las 4:00 p.m. en "Av. Patria", el bloque pegado de 4:00 p.m. – 5:00 p.m.
+ * se bloquea automáticamente por traslado hacia "Jardín Real", "Valle Real" o "Puerta de Hierro",
+ * recomendando la siguiente hora separada (ej. 5:00 p.m. – 6:00 p.m.).
  */
+export function evaluateDaySlotsWithAutoBuffer(day: CalendarDay, clientZone: ZoneName) {
+  return day.slots.map((slot, idx, arr) => {
+    if (slot.status === 'booked') {
+      return {
+        ...slot,
+        effectiveStatus: 'booked' as const,
+        reasonLabel: `Ocupado (${slot.bookedZone || 'Reservado'})`,
+      };
+    }
+
+    // Revisamos si la hora inmediatamente anterior (startHour24 - 1) está ocupada en otra zona distinta
+    const prevSlot = idx > 0 ? arr[idx - 1] : null;
+    if (
+      prevSlot &&
+      prevSlot.status === 'booked' &&
+      slot.startHour24 - prevSlot.startHour24 <= 1 &&
+      prevSlot.bookedZone &&
+      prevSlot.bookedZone !== clientZone
+    ) {
+      return {
+        ...slot,
+        effectiveStatus: 'auto_buffer' as const,
+        reasonLabel: `Separado por traslado desde ${prevSlot.bookedZone}`,
+      };
+    }
+
+    return {
+      ...slot,
+      effectiveStatus: 'available' as const,
+      reasonLabel: 'Disponible (Con margen de traslado)',
+    };
+  });
+}
+
 export function calculateQuote(params: {
   petCount: number;
   hours: number;
@@ -181,7 +236,7 @@ export function calculateQuote(params: {
     specialNotes.push('Fin de semana (sujeto a disponibilidad y ajuste con Alex)');
   }
   if (params.isExtraSlot) {
-    specialNotes.push('Horario especial fuera de los 5 bloques (sujeto a confirmación)');
+    specialNotes.push('Horario especial fuera de los bloques libres (sujeto a confirmación)');
   }
   if (params.zone === 'Otra zona (Confirmar por WhatsApp)') {
     specialNotes.push('Zona fuera del polígono base (confirmar si aplica traslado)');
@@ -238,7 +293,7 @@ export function buildWhatsAppMessage(params: {
     ? ' (Sé que es horario/zona especial, me confirmas disponibilidad o si aplica algún extra)'
     : '';
 
-  return `Hola Alex, quiero agendar ${params.service} para ${cleanPetName} (${petCount} ${
+  return `Hola Alex, vi Pet Concierge Service y quiero agendar ${params.service} para ${cleanPetName} (${petCount} ${
     petCount === 1 ? 'mascota' : 'mascotas'
   } a $${ratePerPetAfterDiscount} MXN c/u) por ${finalZone}. Me interesa el ${
     params.dayName
@@ -272,7 +327,7 @@ export const BENTO_SERVICES: BentoServiceItem[] = [
     highlights: [
       'Atención 100% enfocada en el ritmo y energía de tus perros',
       'Hidratación con agua fresca y plato portátil limpio',
-      'Cobertura base en Puerta de Hierro, Av. Patria, Jardín Real y Valle Real',
+      'Cobertura normal en Puerta de Hierro, Av. Patria, Jardín Real y Valle Real',
     ],
     metricLabel: 'Tarifa por Mascota',
     metricValue: '1: $200 • 2-3: $190 • 4+: $180',
@@ -288,7 +343,7 @@ export const BENTO_SERVICES: BentoServiceItem[] = [
     highlights: [
       'Cero estrés de jaulas o traslados',
       'Cuidado de 60 minutos en la tranquilidad de tu hogar',
-      'Agenda exclusiva de solo 5 horas al día (Lunes a Viernes)',
+      'Horario de 10:00 a.m. a 9:00 p.m. (máximo 5 servicios al día)',
     ],
     metricLabel: 'Modalidad',
     metricValue: 'Sesión de 60 min en Casa',
@@ -303,7 +358,7 @@ export const BENTO_SERVICES: BentoServiceItem[] = [
       'Ubicación en vivo por WhatsApp durante todo el servicio y bitácora al finalizar con hora de inicio, ruta, hidratación y reporte fotográfico.',
     highlights: [
       'Ubicación en tiempo real directo a tu WhatsApp',
-      '30 minutos de margen entre bloques para llegar siempre puntual',
+      'Horarios separados automáticamente para llegar siempre puntual',
       'Fotos y resumen al terminar cada sesión',
     ],
     metricLabel: 'Trazabilidad',
@@ -316,14 +371,14 @@ export const BENTO_SERVICES: BentoServiceItem[] = [
     tag: 'CUIDADO DE TU HOGAR',
     title: 'Limpieza al Regresar',
     description:
-      'Limpiamos las patitas antes de entrar a tu casa para cuidar tus pisos y muebles, dejándolos frescos, hidratados y tranquilos.',
+      'Limpiamos las patitas con espuma y toalla antes de entrar a tu casa para cuidar tus pisos y muebles, dejándolos frescos, hidratados y tranquilos.',
     highlights: [
-      'Revisión de almohadillas al volver del paseo',
-      'Limpieza suave de patitas antes de cruzar tu puerta',
+      'Limpieza práctica de patitas con espuma antes de entrar',
+      'Cuidamos tus pisos, alfombras y sillones del polvo de la calle',
       'Regresan relajados y con agua fresca servida',
     ],
     metricLabel: 'Higiene al Entrar',
-    metricValue: 'Patitas 100% Limpias',
+    metricValue: 'Patitas Limpias con Espuma',
     spanClass: 'md:col-span-7',
     accentVariant: 'charcoal',
   },
@@ -340,10 +395,10 @@ export const SECURITY_PROTOCOL_STEPS: ProtocolStep[] = [
   },
   {
     stepNumber: '02',
-    title: 'Margen de Traslado entre Zonas',
-    subtitle: '30 min entre bloque y bloque',
+    title: 'Horarios Separados Automáticamente',
+    subtitle: 'De 10:00 a.m. a 9:00 p.m.',
     description:
-      'Solo agendamos 5 horas al día con media hora libre entre cada cita (ej. de Av. Patria a las 4:00 PM hacia Jardín Real a las 4:30 PM) para nunca correr ni llegar tarde.',
+      'El sistema separa automáticamente las citas cuando hay cambio de zona (ej. de Av. Patria a las 4:00 p.m. hacia Jardín Real hasta las 5:00 p.m.) para un servicio rápido y puntual.',
     durationBadge: 'Puntualidad',
   },
   {
@@ -351,15 +406,15 @@ export const SECURITY_PROTOCOL_STEPS: ProtocolStep[] = [
     title: 'GPS en Vivo e Hidratación',
     subtitle: 'Monitoreo por WhatsApp',
     description:
-      'Me compartes o te comparto ubicación en vivo al iniciar, cuidamos la temperatura del piso y damos pausas de agua fresca.',
+      'Te comparto ubicación en vivo al iniciar, cuidamos la temperatura del piso y damos pausas de agua fresca.',
     durationBadge: '60 Minutos',
   },
   {
     stepNumber: '04',
-    title: 'Patitas Limpias y Reporte',
+    title: 'Patitas Limpias con Espuma y Reporte',
     subtitle: 'Cierre impecable',
     description:
-      'Limpiamos patitas antes de entrar a tu casa y te mando fotos del paseo o visita a tu WhatsApp.',
+      'Limpiamos sus patitas con espuma antes de entrar a tu casa y te mando fotos del paseo o visita a tu WhatsApp.',
     durationBadge: 'Reporte Final',
   },
 ];
@@ -369,7 +424,7 @@ export const FAQ_ITEMS: FaqItem[] = [
     id: 'primera-visita',
     question: '¿Cómo funciona la primera visita?',
     answer:
-      'Incluye una breve entrevista de presentación de 15 minutos sin costo en tu domicilio para conocer a tu mascota, platicar de su rutina y que nos agarre confianza antes de su primer paseo o visita.',
+      'Incluye una breve entrevista de presentación de 15 minutos sin costo en tu domicilio para conocer a tu mascota, platicar de su rutina y que me tome confianza antes de su primer paseo o visita.',
     highlightTag: 'Entrevista de 15 min sin costo',
   },
   {
@@ -381,16 +436,16 @@ export const FAQ_ITEMS: FaqItem[] = [
   },
   {
     id: 'zonas-y-fines-de-semana',
-    question: '¿Qué zonas cubren y qué pasa si necesito fin de semana o estoy más lejos?',
+    question: '¿Cuál es el horario y por qué el calendario separa las horas entre zonas?',
     answer:
-      'Mis zonas base sin cargo extra son Puerta de Hierro, Av. Patria, Jardín Real y Valle Real, trabajando 5 bloques diarios de Lunes a Viernes. Si estás en una zona más retirada, si el día ya tiene las 5 horas llenas o si necesitas Sábado o Domingo, mándame mensaje desde la calculadora y te confirmo directo por WhatsApp si tengo espacio y si aplica algún extra.',
-    highlightTag: 'Trato directo por WhatsApp',
+      'Atiendo de 10:00 a.m. a 9:00 p.m. (máximo 5 servicios al día de Lunes a Viernes) en Puerta de Hierro, Av. Patria, Jardín Real y Valle Real. El calendario bloquea automáticamente las horas pegadas cuando el servicio anterior es en otra zona para trasladarme sin prisas y darte un servicio puntual y profesional.',
+    highlightTag: '10:00 a.m. a 9:00 p.m. • Citas separadas',
   },
   {
     id: 'lluvia-o-calor',
     question: '¿Qué pasa si llueve o hace mucho calor?',
     answer:
-      'Ajustamos los horarios hacia horas frescas para proteger las almohadillas de las patas del asfalto caliente y buscamos rutas con sombra. Si llueve fuerte, podemos reprogramar o cambiar la hora por cuidado y juego dentro de casa.',
+      'Como trabajamos hasta las 9:00 p.m., en días calurosos podemos elegir bloques de mañana o tarde-noche para proteger las almohadillas de las patas. Si llueve fuerte, podemos reprogramar o cambiar la hora por cuidado y juego dentro de casa.',
     highlightTag: 'Cuidado de almohadillas',
   },
 ];
@@ -403,7 +458,7 @@ export const TESTIMONIALS: TestimonialItem[] = [
     ownerName: 'Alejandro G.',
     zone: 'Jardín Real',
     quote:
-      'Tengo 4 perros y con Alex salen los 4 juntos sin juntarlos con perros ajenos. Me sale en $180 cada uno y siempre llega a tiempo.',
+      'Tengo 4 perros y salen los 4 juntos sin juntarlos con perros ajenos. Me sale en $180 cada uno, siempre llega puntual y les limpia las patitas con espuma antes de entrar.',
     serviceUsed: '4 Mascotas • $180 c/u',
   },
   {
@@ -413,7 +468,7 @@ export const TESTIMONIALS: TestimonialItem[] = [
     ownerName: 'Mariana V.',
     zone: 'Puerta de Hierro',
     quote:
-      'Se nota que solo toma 5 horas al día. Llega con calma, cumple la hora completa, me manda ubicación en vivo y les limpia las patitas al entrar.',
+      'Se nota que solo toma 5 servicios al día y con horas separadas. Llega con calma, cumple la hora completa, me manda ubicación en vivo y regresan impecables.',
     serviceUsed: '2 Mascotas • $190 c/u',
   },
   {
@@ -423,7 +478,7 @@ export const TESTIMONIALS: TestimonialItem[] = [
     ownerName: 'Rodrigo S.',
     zone: 'Av. Patria',
     quote:
-      'Súper fácil ver en su calendario qué horas tiene libres y mandarle WhatsApp directo. Total confianza para dejarle las llaves de casa.',
+      'El horario hasta las 9:00 p.m. me queda perfecto cuando salgo tarde. Súper fácil ver en su calendario qué horas tiene libres y mandarle WhatsApp directo.',
     serviceUsed: 'Paseo & Cuidado en Casa',
   },
 ];

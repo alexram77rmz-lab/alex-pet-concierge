@@ -11,9 +11,10 @@ export type DiscountTierKey = 'standard_200' | 'duo_190' | 'pack_180';
 
 export interface CalendarSlot {
   id: string;
+  startHour24: number;
   timeRange: string;
   status: 'available' | 'booked';
-  zoneNote?: string;
+  bookedZone?: ZoneName;
 }
 
 export interface CalendarDay {

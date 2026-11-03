@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { CalendarCheck, Menu, Moon, ShieldCheck, Sparkles, Sun, X } from 'lucide-react';
+import { BRAND_NAME, BRAND_SHORT } from '../config/constants';
 
 interface NavbarProps {
   darkMode: boolean;
@@ -11,9 +12,10 @@ export const Navbar: React.FC<NavbarProps> = ({ darkMode, onToggleDarkMode }) =>
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navLinks = [
+    { label: 'Sobre Mí', href: '#sobre-mi' },
     { label: 'Servicios', href: '#servicios' },
-    { label: 'Protocolo de Seguridad', href: '#protocolo' },
-    { label: 'Calculadora de Tarifas', href: '#calculadora' },
+    { label: 'Protocolo', href: '#protocolo' },
+    { label: 'Calculadora y Agenda', href: '#calculadora' },
     { label: 'Preguntas Frecuentes', href: '#faq' },
   ];
 
@@ -25,21 +27,21 @@ export const Navbar: React.FC<NavbarProps> = ({ darkMode, onToggleDarkMode }) =>
     <header className="sticky top-0 z-50 w-full backdrop-blur-md bg-[#FAF9F6]/85 dark:bg-[#0E1210]/85 border-b border-[#E5E0D8]/80 dark:border-white/10 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
-          {/* Typographic Brand Logo */}
+          {/* Typographic Brand Logo: PET CONCIERGE SERVICE */}
           <a
             href="#"
             className="min-h-[44px] inline-flex items-center gap-3 group focus:outline-none"
-            aria-label="Alex Pet Concierge - Inicio"
+            aria-label={`${BRAND_NAME} - Inicio`}
           >
             <span className="w-9 h-9 rounded-full bg-[#1E3A2F] text-[#FAF9F6] flex items-center justify-center text-xs font-semibold tracking-widest shadow-sm group-hover:scale-105 transition-transform">
-              APC
+              {BRAND_SHORT}
             </span>
             <div className="flex flex-col">
-              <span className="text-sm sm:text-base font-bold tracking-[0.22em] text-[#18181B] dark:text-[#FAF9F6] uppercase">
-                ALEX PET CONCIERGE
+              <span className="text-sm sm:text-base font-bold tracking-[0.2em] text-[#18181B] dark:text-[#FAF9F6] uppercase">
+                {BRAND_NAME}
               </span>
-              <span className="text-[10px] tracking-[0.16em] text-[#57534E] dark:text-stone-400 uppercase">
-                Private Walks &amp; Home Sitting
+              <span className="text-[10px] tracking-[0.14em] text-[#57534E] dark:text-stone-400 uppercase">
+                10:00 A.M. – 9:00 P.M. • Paseos &amp; Cuidado
               </span>
             </div>
           </a>
@@ -78,7 +80,7 @@ export const Navbar: React.FC<NavbarProps> = ({ darkMode, onToggleDarkMode }) =>
             </a>
           </div>
 
-          {/* Mobile Controls (44px+ touch targets) */}
+          {/* Mobile Controls */}
           <div className="flex items-center gap-2 md:hidden">
             <button
               type="button"
@@ -116,9 +118,9 @@ export const Navbar: React.FC<NavbarProps> = ({ darkMode, onToggleDarkMode }) =>
               <div className="px-3 py-2 rounded-xl bg-[#E5E0D8]/40 dark:bg-white/5 flex items-center justify-between text-xs text-[#57534E] dark:text-stone-300">
                 <span className="inline-flex items-center gap-1.5 font-medium">
                   <ShieldCheck className="w-4 h-4 text-[#1E3A2F] dark:text-emerald-400" />
-                  Servicio 1 a 1 • Cero Manadas
+                  10:00 a.m. a 9:00 p.m. • Cero Manadas Ajenas
                 </span>
-                <span className="font-semibold text-[#1E3A2F] dark:text-[#E5E0D8]">$200 MXN / hr</span>
+                <span className="font-semibold text-[#1E3A2F] dark:text-[#E5E0D8]">$200 a $180 MXN</span>
               </div>
 
               {navLinks.map((link) => (
