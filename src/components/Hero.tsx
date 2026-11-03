@@ -8,11 +8,12 @@ import {
   Clock,
   Droplets,
   Home,
+  Instagram,
   MapPin,
   ShieldCheck,
   UserCheck,
 } from 'lucide-react';
-import { FOUNDER_BIO } from '../config/constants';
+import { FOUNDER_BIO, INSTAGRAM_HANDLE, INSTAGRAM_URL } from '../config/constants';
 
 export const Hero: React.FC = () => {
   const [previewMode, setPreviewMode] = useState<'walk' | 'sitting'>('walk');
@@ -243,10 +244,20 @@ export const Hero: React.FC = () => {
                 key={item}
                 className="px-3 py-1.5 rounded-xl bg-white dark:bg-[#0E1210] border border-[#DCD6CC] dark:border-white/10 flex items-center gap-1.5 text-xs font-semibold text-[#18181B] dark:text-[#FAF9F6]"
               >
-                <CheckCircle2 className="w-3.5 h-3.5 text-[#1E3A2F] dark:text-emerald-400 shrink-0" />
+                <CheckCircle2 className="w-3.5 h-3.5 text-[#4D7C0F] dark:text-lime-300 shrink-0" />
                 <span>{item}</span>
               </div>
             ))}
+
+            <a
+              href={INSTAGRAM_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-3 py-1.5 rounded-xl bg-[#E4F2D3] hover:bg-[#D5E9BE] dark:bg-[#1D3528] border border-[#C5E1A5] dark:border-lime-400/30 flex items-center gap-1.5 text-xs font-bold text-[#1E3A2F] dark:text-lime-200 transition-colors"
+            >
+              <Instagram className="w-3.5 h-3.5 text-[#4D7C0F] dark:text-lime-300 shrink-0" />
+              <span>Instagram: {INSTAGRAM_HANDLE}</span>
+            </a>
           </div>
         </div>
       </div>

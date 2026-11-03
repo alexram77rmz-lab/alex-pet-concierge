@@ -16,7 +16,8 @@ import {
 export const WHATSAPP_PHONE = '523321222772';
 export const WHATSAPP_DISPLAY = '33 2122 2772';
 
-export const INSTAGRAM_URL = 'https://instagram.com/petconciergeservice';
+export const INSTAGRAM_URL = 'https://www.instagram.com/pet_concierge_service?mdxt=NTZzdWx3aGdseXQw';
+export const INSTAGRAM_HANDLE = '@pet_concierge_service';
 
 export const BRAND_NAME = 'PET CONCIERGE SERVICE';
 export const BRAND_SHORT = 'PCS';

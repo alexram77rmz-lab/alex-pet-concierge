@@ -3,6 +3,7 @@ import { Clock, Instagram, MapPin, MessageCircle, ShieldCheck } from 'lucide-rea
 import {
   BRAND_NAME,
   BRAND_SHORT,
+  INSTAGRAM_HANDLE,
   INSTAGRAM_URL,
   PRIORITY_ZONES,
   WHATSAPP_DISPLAY,
@@ -110,7 +111,7 @@ export const Footer: React.FC = () => {
                 className="min-h-[44px] px-4 py-2.5 rounded-xl bg-[#2A5041] hover:bg-[#346350] border border-white/15 text-[#FAF9F6] text-xs font-bold inline-flex items-center justify-center gap-2 transition-all active:scale-95"
               >
                 <Instagram className="w-4 h-4 text-[#BEF264]" />
-                <span>@petconciergeservice</span>
+                <span>{INSTAGRAM_HANDLE}</span>
               </a>
             </div>
           </div>

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { CalendarCheck, Menu, Moon, ShieldCheck, Sparkles, Sun, X } from 'lucide-react';
-import { BRAND_NAME, BRAND_SHORT } from '../config/constants';
+import { CalendarCheck, Instagram, Menu, Moon, ShieldCheck, Sparkles, Sun, X } from 'lucide-react';
+import { BRAND_NAME, BRAND_SHORT, INSTAGRAM_HANDLE, INSTAGRAM_URL } from '../config/constants';
 
 interface NavbarProps {
   darkMode: boolean;
@@ -61,6 +61,17 @@ export const Navbar: React.FC<NavbarProps> = ({ darkMode, onToggleDarkMode }) =>
 
           {/* Desktop Right Actions */}
           <div className="hidden md:flex items-center gap-2.5">
+            <a
+              href={INSTAGRAM_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`Instagram ${INSTAGRAM_HANDLE}`}
+              title={`Síguenos en Instagram (${INSTAGRAM_HANDLE})`}
+              className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-full border border-[#E5E0D8] dark:border-white/15 text-[#1E3A2F] dark:text-[#BEF264] hover:bg-[#E4F2D3] dark:hover:bg-white/10 active:scale-95 transition-all"
+            >
+              <Instagram className="w-4 h-4" />
+            </a>
+
             <button
               type="button"
               onClick={onToggleDarkMode}
