@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import {
   Calendar,
@@ -16,12 +16,13 @@ import {
   MessageCircle,
   Minus,
   PawPrint,
+  Phone,
   Plus,
   RotateCcw,
+  ShieldAlert,
   Unlock,
 } from 'lucide-react';
 import {
-  ADMIN_PIN,
   ALL_ZONES,
   BASE_HOURLY_RATE,
   PRIORITY_ZONES,
@@ -35,6 +36,13 @@ import {
   formatMXN,
 } from '../config/constants';
 import { CalendarDay, ServiceType, ZoneName } from '../types/concierge';
+import {
+  clearAuthLockout,
+  getSecurityLockoutStatus,
+  registerFailedAuthAttempt,
+  sanitizeUserText,
+  verifyTwoStepAdminAuth,
+} from '../utils/security';
 
 interface PricingCalculatorProps {
   onShowToast: (message: string) => void;
@@ -54,7 +62,6 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
   const [petName, setPetName] = useState<string>('');
   const [specificDate, setSpecificDate] = useState<string>('');
 
-  // Estado del calendario semanal (empieza 100% libre sin fechas ocupadas de ejemplo)
   const [calendarDays, setCalendarDays] = useState<CalendarDay[]>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY_CALENDAR);
@@ -72,15 +79,49 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
   const [selectedSlotRange, setSelectedSlotRange] = useState<string>('10:00 a.m. – 11:00 a.m.');
   const [requestExtraSlot, setRequestExtraSlot] = useState<boolean>(false);
 
-  // Estado del Panel Admin Oculto (Solo para Alex con PIN 2772)
-  const [showPinPrompt, setShowPinPrompt] = useState<boolean>(false);
+  // Seguridad en 2 pasos (Teléfono 10 dígitos + Código SHA-256 + Anti-Fuerza Bruta)
+  const [showAuthModal, setShowAuthModal] = useState<boolean>(false);
+  const [authStep, setAuthStep] = useState<1 | 2>(1);
+  const [phoneInput, setPhoneInput] = useState<string>('');
   const [pinInput, setPinInput] = useState<string>('');
   const [adminUnlocked, setAdminUnlocked] = useState<boolean>(false);
   const [adminSelectedZone, setAdminSelectedZone] = useState<ZoneName>('Puerta de Hierro');
   const [ghToken, setGhToken] = useState<string>(() => localStorage.getItem(STORAGE_KEY_GH_TOKEN) || '');
   const [isPublishingCloud, setIsPublishingCloud] = useState<boolean>(false);
+  const [lockoutInfo, setLockoutInfo] = useState(() => getSecurityLockoutStatus());
 
-  // Carga en vivo el archivo schedule.json desde GitHub para que todos los clientes vean los horarios reales
+  // Contador de 3 toques secretos para abrir el candado
+  const secretTapCountRef = useRef<number>(0);
+  const secretTapTimerRef = useRef<number | null>(null);
+
+  const handleSecretTriggerTap = () => {
+    secretTapCountRef.current += 1;
+    if (secretTapTimerRef.current) {
+      window.clearTimeout(secretTapTimerRef.current);
+    }
+    if (secretTapCountRef.current >= 3) {
+      secretTapCountRef.current = 0;
+      setLockoutInfo(getSecurityLockoutStatus());
+      setShowAuthModal((prev) => !prev);
+      setAuthStep(1);
+    } else {
+      secretTapTimerRef.current = window.setTimeout(() => {
+        secretTapCountRef.current = 0;
+      }, 1200);
+    }
+  };
+
+  // Auto-cierre de sesión Admin tras 10 minutos por seguridad
+  useEffect(() => {
+    if (!adminUnlocked) return;
+    const timer = window.setTimeout(() => {
+      setAdminUnlocked(false);
+      onShowToast('Sesión de administrador cerrada por seguridad.');
+    }, 10 * 60 * 1000);
+    return () => window.clearTimeout(timer);
+  }, [adminUnlocked, onShowToast]);
+
+  // Carga en vivo el archivo schedule.json desde GitHub
   useEffect(() => {
     const fetchLiveSchedule = async () => {
       try {
@@ -94,7 +135,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
           }
         }
       } catch {
-        // Fallback silencioso a localStorage o WEEKLY_CALENDAR limpio
+        // Fallback silencioso
       }
     };
     fetchLiveSchedule();
@@ -105,7 +146,6 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
     [calendarDays, selectedDayId]
   );
 
-  // Evalúa automáticamente la separación de horarios según la zona del cliente y el tope de 5 horas
   const evaluatedSlots = useMemo(
     () => evaluateDaySlotsWithAutoBuffer(activeDay, zone),
     [activeDay, zone]
@@ -137,16 +177,51 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
     }
   };
 
-  // Funciones Admin de Alex
-  const handleVerifyPin = (e: React.FormEvent) => {
+  // Paso 1: Validar formato de teléfono (10 dígitos)
+  const handleStep1PhoneSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (pinInput.trim() === ADMIN_PIN) {
+    const status = getSecurityLockoutStatus();
+    setLockoutInfo(status);
+    if (status.isLocked) {
+      onShowToast(`Acceso bloqueado por seguridad (${status.remainingMinutes} min restantes).`);
+      return;
+    }
+    const cleanPhone = phoneInput.replace(/\D/g, '');
+    if (cleanPhone.length !== 10) {
+      onShowToast('Ingresa tu número celular de 10 dígitos.');
+      return;
+    }
+    setAuthStep(2);
+  };
+
+  // Paso 2: Verificación SHA-256 de (Teléfono + Código)
+  const handleStep2VerifyAuth = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const status = getSecurityLockoutStatus();
+    if (status.isLocked) {
+      setLockoutInfo(status);
+      return;
+    }
+
+    const isValid = await verifyTwoStepAdminAuth(phoneInput, pinInput);
+    if (isValid) {
+      clearAuthLockout();
+      setLockoutInfo(getSecurityLockoutStatus());
       setAdminUnlocked(true);
-      setShowPinPrompt(false);
+      setShowAuthModal(false);
+      setPhoneInput('');
       setPinInput('');
-      onShowToast('Modo Admin de Alex activado.');
+      setAuthStep(1);
+      onShowToast('Identidad verificada en 2 pasos.');
     } else {
-      onShowToast('PIN incorrecto.');
+      const updatedLockout = registerFailedAuthAttempt();
+      setLockoutInfo(updatedLockout);
+      setPinInput('');
+      if (updatedLockout.isLocked) {
+        onShowToast('3 intentos fallidos. Panel bloqueado por 15 minutos.');
+      } else {
+        onShowToast(`Credenciales inválidas. Intentos restantes: ${updatedLockout.attemptsLeft}`);
+      }
     }
   };
 
@@ -181,7 +256,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
   const handlePublishToGitHub = async () => {
     const cleanToken = ghToken.trim();
     if (!cleanToken) {
-      onShowToast('Ingresa tu Token de GitHub para publicar a todos los clientes.');
+      onShowToast('Ingresa tu llave de GitHub para publicar a todos los clientes.');
       return;
     }
     localStorage.setItem(STORAGE_KEY_GH_TOKEN, cleanToken);
@@ -216,7 +291,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          message: 'chore(schedule): update live availability from Admin Panel',
+          message: 'chore(schedule): update live availability from verified Admin Panel',
           content: contentBase64,
           sha,
           branch: 'main',
@@ -226,7 +301,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
       if (putRes.ok) {
         onShowToast('¡Horarios publicados en vivo para todos tus clientes!');
       } else {
-        onShowToast('Guardado en este dispositivo. Revisa el token si deseas sincronizar en la nube.');
+        onShowToast('Guardado en este dispositivo. Verifica tu token para publicar en la nube.');
       }
     } catch {
       onShowToast('Guardado localmente en este dispositivo.');
@@ -251,11 +326,11 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
     () =>
       buildWhatsAppMessage({
         service: selectedService,
-        petName,
+        petName: sanitizeUserText(petName, 50),
         zone,
-        customZoneText,
+        customZoneText: sanitizeUserText(customZoneText, 50),
         dayName: activeDay.dayName,
-        specificDate,
+        specificDate: sanitizeUserText(specificDate, 20),
         slotLabel: requestExtraSlot ? 'Horario Especial / Extra' : selectedSlotRange,
         quote,
       }),
@@ -276,11 +351,11 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
     () =>
       buildWhatsAppBookingUrl({
         service: selectedService,
-        petName,
+        petName: sanitizeUserText(petName, 50),
         zone,
-        customZoneText,
+        customZoneText: sanitizeUserText(customZoneText, 50),
         dayName: activeDay.dayName,
-        specificDate,
+        specificDate: sanitizeUserText(specificDate, 20),
         slotLabel: requestExtraSlot ? 'Horario Especial / Extra' : selectedSlotRange,
         quote,
       }),
@@ -465,7 +540,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
                 <input
                   type="text"
                   value={customZoneText}
-                  onChange={(e) => setCustomZoneText(e.target.value)}
+                  onChange={(e) => setCustomZoneText(sanitizeUserText(e.target.value, 50))}
                   placeholder="Escribe tu colonia (te confirmo por WhatsApp si aplica algún extra)"
                   className="min-h-[44px] w-full px-3.5 py-2 rounded-xl bg-[#FAF9F6] dark:bg-[#0E1210] border border-[#DCD6CC] dark:border-white/15 text-xs sm:text-sm"
                 />
@@ -476,21 +551,28 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
           {/* 4. Calendario Semanal (10:00 a.m. a 9:00 p.m.) */}
           <div className="space-y-3.5 pt-2 border-t border-[#E5E0D8]/80 dark:border-white/10">
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <label className="text-xs font-bold uppercase tracking-wider text-[#57534E] dark:text-stone-400 flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={handleSecretTriggerTap}
+                className="text-xs font-bold uppercase tracking-wider text-[#57534E] dark:text-stone-400 flex items-center gap-1.5 select-none"
+              >
                 <Calendar className="w-4 h-4 text-[#1E3A2F] dark:text-emerald-400" />
                 <span>4. Horarios Disponibles (10:00 a.m. a 9:00 p.m.)</span>
-              </label>
+              </button>
 
-              {/* Acceso discreto para Alex (PIN 2772) */}
+              {/* Candadito discreto sin texto "Admin" */}
               {!adminUnlocked ? (
                 <button
                   type="button"
-                  onClick={() => setShowPinPrompt((prev) => !prev)}
-                  className="text-[11px] text-[#57534E]/60 hover:text-[#1E3A2F] dark:text-stone-500 inline-flex items-center gap-1 transition-colors"
-                  title="Acceso Admin para gestionar horas ocupadas"
+                  onClick={() => {
+                    setLockoutInfo(getSecurityLockoutStatus());
+                    setShowAuthModal((prev) => !prev);
+                    setAuthStep(1);
+                  }}
+                  aria-label="Control de agenda"
+                  className="p-1.5 rounded-lg text-[#57534E]/35 hover:text-[#1E3A2F] dark:text-stone-600 transition-colors"
                 >
-                  <Lock className="w-3 h-3" />
-                  <span>Admin</span>
+                  <Lock className="w-3.5 h-3.5" />
                 </button>
               ) : (
                 <button
@@ -499,40 +581,87 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
                   className="px-2.5 py-1 rounded-lg bg-[#18181B] text-[#FAF9F6] text-[11px] font-bold inline-flex items-center gap-1"
                 >
                   <Unlock className="w-3 h-3 text-emerald-400" />
-                  <span>Salir de Admin</span>
+                  <span>Cerrar Sesión Segura</span>
                 </button>
               )}
             </div>
 
-            {/* Prompt de PIN 2772 cuando Alex toca "Admin" */}
-            {showPinPrompt && !adminUnlocked && (
-              <form
-                onSubmit={handleVerifyPin}
-                className="p-3.5 rounded-2xl bg-[#FAF9F6] dark:bg-[#0E1210] border border-[#DCD6CC] dark:border-white/15 flex items-center gap-2"
-              >
-                <KeyRound className="w-4 h-4 text-[#1E3A2F] shrink-0" />
-                <input
-                  type="password"
-                  value={pinInput}
-                  onChange={(e) => setPinInput(e.target.value)}
-                  placeholder="PIN de Alex (4 dígitos)"
-                  className="min-h-[38px] flex-1 px-3 rounded-lg bg-white dark:bg-[#161D19] border border-[#DCD6CC] dark:border-white/15 text-xs"
-                />
-                <button
-                  type="submit"
-                  className="min-h-[38px] px-4 rounded-lg bg-[#1E3A2F] text-[#FAF9F6] text-xs font-bold"
-                >
-                  Entrar
-                </button>
-              </form>
+            {/* Verificación en 2 Pasos (Teléfono + Código con Hash SHA-256 y Bloqueo Anti-Hackeo) */}
+            {showAuthModal && !adminUnlocked && (
+              <div className="p-4 rounded-2xl bg-[#FAF9F6] dark:bg-[#0E1210] border border-[#DCD6CC] dark:border-white/15 space-y-3">
+                {lockoutInfo.isLocked ? (
+                  <div className="flex items-center gap-2.5 text-xs text-red-700 dark:text-red-400 font-semibold">
+                    <ShieldAlert className="w-4 h-4 shrink-0" />
+                    <span>
+                      Protección anti-hackeo activa: Acceso bloqueado por {lockoutInfo.remainingMinutes}{' '}
+                      minutos tras múltiples intentos fallidos.
+                    </span>
+                  </div>
+                ) : authStep === 1 ? (
+                  <form onSubmit={handleStep1PhoneSubmit} className="space-y-2">
+                    <p className="text-[11px] font-bold uppercase tracking-wider text-[#1E3A2F] dark:text-emerald-400">
+                      Verificación Paso 1 de 2 — Confirma tu número celular (10 dígitos)
+                    </p>
+                    <div className="flex items-center gap-2">
+                      <Phone className="w-4 h-4 text-[#1E3A2F] shrink-0" />
+                      <input
+                        type="tel"
+                        inputMode="numeric"
+                        maxLength={12}
+                        value={phoneInput}
+                        onChange={(e) => setPhoneInput(e.target.value)}
+                        placeholder="Ej. 33 2122 2772"
+                        className="min-h-[38px] flex-1 px-3 rounded-lg bg-white dark:bg-[#161D19] border border-[#DCD6CC] dark:border-white/15 text-xs"
+                      />
+                      <button
+                        type="submit"
+                        className="min-h-[38px] px-4 rounded-lg bg-[#1E3A2F] text-[#FAF9F6] text-xs font-bold"
+                      >
+                        Siguiente →
+                      </button>
+                    </div>
+                  </form>
+                ) : (
+                  <form onSubmit={handleStep2VerifyAuth} className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <p className="text-[11px] font-bold uppercase tracking-wider text-[#1E3A2F] dark:text-emerald-400">
+                        Verificación Paso 2 de 2 — Código de Seguridad (Cifrado SHA-256)
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => setAuthStep(1)}
+                        className="text-[11px] underline text-[#57534E]"
+                      >
+                        Cambiar número
+                      </button>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <KeyRound className="w-4 h-4 text-[#1E3A2F] shrink-0" />
+                      <input
+                        type="password"
+                        value={pinInput}
+                        onChange={(e) => setPinInput(e.target.value)}
+                        placeholder="Código de 4 dígitos"
+                        className="min-h-[38px] flex-1 px-3 rounded-lg bg-white dark:bg-[#161D19] border border-[#DCD6CC] dark:border-white/15 text-xs"
+                      />
+                      <button
+                        type="submit"
+                        className="min-h-[38px] px-4 rounded-lg bg-[#1E3A2F] text-[#FAF9F6] text-xs font-bold"
+                      >
+                        Desbloquear
+                      </button>
+                    </div>
+                  </form>
+                )}
+              </div>
             )}
 
-            {/* Barra de herramientas Admin (Solo visible cuando Alex mete su PIN 2772) */}
+            {/* Barra de herramientas Admin (Solo visible tras pasar los 2 pasos SHA-256) */}
             {adminUnlocked && (
               <div className="p-4 rounded-2xl bg-[#18181B] text-[#FAF9F6] space-y-3 border border-white/15">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <span className="text-xs font-bold uppercase tracking-wider text-emerald-400">
-                    Panel de Alex — Toca cualquier hora abajo para marcarla Ocupada / Libre
+                    Panel Protegido — Toca cualquier hora abajo para marcarla Ocupada / Libre
                   </span>
                   <button
                     type="button"
@@ -567,7 +696,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
                     type="password"
                     value={ghToken}
                     onChange={(e) => setGhToken(e.target.value)}
-                    placeholder="Token de GitHub (opcional para sincronizar en vivo a todos)"
+                    placeholder="Token de GitHub (requerido para publicar en la nube)"
                     className="min-h-[38px] flex-1 px-3 rounded-lg bg-white/10 border border-white/15 text-xs text-white placeholder:text-white/40"
                   />
                   <button
@@ -719,7 +848,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
                 id="pet-name-input"
                 type="text"
                 value={petName}
-                onChange={(e) => setPetName(e.target.value)}
+                onChange={(e) => setPetName(sanitizeUserText(e.target.value, 50))}
                 placeholder="Ej. Bruno, Kira..."
                 className="min-h-[46px] w-full px-4 py-2 rounded-xl bg-[#FAF9F6] dark:bg-[#0E1210] border border-[#DCD6CC] dark:border-white/15 text-sm text-[#18181B] dark:text-[#FAF9F6]"
               />
@@ -737,7 +866,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
                 id="specific-date-input"
                 type="date"
                 value={specificDate}
-                onChange={(e) => setSpecificDate(e.target.value)}
+                onChange={(e) => setSpecificDate(sanitizeUserText(e.target.value, 20))}
                 className="min-h-[46px] w-full px-4 py-2 rounded-xl bg-[#FAF9F6] dark:bg-[#0E1210] border border-[#DCD6CC] dark:border-white/15 text-sm text-[#18181B] dark:text-[#FAF9F6]"
               />
             </div>
@@ -760,7 +889,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
           <div className="space-y-3 text-sm">
             <div className="flex items-center justify-between text-[#FAF9F6]/85">
               <span>
-                Subtotal ({quote.petCount} {quote.petCount === 1 ? 'mascota' : 'mascotas'} × $
+                Subtotal ({quote.petCount} {quote.petCount === 1 ? 'perro' : 'perros'} × $
                 {BASE_HOURLY_RATE} × {quote.hours} {quote.hours === 1 ? 'hr' : 'hrs'})
               </span>
               <span className="font-semibold">{formatMXN(quote.subtotalBase)} MXN</span>
@@ -768,7 +897,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
 
             <div className="flex items-center justify-between">
               <span className="text-[#E5E0D8]">
-                Descuento ({quote.discountPercentage}% → ${quote.ratePerPetAfterDiscount} c/u)
+                Descuento ({quote.discountPercentage}% menos → ${quote.ratePerPetAfterDiscount} c/u)
               </span>
               <span className="font-bold text-emerald-300">
                 {quote.discountAmount > 0 ? `-${formatMXN(quote.discountAmount)} MXN` : '$0 MXN'}
@@ -776,7 +905,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
             </div>
 
             <div className="flex items-center justify-between text-[#FAF9F6]/90 pt-2 border-t border-white/10">
-              <span>Tarifa por mascota / hora</span>
+              <span>Tarifa por perro / hora</span>
               <span className="px-2.5 py-0.5 rounded-lg bg-white/10 font-bold text-[#E5E0D8]">
                 {formatMXN(quote.ratePerPetAfterDiscount)} MXN c/u
               </span>
@@ -785,7 +914,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
             <div className="pt-4 border-t border-white/20 flex items-baseline justify-between">
               <div>
                 <span className="text-xs uppercase tracking-widest text-[#E5E0D8]/80 block">
-                  Total Base
+                  Total
                 </span>
                 <span className="text-[11px] text-[#E5E0D8]/75">{quote.tierBadge}</span>
               </div>

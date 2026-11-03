@@ -15,7 +15,6 @@ import {
  */
 export const WHATSAPP_PHONE = '523321222772';
 export const WHATSAPP_DISPLAY = '33 2122 2772';
-export const ADMIN_PIN = '2772';
 
 export const INSTAGRAM_URL = 'https://instagram.com/petconciergeservice';
 
