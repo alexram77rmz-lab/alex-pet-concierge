@@ -189,11 +189,11 @@ export const PcsClub: React.FC = () => {
             <div className="space-y-2.5">
               <div className="flex flex-wrap items-center gap-2">
                 <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#1E3A2F] text-[#FAF9F6] text-[11px] font-bold uppercase tracking-[0.18em]">
-                  <Crown className="w-3.5 h-3.5 text-[#BEF264]" />
+                  <Crown className="w-3.5 h-3.5 text-[#22C55E]" />
                   <span>Desde tu 1er Servicio</span>
                 </div>
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#E4F2D3] dark:bg-[#1D3528] border border-[#C5E1A5] dark:border-lime-400/30 text-[#1E3A2F] dark:text-lime-200 text-[11px] font-bold">
-                  <QrCode className="w-3.5 h-3.5 text-[#4D7C0F] dark:text-lime-300" />
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#E4F2D3] dark:bg-[#1D3528] border border-[#C5E1A5] dark:border-[#15803D]/40 text-[#1E3A2F] dark:text-emerald-300 text-[11px] font-bold">
+                  <QrCode className="w-3.5 h-3.5 text-[#15803D] dark:text-[#22C55E]" />
                   <span>QR Personal Entregado en Persona</span>
                 </div>
               </div>
@@ -205,7 +205,7 @@ export const PcsClub: React.FC = () => {
               <p className="text-sm sm:text-base text-[#57534E] dark:text-stone-300 leading-relaxed">
                 Desde tu <strong>primer servicio</strong> te entrego personalmente tu tarjeta con{' '}
                 <strong>código QR de PCS Club</strong>. Cada paseo suma un sello:{' '}
-                <strong className="text-[#4D7C0F] dark:text-lime-300">
+                <strong className="text-[#15803D] dark:text-[#22C55E]">
                   en el 5º paseo obtienes 25% de descuento
                 </strong>{' '}
                 y{' '}
@@ -218,7 +218,7 @@ export const PcsClub: React.FC = () => {
 
             {/* Beneficios de miembro */}
             <div className="space-y-3">
-              <h3 className="text-xs font-bold uppercase tracking-[0.16em] text-[#4D7C0F] dark:text-lime-300">
+              <h3 className="text-xs font-bold uppercase tracking-[0.16em] text-[#15803D] dark:text-[#22C55E]">
                 {PCS_CLUB_CONTENT.benefitsTitle}
               </h3>
 
@@ -228,7 +228,7 @@ export const PcsClub: React.FC = () => {
                     key={benefit}
                     className="p-3 rounded-xl bg-[#FAF9F6] dark:bg-[#16241D] border border-[#E5E0D8] dark:border-white/10 flex items-start gap-2.5 text-xs sm:text-sm font-medium text-[#1E3A2F] dark:text-[#FAF9F6]"
                   >
-                    <CheckCircle2 className="w-4 h-4 text-[#4D7C0F] dark:text-lime-300 shrink-0 mt-0.5" />
+                    <CheckCircle2 className="w-4 h-4 text-[#15803D] dark:text-[#22C55E] shrink-0 mt-0.5" />
                     <span>{benefit}</span>
                   </div>
                 ))}
@@ -236,9 +236,9 @@ export const PcsClub: React.FC = () => {
             </div>
 
             {/* Bloque Invita a un vecino / Anfitrión PCS */}
-            <div className="p-4 sm:p-5 rounded-2xl bg-[#E4F2D3]/65 dark:bg-[#16241D] border border-[#C5E1A5] dark:border-lime-400/20 space-y-2">
-              <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#1E3A2F] dark:text-lime-300">
-                <Users className="w-4 h-4 text-[#4D7C0F] dark:text-lime-300" />
+            <div className="p-4 sm:p-5 rounded-2xl bg-[#E4F2D3]/65 dark:bg-[#16241D] border border-[#C5E1A5] dark:border-[#15803D]/30 space-y-2">
+              <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#1E3A2F] dark:text-[#22C55E]">
+                <Users className="w-4 h-4 text-[#15803D] dark:text-[#22C55E]" />
                 <span>Programa de Vecinos &amp; Anfitrión PCS</span>
               </div>
               <p className="text-xs sm:text-sm text-[#1E3A2F] dark:text-stone-200 leading-relaxed">
@@ -258,34 +258,34 @@ export const PcsClub: React.FC = () => {
               initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="rounded-3xl bg-[#1E3A2F] text-[#FAF9F6] p-6 sm:p-8 shadow-luxury border border-[#2A5041] space-y-6 relative overflow-hidden"
+              className="rounded-3xl bg-black text-white p-6 sm:p-8 shadow-2xl border-2 border-[#15803D] space-y-6 relative overflow-hidden"
             >
               {/* Encabezado de la Tarjeta de Sellos */}
-              <div className="flex items-center justify-between border-b border-white/15 pb-4">
+              <div className="flex items-center justify-between border-b border-white/20 pb-4">
                 <div>
-                  <span className="text-[10px] uppercase tracking-[0.22em] text-[#BEF264] font-semibold block">
+                  <span className="text-[10px] uppercase tracking-[0.22em] text-[#22C55E] font-bold block">
                     DESDE TU 1ER SERVICIO • QR PERSONAL
                   </span>
-                  <h3 className="text-xl sm:text-2xl font-serif italic font-bold text-[#FAF9F6]">
-                    PCS Club · Tarjeta de Sellos
+                  <h3 className="text-xl sm:text-2xl font-serif italic font-bold text-white">
+                    PCS Club · Tarjeta Digital de Sellos
                   </h3>
                 </div>
-                <div className="w-11 h-11 aspect-square shrink-0 rounded-full bg-[#BEF264]/20 border border-[#BEF264]/40 flex items-center justify-center">
-                  <QrCode className="w-5 h-5 text-[#BEF264]" />
+                <div className="w-11 h-11 aspect-square shrink-0 rounded-full bg-black border-2 border-[#15803D] flex items-center justify-center">
+                  <QrCode className="w-5 h-5 text-[#22C55E]" />
                 </div>
               </div>
 
               {/* Resumen de Recompensas de la Tarjeta */}
               <div className="grid grid-cols-2 gap-2.5">
-                <div className="p-2.5 rounded-xl bg-[#2A5041] border border-[#BEF264]/30 flex items-center justify-between">
-                  <span className="text-[11px] text-[#E5E0D8]">Paseo #5</span>
-                  <span className="px-2 py-0.5 rounded-full bg-[#BEF264] text-[#1E3A2F] text-xs font-extrabold">
+                <div className="p-2.5 rounded-xl bg-black border-2 border-[#15803D] flex items-center justify-between">
+                  <span className="text-[11px] text-zinc-300">Paseo #5</span>
+                  <span className="px-2 py-0.5 rounded-full bg-[#15803D] text-white text-xs font-extrabold border border-[#22C55E]">
                     25% OFF
                   </span>
                 </div>
-                <div className="p-2.5 rounded-xl bg-[#2A5041] border border-[#E5E0D8]/40 flex items-center justify-between">
-                  <span className="text-[11px] text-[#FAF9F6] font-semibold">Paseo #10</span>
-                  <span className="px-2 py-0.5 rounded-full bg-[#E5E0D8] text-[#1E3A2F] text-xs font-extrabold">
+                <div className="p-2.5 rounded-xl bg-black border-2 border-white/30 flex items-center justify-between">
+                  <span className="text-[11px] text-white font-semibold">Paseo #10</span>
+                  <span className="px-2 py-0.5 rounded-full bg-white text-black text-xs font-extrabold">
                     50% OFF
                   </span>
                 </div>
@@ -304,15 +304,15 @@ export const PcsClub: React.FC = () => {
                       className={`aspect-square rounded-2xl border flex flex-col items-center justify-center p-1.5 transition-all ${
                         isTenth
                           ? isStamped
-                            ? 'bg-[#E5E0D8] text-[#1E3A2F] border-[#E5E0D8] shadow-md'
-                            : 'bg-[#162C23] text-[#E5E0D8] border-dashed border-[#E5E0D8]/70'
+                            ? 'bg-white text-black border-white shadow-md'
+                            : 'bg-black text-white border-dashed border-white/60'
                           : isFifth
                           ? isStamped
-                            ? 'bg-[#BEF264] text-[#1E3A2F] border-[#D9F99D] shadow-md'
-                            : 'bg-[#162C23] text-[#BEF264] border-dashed border-[#BEF264]/60'
+                            ? 'bg-[#15803D] text-white border-[#22C55E] shadow-md'
+                            : 'bg-black text-[#22C55E] border-dashed border-[#15803D]'
                           : isStamped
-                          ? 'bg-[#FAF9F6] text-[#1E3A2F] border-[#FAF9F6] shadow-sm'
-                          : 'bg-[#162C23] text-[#E5E0D8]/60 border-white/15'
+                          ? 'bg-white text-black border-white shadow-sm'
+                          : 'bg-black text-zinc-400 border-white/20'
                       }`}
                     >
                       {isTenth ? (
@@ -343,29 +343,29 @@ export const PcsClub: React.FC = () => {
               </div>
 
               {/* Pie de la Tarjeta Digital */}
-              <div className="pt-1 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-[#E5E0D8]/90">
+              <div className="pt-1 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-zinc-300">
                 <span className="inline-flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5 text-[#BEF264] shrink-0" />
+                  <Sparkles className="w-3.5 h-3.5 text-[#22C55E] shrink-0" />
                   <span>
                     {activeMemberLabel
                       ? activeMemberLabel
                       : 'Tarjeta de ejemplo (Muestra visual). Tu tarjeta personal se actualiza automáticamente con tu código QR.'}
                   </span>
                 </span>
-                <span className="font-bold text-[#BEF264] uppercase tracking-wider text-[11px] shrink-0">
+                <span className="font-bold text-white bg-black border border-[#15803D] px-2.5 py-0.5 rounded-full uppercase tracking-wider text-[10px] shrink-0">
                   {activeMemberLabel ? 'Verificada' : 'Muestra'}
                 </span>
               </div>
 
               {/* Buscador y Registro de Tarjeta por Número del Cliente */}
-              <div className="pt-4 border-t border-white/15 space-y-3">
-                <p className="text-xs font-bold uppercase tracking-wider text-[#BEF264]">
+              <div className="pt-4 border-t border-white/20 space-y-3">
+                <p className="text-xs font-bold uppercase tracking-wider text-white">
                   ¿Tienes tu Tarjeta PCS Club o Código QR? Consulta tus sellos o regístrate con tu celular:
                 </p>
 
                 <form onSubmit={handleCheckPhoneStamps} className="grid grid-cols-1 sm:grid-cols-12 gap-2">
-                  <div className="sm:col-span-5 flex items-center gap-2 px-3 rounded-xl bg-[#162C23] border border-white/15">
-                    <Phone className="w-3.5 h-3.5 text-[#BEF264] shrink-0" />
+                  <div className="sm:col-span-5 flex items-center gap-2 px-3 rounded-xl bg-black border-2 border-[#15803D]">
+                    <Phone className="w-3.5 h-3.5 text-[#22C55E] shrink-0" />
                     <input
                       type="tel"
                       inputMode="numeric"
@@ -373,32 +373,32 @@ export const PcsClub: React.FC = () => {
                       value={clientPhone}
                       onChange={(e) => setClientPhone(e.target.value)}
                       placeholder="Tu celular (10 dígitos)"
-                      className="min-h-[40px] w-full bg-transparent text-xs text-[#FAF9F6] placeholder:text-[#E5E0D8]/50 focus:outline-none"
+                      className="min-h-[40px] w-full bg-transparent text-xs text-white placeholder:text-zinc-500 focus:outline-none"
                     />
                   </div>
 
-                  <div className="sm:col-span-4 flex items-center gap-2 px-3 rounded-xl bg-[#162C23] border border-white/15">
-                    <PawPrint className="w-3.5 h-3.5 text-[#BEF264] shrink-0" />
+                  <div className="sm:col-span-4 flex items-center gap-2 px-3 rounded-xl bg-black border-2 border-[#15803D]">
+                    <PawPrint className="w-3.5 h-3.5 text-[#22C55E] shrink-0" />
                     <input
                       type="text"
                       value={clientPetName}
                       onChange={(e) => setClientPetName(sanitizeUserText(e.target.value, 30))}
                       placeholder="Nombre mascota"
-                      className="min-h-[40px] w-full bg-transparent text-xs text-[#FAF9F6] placeholder:text-[#E5E0D8]/50 focus:outline-none"
+                      className="min-h-[40px] w-full bg-transparent text-xs text-white placeholder:text-zinc-500 focus:outline-none"
                     />
                   </div>
 
                   <button
                     type="submit"
-                    className="sm:col-span-3 min-h-[40px] px-3 rounded-xl bg-[#2A5041] hover:bg-[#356350] border border-[#BEF264]/40 text-[#FAF9F6] text-xs font-bold inline-flex items-center justify-center gap-1.5 transition-all"
+                    className="sm:col-span-3 min-h-[40px] px-3 rounded-xl bg-black hover:bg-[#15803D] border-2 border-[#15803D] text-white text-xs font-bold inline-flex items-center justify-center gap-1.5 transition-all"
                   >
-                    <Search className="w-3.5 h-3.5 text-[#BEF264]" />
+                    <Search className="w-3.5 h-3.5 text-[#22C55E]" />
                     <span>Ver Sellos</span>
                   </button>
                 </form>
 
                 {lookupFeedback && (
-                  <p className="text-xs text-[#BEF264] bg-[#162C23] border border-[#BEF264]/30 rounded-xl px-3 py-2">
+                  <p className="text-xs text-white bg-black border-2 border-[#15803D] rounded-xl px-3 py-2">
                     {lookupFeedback}
                   </p>
                 )}
@@ -407,9 +407,9 @@ export const PcsClub: React.FC = () => {
                   href={registerClubWhatsappUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="min-h-[42px] w-full px-4 py-2 rounded-xl bg-[#BEF264] hover:bg-[#D9F99D] text-[#1E3A2F] text-xs font-extrabold inline-flex items-center justify-center gap-2 transition-all active:scale-95 shadow-sm"
+                  className="min-h-[42px] w-full px-4 py-2 rounded-xl bg-black hover:bg-[#121212] border-2 border-[#15803D] text-white text-xs font-extrabold inline-flex items-center justify-center gap-2 transition-all active:scale-95 shadow-md"
                 >
-                  <MessageCircle className="w-4 h-4" />
+                  <MessageCircle className="w-4 h-4 text-[#22C55E]" />
                   <span>Activar mi Tarjeta PCS Club y Recibir Promos por WhatsApp</span>
                 </a>
               </div>
