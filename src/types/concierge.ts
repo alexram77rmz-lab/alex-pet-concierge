@@ -7,7 +7,7 @@ export type ZoneName =
   | 'Valle Real'
   | 'Otra zona (Confirmar por WhatsApp)';
 
-export type DiscountTierKey = 'standard_200' | 'duo_190' | 'pack_180';
+export type DiscountTierKey = 'tier_1' | 'tier_2' | 'tier_3' | 'tier_4' | 'tier_5';
 
 export interface CalendarSlot {
   id: string;
@@ -23,6 +23,14 @@ export interface CalendarDay {
   dayName: string;
   isWeekend: boolean;
   slots: CalendarSlot[];
+}
+
+export interface PricingTableRow {
+  dogsLabel: string;
+  petCount: number;
+  discountLabel?: string;
+  pricePerDog: number;
+  totalPrice: number;
 }
 
 export interface QuoteBreakdown {

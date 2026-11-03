@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { BentoServices } from './components/BentoServices';
+import { PcsClub } from './components/PcsClub';
 import { PricingCalculator } from './components/PricingCalculator';
 import { FaqAndTrust } from './components/FaqAndTrust';
 import { Footer } from './components/Footer';
@@ -34,6 +35,7 @@ export function App() {
       <main className="flex-grow">
         <Hero />
         <BentoServices />
+        <PcsClub />
         <PricingCalculator onShowToast={triggerToast} />
         <FaqAndTrust />
       </main>

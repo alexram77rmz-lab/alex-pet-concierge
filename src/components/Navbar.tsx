@@ -12,11 +12,11 @@ export const Navbar: React.FC<NavbarProps> = ({ darkMode, onToggleDarkMode }) =>
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navLinks = [
-    { label: 'Sobre Mí', href: '#sobre-mi' },
     { label: 'Servicios', href: '#servicios' },
-    { label: 'Protocolo', href: '#protocolo' },
-    { label: 'Calculadora y Agenda', href: '#calculadora' },
-    { label: 'Preguntas Frecuentes', href: '#faq' },
+    { label: 'Tabla de Precios', href: '#precios-y-club' },
+    { label: 'PCS Club', href: '#pcs-club' },
+    { label: 'Calculadora', href: '#calculadora' },
+    { label: 'FAQ', href: '#faq' },
   ];
 
   const handleNavClick = () => {

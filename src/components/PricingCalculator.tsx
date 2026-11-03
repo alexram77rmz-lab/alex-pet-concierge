@@ -318,12 +318,15 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
         </span>
 
         <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-[#18181B] dark:text-[#FAF9F6]">
-          Calcula tu tarifa y elige tu horario
+          Calcula tu tarifa y{' '}
+          <span className="font-serif italic font-semibold text-[#1E3A2F] dark:text-[#E5E0D8]">
+            elige tu horario
+          </span>
         </h2>
 
         <p className="text-sm sm:text-base text-[#57534E] dark:text-stone-300">
-          1 mascota: <strong>$200 MXN</strong> • 2 a 3 mascotas: <strong>$190 c/u</strong> • 4 o más mascotas:{' '}
-          <strong>$180 c/u</strong>. Cobertura normal en{' '}
+          <strong>$200 por 1 perro, $190 c/u por 2, $180 c/u por 3, $170 c/u por 4 y $160 c/u por 5</strong>{' '}
+          (del mismo domicilio). Cobertura en{' '}
           <strong>Puerta de Hierro, Av. Patria, Jardín Real y Valle Real</strong>.
         </p>
       </div>
@@ -373,12 +376,13 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-[#E5E0D8]/80 dark:border-white/10">
             <div className="space-y-2">
               <label className="text-xs font-bold uppercase tracking-wider text-[#57534E] dark:text-stone-400 block">
-                2. ¿Cuántas mascotas son?
+                2. Perros del mismo domicilio
               </label>
               <div className="grid grid-cols-5 gap-1.5">
                 {[1, 2, 3, 4, 5].map((n) => {
                   const active = petCount === n;
-                  const price = n === 1 ? 200 : n <= 3 ? 190 : 180;
+                  const priceMap: Record<number, number> = { 1: 200, 2: 190, 3: 180, 4: 170, 5: 160 };
+                  const price = priceMap[n];
                   return (
                     <button
                       key={n}
@@ -390,8 +394,8 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
                           : 'bg-[#FAF9F6] dark:bg-[#0E1210] text-[#18181B] dark:text-[#FAF9F6] border-[#E5E0D8] dark:border-white/10'
                       }`}
                     >
-                      <span className="text-sm font-bold">{n === 5 ? '5+' : n}</span>
-                      <span className="text-[10px] opacity-80">${price}</span>
+                      <span className="text-sm font-bold">{n}</span>
+                      <span className="text-[10px] opacity-85">${price} c/u</span>
                     </button>
                   );
                 })}

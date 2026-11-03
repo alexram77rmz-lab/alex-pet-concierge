@@ -2,6 +2,7 @@ import {
   BentoServiceItem,
   CalendarDay,
   FaqItem,
+  PricingTableRow,
   ProtocolStep,
   QuoteBreakdown,
   ServiceType,
@@ -33,8 +34,39 @@ export const FOUNDER_BIO = {
   ],
 };
 
-export const BASE_HOURLY_RATE = 200; // $200 MXN base por mascota / hora
-export const MAX_DAILY_HOURS = 5; // Máximo 5 horas trabajadas por día
+export const BASE_HOURLY_RATE = 200; // $200 MXN base por 1 perro
+export const MAX_DAILY_HOURS = 5; // Máximo 5 servicios por día
+
+/**
+ * Tabla oficial de precios por perros del mismo domicilio:
+ * 1 -> $200 ($200)
+ * 2 (5% menos) -> $190 ($380)
+ * 3 (10% menos) -> $180 ($540)
+ * 4 (15% menos) -> $170 ($680)
+ * 5 (20% menos) -> $160 ($800)
+ */
+export const PRICING_TABLE_ROWS: PricingTableRow[] = [
+  { dogsLabel: '1', petCount: 1, pricePerDog: 200, totalPrice: 200 },
+  { dogsLabel: '2 (5% menos)', petCount: 2, discountLabel: '5% menos', pricePerDog: 190, totalPrice: 380 },
+  { dogsLabel: '3 (10% menos)', petCount: 3, discountLabel: '10% menos', pricePerDog: 180, totalPrice: 540 },
+  { dogsLabel: '4 (15% menos)', petCount: 4, discountLabel: '15% menos', pricePerDog: 170, totalPrice: 680 },
+  { dogsLabel: '5 (20% menos)', petCount: 5, discountLabel: '20% menos', pricePerDog: 160, totalPrice: 800 },
+];
+
+export const PCS_CLUB_CONTENT = {
+  title: 'PCS Club · Tu tarjeta de cliente consentido',
+  subtitle: 'Cada paseo suma un sello en tu tarjeta digital. Al décimo, tu siguiente paseo va por la casa.',
+  benefitsTitle: 'Beneficios de miembro',
+  benefits: [
+    'Prioridad para elegir tu horario',
+    'Reporte con fotos de cada paseo',
+    'Limpieza de patitas de cortesía',
+    'Detalle de cumpleaños para tu mascota',
+  ],
+  referralText:
+    'Invita a un vecino y, cuando complete su primer servicio, ambos reciben un paseo de cortesía. Con tu tercer referido eres Anfitrión PCS y conservas prioridad de horarios.',
+  finePrint: 'Máximo 2 paseos de cortesía por mes, se canjean en horarios disponibles.',
+};
 
 export const SERVICE_OPTIONS: {
   id: ServiceType;
@@ -75,10 +107,6 @@ const createCleanDaySlots = (prefix: string) => [
   { id: `${prefix}-20`, startHour24: 20, timeRange: '8:00 p.m. – 9:00 p.m.', status: 'available' as const },
 ];
 
-/**
- * Calendario semanal limpio (sin fechas ocupadas falsas de ejemplo).
- * Tú puedes marcar qué horas se van ocupando desde tu Panel Admin oculto (PIN: 2772).
- */
 export const WEEKLY_CALENDAR: CalendarDay[] = [
   { id: 'lun', dayShort: 'Lun', dayName: 'Lunes', isWeekend: false, slots: createCleanDaySlots('lun') },
   { id: 'mar', dayShort: 'Mar', dayName: 'Martes', isWeekend: false, slots: createCleanDaySlots('mar') },
@@ -89,12 +117,6 @@ export const WEEKLY_CALENDAR: CalendarDay[] = [
   { id: 'dom', dayShort: 'Dom', dayName: 'Domingo', isWeekend: true, slots: [] },
 ];
 
-/**
- * Automatiza la separación de horarios y el límite de 5 horas al día:
- * 1) Si ya hay 5 bloques ocupados en el día, el resto se marca como "Cupo de 5 hrs lleno".
- * 2) Si un bloque está ocupado en otra zona distinta y el siguiente bloque está pegado (diferencia <= 1 hr),
- *    se separa automáticamente como "Tiempo de traslado".
- */
 export function evaluateDaySlotsWithAutoBuffer(day: CalendarDay, clientZone: ZoneName) {
   const bookedCount = day.slots.filter((s) => s.status === 'booked').length;
 
@@ -153,6 +175,14 @@ export function evaluateDaySlotsWithAutoBuffer(day: CalendarDay, clientZone: Zon
   });
 }
 
+/**
+ * Regla exacta de precios por perros del mismo domicilio:
+ * 1 perro: $200 c/u (0% menos) -> $200
+ * 2 perros: $190 c/u (5% menos) -> $380
+ * 3 perros: $180 c/u (10% menos) -> $540
+ * 4 perros: $170 c/u (15% menos) -> $680
+ * 5 perros: $160 c/u (20% menos) -> $800
+ */
 export function calculateQuote(params: {
   petCount: number;
   hours: number;
@@ -160,29 +190,30 @@ export function calculateQuote(params: {
   isExtraSlot: boolean;
   zone: ZoneName;
 }): QuoteBreakdown {
-  const petCount = Math.min(6, Math.max(1, Math.round(params.petCount)));
+  const petCount = Math.min(5, Math.max(1, Math.round(params.petCount)));
   const hours = Math.min(10, Math.max(1, Math.round(params.hours)));
   const baseRatePerPet = BASE_HOURLY_RATE;
 
-  let discountPercentage = 0;
-  let tierKey: QuoteBreakdown['tierKey'] = 'standard_200';
-  let tierBadge = 'Tarifa estándar: $200 MXN por mascota / hora';
-  let tierHelperText =
-    'A partir de 2 mascotas (o 2 horas) baja a $190 c/u (-5%). De 4 mascotas en adelante baja a $180 c/u (-10%).';
+  const discountByCount: Record<number, { pct: number; rate: number; key: QuoteBreakdown['tierKey'] }> = {
+    1: { pct: 0, rate: 200, key: 'tier_1' },
+    2: { pct: 5, rate: 190, key: 'tier_2' },
+    3: { pct: 10, rate: 180, key: 'tier_3' },
+    4: { pct: 15, rate: 170, key: 'tier_4' },
+    5: { pct: 20, rate: 160, key: 'tier_5' },
+  };
 
-  if (petCount >= 4 || hours >= 5) {
-    discountPercentage = 10;
-    tierKey = 'pack_180';
-    tierBadge = 'Máximo Ahorro • $180 MXN por mascota (-10%)';
-    tierHelperText = 'Tarifa preferencial de $180 MXN cada mascota por hora.';
-  } else if (petCount >= 2 || hours >= 2) {
-    discountPercentage = 5;
-    tierKey = 'duo_190';
-    tierBadge = 'Descuento Aplicado • $190 MXN por mascota (-5%)';
-    tierHelperText = 'Pagas $190 MXN por mascota. Con 4+ mascotas (o 5 hrs) baja a $180 MXN c/u.';
-  }
+  const selectedTier = discountByCount[petCount] || discountByCount[1];
+  const discountPercentage = selectedTier.pct;
+  const ratePerPetAfterDiscount = selectedTier.rate;
+  const tierKey = selectedTier.key;
 
-  const ratePerPetAfterDiscount = Math.round(baseRatePerPet * (1 - discountPercentage / 100));
+  const tierBadge =
+    petCount === 1
+      ? '1 mascota: $200 MXN por hora'
+      : `${petCount} mascotas (${discountPercentage}% menos): $${ratePerPetAfterDiscount} MXN c/u`;
+
+  const tierHelperText = 'Descuento válido solo para mascotas del mismo domicilio.';
+
   const subtotalBase = petCount * hours * baseRatePerPet;
   const total = petCount * hours * ratePerPetAfterDiscount;
   const discountAmount = subtotalBase - total;
@@ -255,12 +286,12 @@ export function buildWhatsAppMessage(params: {
     : '';
 
   return `Hola Alex, vi Pet Concierge Service y quiero agendar ${params.service} para ${cleanPetName} (${petCount} ${
-    petCount === 1 ? 'mascota' : 'mascotas'
+    petCount === 1 ? 'perro/mascota' : 'mascotas del mismo domicilio'
   } a $${ratePerPetAfterDiscount} MXN c/u) por ${finalZone}. Me interesa el ${datePart} en el horario de ${
     params.slotLabel
   } (${hours} ${
     hours === 1 ? 'hora' : 'horas'
-  }, ${discountPercentage}% desc. — Total base: $${total.toLocaleString(
+  }${discountPercentage > 0 ? `, ${discountPercentage}% menos` : ''} — Total: $${total.toLocaleString(
     'es-MX'
   )} MXN)${extraNotice}. ¿Tienes espacio?`;
 }
@@ -282,66 +313,62 @@ export function buildWhatsAppBookingUrl(params: {
 export const BENTO_SERVICES: BentoServiceItem[] = [
   {
     id: 'paseos-privados',
-    tag: 'SOLO TU CASA • DESCUENTO POR GRUPO',
-    title: 'Paseos Privados (Solo tus Mascotas)',
+    tag: 'SOLO TU DOMICILIO',
+    title: 'Paseos Privados',
     description:
-      'Sin estrés ni peleas con perros desconocidos. Si tienes varias mascotas en casa, pasean juntas con descuento: 1 mascota $200, 2 a 3 mascotas $190 c/u y 4+ mascotas $180 c/u.',
+      'Sin estrés ni peleas con perros ajenos. $200 por 1 perro, $190 c/u por 2, $180 c/u por 3, $170 c/u por 4 y $160 c/u por 5.',
     highlights: [
-      'Atención 100% enfocada en el ritmo y energía de tus perros',
-      'Hidratación con agua fresca y plato portátil limpio',
-      'Cobertura normal en Puerta de Hierro, Av. Patria, Jardín Real y Valle Real',
+      'Solo mascotas del mismo domicilio',
+      'Hidratación con agua fresca',
     ],
-    metricLabel: 'Tarifa por Mascota',
-    metricValue: '1: $200 • 2-3: $190 • 4+: $180',
-    spanClass: 'md:col-span-7',
+    metricLabel: 'Tarifa por Perro',
+    metricValue: '$200 a $160 c/u',
+    spanClass: 'col-span-1',
     accentVariant: 'forest',
   },
   {
     id: 'cat-home-sitting',
-    tag: 'CUIDADO EN CASA',
+    tag: 'EN TU HOGAR',
     title: 'Cat & Home Sitting',
     description:
-      'Visitas a domicilio para gatos o perros que prefieren su propio espacio. Limpieza de areneros, alimentación precisa, agua fresca, juego e interacción.',
+      'Visitas a domicilio para gatos o perros que prefieren su espacio. Areneros, comida, agua fresca y compañía.',
     highlights: [
-      'Cero estrés de jaulas o traslados',
-      'Cuidado de 60 minutos en la tranquilidad de tu hogar',
-      'Horario de 10:00 a.m. a 9:00 p.m. (máximo 5 servicios al día)',
+      'Cero estrés de traslado',
+      'Sesión de 60 min en casa',
     ],
     metricLabel: 'Modalidad',
-    metricValue: 'Sesión de 60 min en Casa',
-    spanClass: 'md:col-span-5',
+    metricValue: '60 min en Casa',
+    spanClass: 'col-span-1',
     accentVariant: 'stone',
   },
   {
     id: 'transparencia-gps',
-    tag: 'MONITOREO EN VIVO',
-    title: 'Transparencia Total en Tiempo Real',
+    tag: 'TIEMPO REAL',
+    title: 'GPS en Vivo y Fotos',
     description:
-      'Ubicación en vivo por WhatsApp durante todo el servicio y bitácora al finalizar con hora de inicio, ruta, hidratación y reporte fotográfico.',
+      'Ubicación en vivo por WhatsApp durante todo el servicio y reporte con fotos de cada paseo al finalizar.',
     highlights: [
-      'Ubicación en tiempo real directo a tu WhatsApp',
-      'Horarios separados automáticamente para llegar siempre puntual',
-      'Fotos y resumen al terminar cada sesión',
+      'GPS directo en WhatsApp',
+      'Horarios separados y puntuales',
     ],
-    metricLabel: 'Trazabilidad',
-    metricValue: 'GPS en Vivo + Fotos',
-    spanClass: 'md:col-span-5',
+    metricLabel: 'Monitoreo',
+    metricValue: 'GPS + Reporte Fotos',
+    spanClass: 'col-span-1',
     accentVariant: 'alabaster',
   },
   {
     id: 'limpieza-patitas',
-    tag: 'CUIDADO DE TU HOGAR',
+    tag: 'CORTESÍA PCS',
     title: 'Limpieza al Regresar',
     description:
-      'Limpiamos las patitas con espuma y toalla antes de entrar a tu casa para cuidar tus pisos y muebles, dejándolos frescos, hidratados y tranquilos.',
+      'Limpiamos las patitas con espuma y toalla antes de entrar a tu casa para cuidar tus pisos y muebles.',
     highlights: [
-      'Limpieza práctica de patitas con espuma antes de entrar',
-      'Cuidamos tus pisos, alfombras y sillones del polvo de la calle',
-      'Regresan relajados y con agua fresca servida',
+      'Patitas limpias con espuma',
+      'Regresan hidratados y tranquilos',
     ],
-    metricLabel: 'Higiene al Entrar',
-    metricValue: 'Patitas Limpias con Espuma',
-    spanClass: 'md:col-span-7',
+    metricLabel: 'Higiene',
+    metricValue: 'Espuma + Toalla',
+    spanClass: 'col-span-1',
     accentVariant: 'charcoal',
   },
 ];
@@ -349,35 +376,31 @@ export const BENTO_SERVICES: BentoServiceItem[] = [
 export const SECURITY_PROTOCOL_STEPS: ProtocolStep[] = [
   {
     stepNumber: '01',
-    title: 'Presentación Previa (15 min sin costo)',
-    subtitle: 'Nos conocemos en tu domicilio',
-    description:
-      'Antes del primer servicio hacemos una visita breve sin costo para conocer a tus mascotas, su carácter y sus rutinas.',
-    durationBadge: 'Sin Costo',
+    title: 'Presentación 15 min',
+    subtitle: 'Sin costo en casa',
+    description: 'Nos conocemos antes del primer paseo para revisar rutinas.',
+    durationBadge: 'Gratis',
   },
   {
     stepNumber: '02',
-    title: 'Horarios Separados Automáticamente',
-    subtitle: 'De 10:00 a.m. a 9:00 p.m.',
-    description:
-      'El sistema separa automáticamente las citas cuando hay cambio de zona (ej. de Av. Patria a las 4:00 p.m. hacia Jardín Real hasta las 5:00 p.m.) para un servicio rápido y puntual.',
-    durationBadge: 'Puntualidad',
+    title: 'Citas Separadas',
+    subtitle: '10:00 a.m. a 9:00 p.m.',
+    description: 'Horarios con margen entre zonas para llegar siempre puntual.',
+    durationBadge: 'Puntual',
   },
   {
     stepNumber: '03',
-    title: 'GPS en Vivo e Hidratación',
-    subtitle: 'Monitoreo por WhatsApp',
-    description:
-      'Te comparto ubicación en vivo al iniciar, cuidamos la temperatura del piso y damos pausas de agua fresca.',
-    durationBadge: '60 Minutos',
+    title: 'GPS e Hidratación',
+    subtitle: 'Vía WhatsApp',
+    description: 'Ubicación en tiempo real y pausas de agua fresca en ruta.',
+    durationBadge: '60 Min',
   },
   {
     stepNumber: '04',
-    title: 'Patitas Limpias con Espuma y Reporte',
-    subtitle: 'Cierre impecable',
-    description:
-      'Limpiamos sus patitas con espuma antes de entrar a tu casa y te mando fotos del paseo o visita a tu WhatsApp.',
-    durationBadge: 'Reporte Final',
+    title: 'Patitas Limpias',
+    subtitle: 'Con espuma al volver',
+    description: 'Limpieza de patitas al entrar y reporte con fotos del paseo.',
+    durationBadge: 'Cierre',
   },
 ];
 
@@ -391,23 +414,23 @@ export const FAQ_ITEMS: FaqItem[] = [
   },
   {
     id: 'descuento-mascotas',
-    question: '¿Cómo aplican los descuentos por varias mascotas o por horas?',
+    question: '¿Cómo aplican los precios de $200 a $160 por perro?',
     answer:
-      'Si es 1 mascota la tarifa es de $200 MXN por hora. Si tienes 2 o 3 mascotas (o reservas de 2 a 4 horas) baja a $190 MXN cada una (5% de descuento). Si son 4 o más mascotas (o paquete de 5+ horas) queda en $180 MXN cada una (10% de descuento).',
-    highlightTag: '$200 (1) • $190 c/u (2-3) • $180 c/u (4+)',
+      'El descuento aplica para perros del mismo domicilio: 1 perro $200, 2 perros $190 c/u ($380 total), 3 perros $180 c/u ($540 total), 4 perros $170 c/u ($680 total) y 5 perros $160 c/u ($800 total).',
+    highlightTag: '1: $200 • 2: $190 • 3: $180 • 4: $170 • 5: $160',
   },
   {
-    id: 'zonas-y-fines-de-semana',
-    question: '¿Cuál es el horario y por qué el calendario separa las horas entre zonas?',
+    id: 'pcs-club-faq',
+    question: '¿Cómo funciona la tarjeta de sellos de PCS Club?',
     answer:
-      'Atiendo de 10:00 a.m. a 9:00 p.m. (máximo 5 servicios al día de Lunes a Viernes) en Puerta de Hierro, Av. Patria, Jardín Real y Valle Real. El calendario bloquea automáticamente las horas pegadas cuando el servicio anterior es en otra zona para trasladarme sin prisas y darte un servicio puntual y profesional.',
-    highlightTag: '10:00 a.m. a 9:00 p.m. • Citas separadas',
+      'Cada paseo suma un sello en tu tarjeta digital. Al décimo sello, tu siguiente paseo va por la casa. Además, si invitas a un vecino y completa su primer servicio, ambos reciben un paseo de cortesía (máximo 2 paseos de cortesía por mes, en horarios disponibles).',
+    highlightTag: '10º Paseo Gratis • PCS Club',
   },
   {
     id: 'lluvia-o-calor',
     question: '¿Qué pasa si llueve o hace mucho calor?',
     answer:
-      'Como trabajamos hasta las 9:00 p.m., en días calurosos podemos elegir bloques de mañana o tarde-noche para proteger las almohadillas de las patas. Si llueve fuerte, podemos reprogramar o cambiar la hora por cuidado y juego dentro de casa.',
+      'Trabajamos de 10:00 a.m. a 9:00 p.m., por lo que en días calurosos elegimos horarios frescos para proteger las almohadillas de las patas. Si llueve fuerte, podemos reprogramar o cambiar la sesión por cuidado y juego en casa.',
     highlightTag: 'Cuidado de almohadillas',
   },
 ];
@@ -416,12 +439,12 @@ export const TESTIMONIALS: TestimonialItem[] = [
   {
     id: 't1',
     petName: 'Thor, Maya, Rocco y Nala',
-    petBreed: '4 perros • Manada familiar',
+    petBreed: '4 perros • Mismo domicilio',
     ownerName: 'Alejandro G.',
     zone: 'Jardín Real',
     quote:
-      'Tengo 4 perros y salen los 4 juntos sin juntarlos con perros ajenos. Me sale en $180 cada uno, siempre llega puntual y les limpia las patitas con espuma antes de entrar.',
-    serviceUsed: '4 Mascotas • $180 c/u',
+      'Tengo 4 perros y salen los 4 juntos sin juntarlos con perros ajenos. Me queda en $170 cada uno ($680 en total), llega puntual y les limpia las patitas con espuma.',
+    serviceUsed: '4 Perros • $170 c/u',
   },
   {
     id: 't2',
@@ -430,17 +453,17 @@ export const TESTIMONIALS: TestimonialItem[] = [
     ownerName: 'Mariana V.',
     zone: 'Puerta de Hierro',
     quote:
-      'Se nota que solo toma 5 servicios al día y con horas separadas. Llega con calma, cumple la hora completa, me manda ubicación en vivo y regresan impecables.',
-    serviceUsed: '2 Mascotas • $190 c/u',
+      'Con PCS Club ya llevamos nuestro primer paseo de cortesía. Cumple la hora completa, manda ubicación en vivo y regresan impecables.',
+    serviceUsed: '2 Perros • $190 c/u',
   },
   {
     id: 't3',
-    petName: 'Milo & Nube',
-    petBreed: 'Gato y Perro',
+    petName: 'Milo, Nube y Coco',
+    petBreed: '3 perros • Mismo domicilio',
     ownerName: 'Rodrigo S.',
     zone: 'Av. Patria',
     quote:
-      'El horario hasta las 9:00 p.m. me queda perfecto cuando salgo tarde. Súper fácil ver en su calendario qué horas tiene libres y mandarle WhatsApp directo.',
-    serviceUsed: 'Paseo & Cuidado en Casa',
+      'Por mis 3 perros pago $180 cada uno. El horario hasta las 9:00 p.m. y las citas separadas hacen que siempre llegue a tiempo.',
+    serviceUsed: '3 Perros • $180 c/u',
   },
 ];
