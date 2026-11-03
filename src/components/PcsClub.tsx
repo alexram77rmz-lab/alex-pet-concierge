@@ -33,7 +33,7 @@ export const PcsClub: React.FC = () => {
     return [];
   });
 
-  // Lee parámetros ?cel=33...&mascota=Bruno&sellos=4 si entran desde link/QR/NFC personalizado
+  // Lee parámetros ?cel=33...&mascota=Bruno&sellos=4 si entran desde link o QR personalizado
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const urlCel = (params.get('cel') || '').replace(/\D/g, '');
@@ -107,13 +107,13 @@ export const PcsClub: React.FC = () => {
       );
     } else {
       setLookupFeedback(
-        'Si es tu 1er servicio con tu tarjeta NFC/QR, toca el botón verde abajo para activar tu número en WhatsApp y recibir tus sellos y promociones.'
+        'Si es tu 1er servicio con tu tarjeta o código QR, toca el botón verde abajo para activar tu número en WhatsApp y recibir tus sellos y promociones.'
       );
     }
   };
 
-  const registerNfcWhatsappUrl = `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(
-    `Hola Alex, escaneé mi tarjeta NFC / QR de PCS Club. Mi celular es ${
+  const registerClubWhatsappUrl = `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(
+    `Hola Alex, escaneé el código QR de mi tarjeta PCS Club. Mi celular es ${
       clientPhone.replace(/\D/g, '') || '(mi número)'
     }${
       clientPetName.trim() ? ` y mi mascota se llama ${sanitizeUserText(clientPetName, 30)}` : ''
@@ -349,7 +349,7 @@ export const PcsClub: React.FC = () => {
                   <span>
                     {activeMemberLabel
                       ? activeMemberLabel
-                      : 'Tarjeta de ejemplo (Muestra visual). Tu tarjeta personal se actualiza con tu QR / NFC.'}
+                      : 'Tarjeta de ejemplo (Muestra visual). Tu tarjeta personal se actualiza automáticamente con tu código QR.'}
                   </span>
                 </span>
                 <span className="font-bold text-[#BEF264] uppercase tracking-wider text-[11px] shrink-0">
@@ -357,10 +357,10 @@ export const PcsClub: React.FC = () => {
                 </span>
               </div>
 
-              {/* Buscador y Registro de Tarjeta NFC / QR por Número del Cliente */}
+              {/* Buscador y Registro de Tarjeta por Número del Cliente */}
               <div className="pt-4 border-t border-white/15 space-y-3">
                 <p className="text-xs font-bold uppercase tracking-wider text-[#BEF264]">
-                  ¿Tienes tu Tarjeta NFC o QR? Consulta tus sellos o regístrate con tu celular:
+                  ¿Tienes tu Tarjeta PCS Club o Código QR? Consulta tus sellos o regístrate con tu celular:
                 </p>
 
                 <form onSubmit={handleCheckPhoneStamps} className="grid grid-cols-1 sm:grid-cols-12 gap-2">
@@ -404,13 +404,13 @@ export const PcsClub: React.FC = () => {
                 )}
 
                 <a
-                  href={registerNfcWhatsappUrl}
+                  href={registerClubWhatsappUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="min-h-[42px] w-full px-4 py-2 rounded-xl bg-[#BEF264] hover:bg-[#D9F99D] text-[#1E3A2F] text-xs font-extrabold inline-flex items-center justify-center gap-2 transition-all active:scale-95 shadow-sm"
                 >
                   <MessageCircle className="w-4 h-4" />
-                  <span>Activar mi Tarjeta NFC / QR y Recibir Promos por WhatsApp</span>
+                  <span>Activar mi Tarjeta PCS Club y Recibir Promos por WhatsApp</span>
                 </a>
               </div>
             </motion.div>

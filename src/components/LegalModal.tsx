@@ -158,7 +158,7 @@ export const LegalModal: React.FC<LegalModalProps> = ({
                 </div>
 
                 <div className="space-y-1.5">
-                  <h4 className="font-bold text-[#18181B] dark:text-[#FAF9F6]">4. Membresía y Tarjetas PCS Club (NFC / QR)</h4>
+                  <h4 className="font-bold text-[#18181B] dark:text-[#FAF9F6]">4. Membresía y Tarjetas PCS Club (Códigos QR)</h4>
                   <p>
                     Cada paseo suma 1 sello en su tarjeta personal. En el 5º paseo aplica 25% de descuento y en el 10º paseo 50% de descuento. Las cortesías por invitar a un vecino son válidas tras el primer servicio completado de dicho vecino en la misma zona de cobertura y en horarios disponibles.
                   </p>

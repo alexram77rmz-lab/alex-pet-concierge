@@ -92,7 +92,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
   const [isPublishingCloud, setIsPublishingCloud] = useState<boolean>(false);
   const [lockoutInfo, setLockoutInfo] = useState(() => getSecurityLockoutStatus());
 
-  // Control de Tarjetas NFC / QR (Sellos de clientes por celular)
+  // Control de Tarjetas PCS Club (Sellos de clientes por celular)
   const [clubMembers, setClubMembers] = useState<ClubMemberRecord[]>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY_CLUB_MEMBERS);
@@ -816,12 +816,12 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
                   </div>
                 )}
 
-                {/* Control de Sellos de Tarjetas NFC / QR por Celular del Cliente */}
+                {/* Control de Sellos de Tarjetas PCS Club por Celular del Cliente */}
                 <div className="pt-3 border-t border-white/15 space-y-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#BEF264]">
                       <QrCode className="w-4 h-4" />
-                      <span>2. Tarjetas NFC / QR — Sellos de Clientes</span>
+                      <span>2. Tarjeta PCS Club — Sellos de Clientes</span>
                     </div>
                     <span className="text-[11px] text-[#E5E0D8]/80 font-medium">
                       {clubMembers.length} {clubMembers.length === 1 ? 'cliente guardado' : 'clientes guardados'}
@@ -882,7 +882,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
                     <div className="p-3.5 rounded-xl bg-[#162C23] border border-dashed border-[#BEF264]/40 text-xs text-[#E5E0D8] space-y-1.5">
                       <p className="font-extrabold text-[#BEF264] flex items-center gap-1.5">
                         <Info className="w-4 h-4 shrink-0 text-[#BEF264]" />
-                        <span>¿Por qué no aparece todavía el botón "Ver QR / NFC"?</span>
+                        <span>¿Por qué no aparece todavía el botón "Ver Código QR"?</span>
                       </p>
                       <p className="leading-relaxed text-[#E5E0D8]/90">
                         Porque aún no has guardado a ningún cliente en la lista. Para generar la tarjeta y ver su QR:
@@ -890,7 +890,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
                       <ol className="list-decimal list-inside space-y-0.5 text-white pl-1 font-medium">
                         <li>Escribe arriba el celular de tu cliente (10 dígitos) y el nombre de su mascota.</li>
                         <li>Dale clic a <strong>"Guardar Cliente"</strong> o a <strong>"Generar / Ver QR en Pantalla"</strong>.</li>
-                        <li>Al instante aparecerá su código QR personal para escanear y el link directo para grabarlo en su tarjeta física NFC.</li>
+                        <li>Al instante aparecerá su código QR personal para escanear y el enlace directo para enviárselo al cliente.</li>
                       </ol>
                     </div>
                   )}
@@ -937,7 +937,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
                                 onClick={() => setQrPreviewMember(m)}
                                 className="px-2 py-1 rounded bg-white/15 hover:bg-white/25 text-white font-bold text-[10px]"
                               >
-                                Ver QR / NFC
+                                Ver Código QR
                               </button>
                               <a
                                 href={cardShareUrl}
@@ -977,10 +977,10 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
                       />
                       <div className="flex-1 space-y-1.5 text-xs">
                         <p className="font-extrabold text-sm">
-                          QR y Link NFC para {qrPreviewMember.petName} ({qrPreviewMember.phone})
+                          Código QR y Enlace para {qrPreviewMember.petName} ({qrPreviewMember.phone})
                         </p>
                         <p className="text-[#57534E]">
-                          El cliente puede escanear este QR de tu pantalla o puedes copiar el link para grabarlo en su tarjeta NFC.
+                          El cliente puede escanear este QR de tu pantalla o puedes copiar y enviarle su enlace personal.
                         </p>
                         <div className="flex flex-wrap gap-2 pt-1">
                           <button
@@ -991,11 +991,11 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
                                   qrPreviewMember.petName
                                 )}&sellos=${qrPreviewMember.stamps}#pcs-club`
                               );
-                              onShowToast('Link copiado para grabar en tarjeta NFC o enviar.');
+                              onShowToast('Enlace personal del cliente copiado.');
                             }}
                             className="px-3 py-1.5 rounded-lg bg-[#1E3A2F] text-[#BEF264] font-bold"
                           >
-                            Copiar Link para NFC
+                            Copiar Enlace Directo
                           </button>
                           <button
                             type="button"
