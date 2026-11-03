@@ -54,10 +54,10 @@ export const PRICING_TABLE_ROWS: PricingTableRow[] = [
 
 export const PCS_CLUB_CONTENT = {
   title: 'PCS Club · Tu tarjeta de cliente consentido',
-  unlockBadge: 'Se desbloquea a partir de tu 3er servicio',
+  unlockBadge: 'Activa desde tu 1er servicio • Entrega de QR personal',
   subtitle:
-    'Al cumplir 3 servicios con nosotros desbloqueas tu membresía PCS Club. Cada paseo suma un sello en tu tarjeta digital: en el 5º paseo recibes 25% de descuento y en el 10º paseo recibes 50% de descuento.',
-  benefitsTitle: 'Beneficios exclusivos de miembro (después de 3 servicios)',
+    'Desde tu primer servicio te entrego personalmente tu acceso con código QR de PCS Club. Cada paseo suma un sello: en el 5º paseo tienes 25% de descuento y en el 10º paseo tienes 50% de descuento.',
+  benefitsTitle: 'Beneficios de miembro (desde tu primer paseo)',
   benefits: [
     'Premios naturales gourmet durante el paseo (autorizados por ti)',
     'Toque de bruma botánica relajante + limpieza de patitas con espuma',
@@ -67,9 +67,9 @@ export const PCS_CLUB_CONTENT = {
     'Detalle especial en el cumpleaños de tu mascota',
   ],
   referralText:
-    'Invita a un vecino de tu zona: cuando complete su primer servicio, reciben su paseo de cortesía de referido. Con tu tercer referido eres Anfitrión PCS y conservas prioridad de horarios.',
+    'Invita a un vecino de tu zona y, cuando complete su primer servicio, ambos reciben un paseo de cortesía. Con tu tercer referido eres Anfitrión PCS y conservas prioridad de horarios.',
   finePrint:
-    'La tarjeta PCS Club se activa tras 3 servicios completados. Descuentos del 25% (paseo 5) y 50% (paseo 10) no acumulables con otras promos. Cortesías de vecino sujetas a horarios disponibles en la misma zona (máx. 1 por mes).',
+    'Tu QR personal de PCS Club se entrega en tu primer servicio. Descuentos del 25% (paseo 5) y 50% (paseo 10) válidos en horarios disponibles. Cortesías de vecino: máx. 1 por mes en la misma zona.',
 };
 
 export const SERVICE_OPTIONS: {
@@ -91,7 +91,7 @@ export const SERVICE_OPTIONS: {
 
 export const PRIORITY_ZONES: ZoneName[] = [
   'Puerta de Hierro',
-  'Av. Patria',
+  'Colomos',
   'Jardín Real',
   'Valle Real',
 ];
@@ -373,7 +373,7 @@ export const BENTO_SERVICES: BentoServiceItem[] = [
     metricLabel: 'Higiene',
     metricValue: 'Espuma + Toalla',
     spanClass: 'col-span-1',
-    accentVariant: 'charcoal',
+    accentVariant: 'lime',
   },
 ];
 
@@ -413,7 +413,7 @@ export const FAQ_ITEMS: FaqItem[] = [
     id: 'primera-visita',
     question: '¿Cómo funciona la primera visita?',
     answer:
-      'Incluye una breve entrevista de presentación de 15 minutos sin costo en tu domicilio para conocer a tu mascota, platicar de su rutina y que me tome confianza antes de su primer paseo o visita.',
+      'Incluye una breve entrevista de presentación de 15 minutos sin costo en tu domicilio para conocer a tu mascota, platicar de su rutina y entregarte tu acceso QR personal de PCS Club.',
     highlightTag: 'Entrevista de 15 min sin costo',
   },
   {
@@ -425,10 +425,10 @@ export const FAQ_ITEMS: FaqItem[] = [
   },
   {
     id: 'pcs-club-faq',
-    question: '¿Cómo funciona la tarjeta de sellos de PCS Club?',
+    question: '¿Cómo funciona la tarjeta y el código QR de PCS Club?',
     answer:
-      'Cada paseo suma un sello en tu tarjeta digital. Al décimo sello, tu siguiente paseo va por la casa. Además, si invitas a un vecino y completa su primer servicio, ambos reciben un paseo de cortesía (máximo 2 paseos de cortesía por mes, en horarios disponibles).',
-    highlightTag: '10º Paseo Gratis • PCS Club',
+      'Desde tu primer servicio te entrego personalmente tu tarjeta con QR de miembro PCS Club. Cada paseo suma un sello: en tu 5º paseo obtienes 25% de descuento y en tu 10º paseo obtienes 50% de descuento. Además, al invitar a un vecino que complete su primer servicio, ambos reciben un paseo de cortesía.',
+    highlightTag: 'Paseo 5 (-25%) • Paseo 10 (-50%)',
   },
   {
     id: 'lluvia-o-calor',
@@ -457,7 +457,7 @@ export const TESTIMONIALS: TestimonialItem[] = [
     ownerName: 'Mariana V.',
     zone: 'Puerta de Hierro',
     quote:
-      'Con PCS Club ya llevamos nuestro primer paseo de cortesía. Cumple la hora completa, manda ubicación en vivo y regresan impecables.',
+      'Desde el primer servicio nos entregó nuestra tarjeta PCS Club. Cumple la hora completa, manda ubicación en vivo y regresan impecables.',
     serviceUsed: '2 Perros • $190 c/u',
   },
   {
@@ -465,7 +465,7 @@ export const TESTIMONIALS: TestimonialItem[] = [
     petName: 'Milo, Nube y Coco',
     petBreed: '3 perros • Mismo domicilio',
     ownerName: 'Rodrigo S.',
-    zone: 'Av. Patria',
+    zone: 'Colomos',
     quote:
       'Por mis 3 perros pago $180 cada uno. El horario hasta las 9:00 p.m. y las citas separadas hacen que siempre llegue a tiempo.',
     serviceUsed: '3 Perros • $180 c/u',

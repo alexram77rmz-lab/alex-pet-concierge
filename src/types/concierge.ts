@@ -2,7 +2,7 @@ export type ServiceType = 'Paseo Privado (Perros)' | 'Cuidado en Casa (Gatos / P
 
 export type ZoneName =
   | 'Puerta de Hierro'
-  | 'Av. Patria'
+  | 'Colomos'
   | 'Jardín Real'
   | 'Valle Real'
   | 'Otra zona (Confirmar por WhatsApp)';
@@ -58,7 +58,7 @@ export interface BentoServiceItem {
   metricLabel: string;
   metricValue: string;
   spanClass: string;
-  accentVariant: 'forest' | 'stone' | 'alabaster' | 'charcoal';
+  accentVariant: 'forest' | 'stone' | 'alabaster' | 'lime';
 }
 
 export interface ProtocolStep {

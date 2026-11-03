@@ -33,11 +33,11 @@ export const Navbar: React.FC<NavbarProps> = ({ darkMode, onToggleDarkMode }) =>
             className="min-h-[44px] inline-flex items-center gap-3 group focus:outline-none"
             aria-label={`${BRAND_NAME} - Inicio`}
           >
-            <span className="w-9 h-9 rounded-full bg-[#1E3A2F] text-[#FAF9F6] flex items-center justify-center text-xs font-semibold tracking-widest shadow-sm group-hover:scale-105 transition-transform">
+            <span className="w-10 h-10 aspect-square shrink-0 rounded-full bg-[#1E3A2F] border-2 border-[#BEF264]/60 text-[#FAF9F6] flex items-center justify-center text-xs font-extrabold tracking-wider shadow-sm group-hover:scale-105 transition-transform">
               {BRAND_SHORT}
             </span>
             <div className="flex flex-col">
-              <span className="text-sm sm:text-base font-bold tracking-[0.2em] text-[#18181B] dark:text-[#FAF9F6] uppercase">
+              <span className="text-sm sm:text-base font-bold tracking-[0.2em] text-[#1E3A2F] dark:text-[#FAF9F6] uppercase">
                 {BRAND_NAME}
               </span>
               <span className="text-[10px] tracking-[0.14em] text-[#57534E] dark:text-stone-400 uppercase">
@@ -120,7 +120,7 @@ export const Navbar: React.FC<NavbarProps> = ({ darkMode, onToggleDarkMode }) =>
                   <ShieldCheck className="w-4 h-4 text-[#1E3A2F] dark:text-emerald-400" />
                   10:00 a.m. a 9:00 p.m. • Cero Manadas Ajenas
                 </span>
-                <span className="font-semibold text-[#1E3A2F] dark:text-[#E5E0D8]">$200 a $180 MXN</span>
+                <span className="font-semibold text-[#1E3A2F] dark:text-[#E5E0D8]">$200 a $160 MXN</span>
               </div>
 
               {navLinks.map((link) => (

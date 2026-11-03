@@ -11,7 +11,6 @@ import {
   Home,
   Info,
   KeyRound,
-  Lock,
   MapPin,
   MessageCircle,
   Minus,
@@ -121,22 +120,30 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
     return () => window.clearTimeout(timer);
   }, [adminUnlocked, onShowToast]);
 
-  // Permite abrir directo con el link #admin
+  // Permite abrir desde el botón oculto hasta abajo del pie de página o con #admin
   useEffect(() => {
+    const openAdminFlow = () => {
+      setLockoutInfo(getSecurityLockoutStatus());
+      setShowAuthModal(true);
+      setAuthStep(1);
+      const el = document.getElementById('panel-horarios-alex');
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    };
+
     const checkHash = () => {
       if (window.location.hash === '#admin') {
-        setLockoutInfo(getSecurityLockoutStatus());
-        setShowAuthModal(true);
-        setAuthStep(1);
-        const el = document.getElementById('panel-horarios-alex');
-        if (el) {
-          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
+        openAdminFlow();
       }
     };
     checkHash();
     window.addEventListener('hashchange', checkHash);
-    return () => window.removeEventListener('hashchange', checkHash);
+    window.addEventListener('pcs-open-admin', openAdminFlow);
+    return () => {
+      window.removeEventListener('hashchange', checkHash);
+      window.removeEventListener('pcs-open-admin', openAdminFlow);
+    };
   }, []);
 
   // Carga en vivo el archivo schedule.json desde GitHub
@@ -420,7 +427,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
         <p className="text-sm sm:text-base text-[#57534E] dark:text-stone-300">
           <strong>$200 por 1 perro, $190 c/u por 2, $180 c/u por 3, $170 c/u por 4 y $160 c/u por 5</strong>{' '}
           (del mismo domicilio). Cobertura en{' '}
-          <strong>Puerta de Hierro, Av. Patria, Jardín Real y Valle Real</strong>.
+          <strong>Puerta de Hierro, Colomos, Jardín Real y Valle Real</strong>.
         </p>
       </div>
 
@@ -581,28 +588,13 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
                 <span>4. Horarios Disponibles (10:00 a.m. a 9:00 p.m.)</span>
               </button>
 
-              {/* Botón claro para Alex pero protegido con 2 pasos SHA-256 */}
-              {!adminUnlocked ? (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setLockoutInfo(getSecurityLockoutStatus());
-                    setShowAuthModal((prev) => !prev);
-                    setAuthStep(1);
-                  }}
-                  aria-label="Control de agenda Alex"
-                  className="px-3 py-1.5 rounded-xl bg-[#FAF9F6] dark:bg-[#0E1210] border border-[#DCD6CC] dark:border-white/15 text-[#1E3A2F] dark:text-emerald-400 hover:bg-[#1E3A2F] hover:text-[#FAF9F6] text-xs font-bold inline-flex items-center gap-1.5 transition-all shadow-sm"
-                >
-                  <Lock className="w-3.5 h-3.5" />
-                  <span>Mi Agenda (Alex)</span>
-                </button>
-              ) : (
+              {adminUnlocked && (
                 <button
                   type="button"
                   onClick={() => setAdminUnlocked(false)}
-                  className="px-3 py-1.5 rounded-xl bg-[#18181B] text-[#FAF9F6] text-xs font-bold inline-flex items-center gap-1.5"
+                  className="px-3 py-1.5 rounded-xl bg-[#1E3A2F] text-[#FAF9F6] text-xs font-bold inline-flex items-center gap-1.5"
                 >
-                  <Unlock className="w-3.5 h-3.5 text-emerald-400" />
+                  <Unlock className="w-3.5 h-3.5 text-[#BEF264]" />
                   <span>Cerrar Sesión Segura</span>
                 </button>
               )}
@@ -680,9 +672,9 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
 
             {/* Barra de herramientas Admin (Solo visible tras pasar los 2 pasos SHA-256) */}
             {adminUnlocked && (
-              <div className="p-4 rounded-2xl bg-[#18181B] text-[#FAF9F6] space-y-3 border border-white/15">
+              <div className="p-4 rounded-2xl bg-[#1E3A2F] text-[#FAF9F6] space-y-3 border border-[#BEF264]/30">
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <span className="text-xs font-bold uppercase tracking-wider text-emerald-400">
+                  <span className="text-xs font-bold uppercase tracking-wider text-[#BEF264]">
                     Panel Protegido — Toca cualquier hora abajo para marcarla Ocupada / Libre
                   </span>
                   <button
@@ -704,7 +696,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
                       onClick={() => setAdminSelectedZone(pz)}
                       className={`px-2.5 py-1 rounded-lg font-semibold ${
                         adminSelectedZone === pz
-                          ? 'bg-emerald-600 text-white'
+                          ? 'bg-[#BEF264] text-[#1E3A2F]'
                           : 'bg-white/10 text-[#E5E0D8]'
                       }`}
                     >
@@ -725,7 +717,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
                     type="button"
                     onClick={handlePublishToGitHub}
                     disabled={isPublishingCloud}
-                    className="min-h-[38px] px-4 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold inline-flex items-center justify-center gap-1.5"
+                    className="min-h-[38px] px-4 rounded-lg bg-[#BEF264] hover:bg-[#D9F99D] text-[#1E3A2F] text-xs font-extrabold inline-flex items-center justify-center gap-1.5"
                   >
                     <CloudUpload className="w-4 h-4" />
                     <span>{isPublishingCloud ? 'Publicando...' : 'Publicar Cambios en Vivo'}</span>
@@ -964,8 +956,8 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
               </div>
             </div>
           ) : (
-            <div className="p-3.5 rounded-2xl bg-black/20 border border-white/10 flex items-center gap-2 text-xs text-[#E5E0D8]">
-              <CheckCircle2 className="w-4 h-4 text-emerald-300 shrink-0" />
+            <div className="p-3.5 rounded-2xl bg-[#162C23] border border-[#BEF264]/25 flex items-center gap-2 text-xs text-[#E5E0D8]">
+              <CheckCircle2 className="w-4 h-4 text-[#BEF264] shrink-0" />
               <span>Horario disponible y zona dentro de cobertura normal (sin cargos extra).</span>
             </div>
           )}
@@ -994,7 +986,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => onShowToast(`Abriendo WhatsApp (${WHATSAPP_DISPLAY})...`)}
-            className="min-h-[52px] w-full px-6 py-3.5 rounded-2xl bg-[#FAF9F6] hover:bg-[#E5E0D8] text-[#18181B] font-bold text-base shadow-lg flex items-center justify-center gap-2.5 hover:-translate-y-0.5 active:scale-95 transition-all"
+            className="min-h-[52px] w-full px-6 py-3.5 rounded-2xl bg-[#BEF264] hover:bg-[#D9F99D] text-[#1E3A2F] font-extrabold text-base shadow-lg flex items-center justify-center gap-2.5 hover:-translate-y-0.5 active:scale-95 transition-all"
           >
             <MessageCircle className="w-5 h-5 text-[#1E3A2F]" />
             <span>Reservar por WhatsApp ({WHATSAPP_DISPLAY})</span>

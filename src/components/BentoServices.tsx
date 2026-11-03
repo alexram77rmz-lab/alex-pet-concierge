@@ -24,8 +24,8 @@ export const BentoServices: React.FC = () => {
         return 'bg-[#1E3A2F] text-[#FAF9F6] border-[#1E3A2F]';
       case 'stone':
         return 'bg-[#E5E0D8]/75 dark:bg-[#19211D] text-[#18181B] dark:text-[#FAF9F6] border-[#DCD6CC] dark:border-white/10';
-      case 'charcoal':
-        return 'bg-[#18181B] text-[#FAF9F6] border-[#18181B] dark:border-white/15';
+      case 'lime':
+        return 'bg-[#E4F2D3] dark:bg-[#1D3528] text-[#1E3A2F] dark:text-[#FAF9F6] border-[#C5E1A5] dark:border-lime-400/25';
       case 'alabaster':
       default:
         return 'bg-white dark:bg-[#141A17] text-[#18181B] dark:text-[#FAF9F6] border-[#E5E0D8] dark:border-white/10';
@@ -54,7 +54,8 @@ export const BentoServices: React.FC = () => {
         {/* Grid Compacto: 2 columnas en móvil, 4 en desktop */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
           {BENTO_SERVICES.map((item, idx) => {
-            const isDarkCard = item.accentVariant === 'forest' || item.accentVariant === 'charcoal';
+            const isDarkCard = item.accentVariant === 'forest';
+            const isLimeCard = item.accentVariant === 'lime';
 
             return (
               <motion.article
@@ -73,14 +74,20 @@ export const BentoServices: React.FC = () => {
                       className={`text-[9px] sm:text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full truncate ${
                         isDarkCard
                           ? 'bg-white/10 text-[#E5E0D8]'
+                          : isLimeCard
+                          ? 'bg-[#65A30D]/20 text-[#1E3A2F] dark:text-lime-200'
                           : 'bg-[#1E3A2F]/10 dark:bg-white/10 text-[#1E3A2F] dark:text-[#E5E0D8]'
                       }`}
                     >
                       {item.tag}
                     </span>
                     <div
-                      className={`w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center shrink-0 ${
-                        isDarkCard ? 'bg-white/10 text-[#FAF9F6]' : 'bg-[#1E3A2F] text-[#FAF9F6]'
+                      className={`w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center shrink-0 ${
+                        isDarkCard
+                          ? 'bg-white/10 text-[#FAF9F6]'
+                          : isLimeCard
+                          ? 'bg-[#4D7C0F] text-[#FAF9F6]'
+                          : 'bg-[#1E3A2F] text-[#FAF9F6]'
                       }`}
                     >
                       {getIcon(item.id)}

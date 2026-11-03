@@ -52,7 +52,7 @@ export const Hero: React.FC = () => {
 
             {/* Exact Subtitle with Promo */}
             <p className="text-base sm:text-lg lg:text-xl text-[#57534E] dark:text-stone-300 leading-relaxed max-w-2xl">
-              Cobertura en Puerta de Hierro, Av. Patria, Jardín Real y Valle Real. Paseos solo para las
+              Cobertura en Puerta de Hierro, Colomos, Jardín Real y Valle Real. Paseos solo para las
               mascotas de tu casa:{' '}
               <strong className="text-[#18181B] dark:text-[#FAF9F6] font-bold">
                 $200 por 1 perro, $190 c/u por 2, $180 c/u por 3, $170 c/u por 4 y $160 c/u por 5
@@ -74,9 +74,9 @@ export const Hero: React.FC = () => {
 
                 <a
                   href="#precios-y-club"
-                  className="min-h-[52px] px-7 py-3.5 inline-flex items-center justify-center gap-2.5 rounded-full bg-[#E5E0D8]/60 hover:bg-[#E5E0D8] dark:bg-white/10 dark:hover:bg-white/15 text-[#18181B] dark:text-[#FAF9F6] border border-[#DCD6CC] dark:border-white/15 text-base font-semibold hover:-translate-y-0.5 active:scale-95 transition-all"
+                  className="min-h-[52px] px-7 py-3.5 inline-flex items-center justify-center gap-2.5 rounded-full bg-[#E4F2D3] hover:bg-[#D5E9BE] dark:bg-white/10 dark:hover:bg-white/15 text-[#1E3A2F] dark:text-[#FAF9F6] border border-[#C5E1A5] dark:border-white/15 text-base font-semibold hover:-translate-y-0.5 active:scale-95 transition-all"
                 >
-                  <ShieldCheck className="w-5 h-5 text-[#1E3A2F] dark:text-[#E5E0D8]" />
+                  <ShieldCheck className="w-5 h-5 text-[#4D7C0F] dark:text-lime-300" />
                   <span>Tabla de Precios y PCS Club</span>
                 </a>
               </div>
@@ -84,12 +84,12 @@ export const Hero: React.FC = () => {
               {/* Short PCS Club Line right below Hero buttons */}
               <a
                 href="#pcs-club"
-                className="inline-flex items-center gap-2 text-xs sm:text-sm font-medium text-[#1E3A2F] dark:text-emerald-300 hover:underline pt-0.5"
+                className="inline-flex items-center gap-2 text-xs sm:text-sm font-medium text-[#1E3A2F] dark:text-lime-300 hover:underline pt-0.5"
               >
-                <Award className="w-4 h-4 shrink-0 text-[#1E3A2F] dark:text-emerald-400" />
+                <Award className="w-4 h-4 shrink-0 text-[#4D7C0F] dark:text-lime-400" />
                 <span>
-                  <strong>PCS Club:</strong> Desbloquea tu tarjeta VIP al 3er servicio — 25% OFF en el 5º
-                  paseo, 50% OFF en el 10º y premios gourmet →
+                  <strong>PCS Club:</strong> Recibe tu tarjeta con QR desde tu 1er servicio — 25% OFF en el
+                  5º paseo y 50% OFF en el 10º →
                 </span>
               </a>
             </div>
