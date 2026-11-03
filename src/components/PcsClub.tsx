@@ -33,15 +33,17 @@ export const PcsClub: React.FC = () => {
     return [];
   });
 
-  // Lee parámetros ?mascota=Bruno&sellos=4 si entran desde link/QR personalizado o carga miembros desde schedule.json
+  // Lee parámetros ?cel=33...&mascota=Bruno&sellos=4 si entran desde link/QR/NFC personalizado
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
+    const urlCel = (params.get('cel') || '').replace(/\D/g, '');
     const urlSellos = Number(params.get('sellos'));
     const urlMascota = params.get('mascota');
+
     if (!Number.isNaN(urlSellos) && urlSellos >= 1 && urlSellos <= 10) {
       setStampedCount(urlSellos);
       if (urlMascota) {
-        setActiveMemberLabel(`Tarjeta de ${sanitizeUserText(urlMascota, 30)}: ${urlSellos}/10 sellos`);
+        setActiveMemberLabel(`Tarjeta Oficial de ${sanitizeUserText(urlMascota, 30)}: ${urlSellos}/10 sellos`);
       }
     }
 
@@ -54,6 +56,13 @@ export const PcsClub: React.FC = () => {
           if (data && Array.isArray(data.members)) {
             setMembers(data.members);
             localStorage.setItem(STORAGE_KEY_CLUB_MEMBERS, JSON.stringify(data.members));
+            if (urlCel.length === 10) {
+              const found = data.members.find((m: ClubMemberRecord) => m.phone.replace(/\D/g, '') === urlCel);
+              if (found) {
+                setStampedCount(found.stamps);
+                setActiveMemberLabel(`Tarjeta Oficial de ${found.petName}: ${found.stamps}/10 sellos`);
+              }
+            }
           }
         }
       } catch {
@@ -282,20 +291,17 @@ export const PcsClub: React.FC = () => {
                 </div>
               </div>
 
-              {/* Grid de 10 Sellos (5x2) */}
-              <div className="grid grid-cols-5 gap-2.5 sm:gap-3">
+              {/* Grid de 10 Sellos (5x2) - Solo lectura para que el cliente no pueda picarle solo */}
+              <div className="grid grid-cols-5 gap-2.5 sm:gap-3 select-none">
                 {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => {
                   const isFifth = num === 5;
                   const isTenth = num === 10;
                   const isStamped = num <= stampedCount;
 
                   return (
-                    <button
+                    <div
                       key={num}
-                      type="button"
-                      onClick={() => setStampedCount(num)}
-                      title={`Simular ${num} sellos acumulados`}
-                      className={`aspect-square rounded-2xl border flex flex-col items-center justify-center p-1.5 transition-all active:scale-95 ${
+                      className={`aspect-square rounded-2xl border flex flex-col items-center justify-center p-1.5 transition-all ${
                         isTenth
                           ? isStamped
                             ? 'bg-[#E5E0D8] text-[#1E3A2F] border-[#E5E0D8] shadow-md'
@@ -306,7 +312,7 @@ export const PcsClub: React.FC = () => {
                             : 'bg-[#162C23] text-[#BEF264] border-dashed border-[#BEF264]/60'
                           : isStamped
                           ? 'bg-[#FAF9F6] text-[#1E3A2F] border-[#FAF9F6] shadow-sm'
-                          : 'bg-[#162C23] text-[#E5E0D8]/60 border-white/15 hover:border-[#BEF264]/50'
+                          : 'bg-[#162C23] text-[#E5E0D8]/60 border-white/15'
                       }`}
                     >
                       {isTenth ? (
@@ -331,7 +337,7 @@ export const PcsClub: React.FC = () => {
                       ) : (
                         <span className="text-xs sm:text-sm font-semibold">{num}</span>
                       )}
-                    </button>
+                    </div>
                   );
                 })}
               </div>
@@ -343,15 +349,11 @@ export const PcsClub: React.FC = () => {
                   <span>
                     {activeMemberLabel
                       ? activeMemberLabel
-                      : stampedCount === 10
-                      ? '¡10º sello alcanzado! Disfrutas 50% de descuento en este paseo.'
-                      : stampedCount === 5
-                      ? '¡5º sello alcanzado! Disfrutas 25% de descuento en este paseo.'
-                      : `Vista previa: ${stampedCount}/10 sellos (toca las casillas o consulta con tu número).`}
+                      : 'Tarjeta de ejemplo (Muestra visual). Tu tarjeta personal se actualiza con tu QR / NFC.'}
                   </span>
                 </span>
                 <span className="font-bold text-[#BEF264] uppercase tracking-wider text-[11px] shrink-0">
-                  NFC + QR Activo
+                  {activeMemberLabel ? 'Verificada' : 'Muestra'}
                 </span>
               </div>
 

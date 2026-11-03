@@ -10,12 +10,10 @@ import {
   Dog,
   Home,
   Info,
-  KeyRound,
   MapPin,
   MessageCircle,
   Minus,
   PawPrint,
-  Phone,
   Plus,
   QrCode,
   RotateCcw,
@@ -110,6 +108,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
   const [newMemberPhone, setNewMemberPhone] = useState<string>('');
   const [newMemberPet, setNewMemberPet] = useState<string>('');
   const [newMemberStamps, setNewMemberStamps] = useState<number>(1);
+  const [qrPreviewMember, setQrPreviewMember] = useState<ClubMemberRecord | null>(null);
 
   // Contador de 3 toques secretos para abrir el candado
   const secretTapCountRef = useRef<number>(0);
@@ -678,93 +677,59 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
               )}
             </div>
 
-            {/* Ventana Emergente (Popup Modal) en medio de la pantalla para los 2 Pasos de Alex */}
+            {/* Ventana Emergente Muda (Sin títulos, sin íconos de teléfono ni pistas) */}
             {showAuthModal && !adminUnlocked && (
               <div className="fixed inset-0 z-50 bg-[#1E3A2F]/80 backdrop-blur-sm flex items-center justify-center p-4">
-                <div className="w-full max-w-md p-6 rounded-3xl bg-[#FAF9F6] dark:bg-[#141A17] border-2 border-[#BEF264] shadow-2xl space-y-4">
-                  <div className="flex items-center justify-between border-b border-[#E5E0D8] dark:border-white/10 pb-3">
-                    <div>
-                      <span className="text-[10px] font-bold uppercase tracking-widest text-[#4D7C0F] dark:text-lime-300 block">
-                        ACCESO PROTEGIDO (SHA-256)
-                      </span>
-                      <h3 className="text-lg font-serif italic font-bold text-[#1E3A2F] dark:text-[#FAF9F6]">
-                        Panel de Control — Alex
-                      </h3>
-                    </div>
+                <div className="w-full max-w-xs p-4 rounded-2xl bg-[#FAF9F6] dark:bg-[#141A17] border border-[#DCD6CC] dark:border-white/15 shadow-2xl space-y-3">
+                  <div className="flex justify-end">
                     <button
                       type="button"
                       onClick={() => setShowAuthModal(false)}
-                      aria-label="Cerrar ventana"
-                      className="w-8 h-8 rounded-full bg-[#E5E0D8]/60 dark:bg-white/10 flex items-center justify-center text-[#1E3A2F] dark:text-white"
+                      aria-label="Cerrar"
+                      className="w-6 h-6 rounded-full bg-[#E5E0D8]/60 dark:bg-white/10 flex items-center justify-center text-[#1E3A2F] dark:text-white"
                     >
-                      <X className="w-4 h-4" />
+                      <X className="w-3.5 h-3.5" />
                     </button>
                   </div>
 
                   {lockoutInfo.isLocked ? (
-                    <div className="flex items-center gap-2.5 text-xs text-red-700 dark:text-red-400 font-semibold">
+                    <div className="flex items-center gap-2 text-xs text-red-700 dark:text-red-400 font-semibold">
                       <ShieldAlert className="w-4 h-4 shrink-0" />
-                      <span>
-                        Protección anti-hackeo activa: Acceso bloqueado por {lockoutInfo.remainingMinutes}{' '}
-                        minutos tras múltiples intentos fallidos.
-                      </span>
+                      <span>Bloqueado ({lockoutInfo.remainingMinutes} min).</span>
                     </div>
                   ) : authStep === 1 ? (
-                    <form onSubmit={handleStep1PhoneSubmit} className="space-y-3">
-                      <p className="text-xs font-bold text-[#1E3A2F] dark:text-lime-300">
-                        Paso 1 de 2 — Ingresa tu número celular (10 dígitos):
-                      </p>
-                      <div className="flex items-center gap-2">
-                        <Phone className="w-4 h-4 text-[#1E3A2F] dark:text-lime-300 shrink-0" />
-                        <input
-                          type="tel"
-                          inputMode="numeric"
-                          autoFocus
-                          maxLength={12}
-                          value={phoneInput}
-                          onChange={(e) => setPhoneInput(e.target.value)}
-                          placeholder="10 dígitos"
-                          className="min-h-[42px] flex-1 px-3.5 rounded-xl bg-white dark:bg-[#16241D] border border-[#DCD6CC] dark:border-white/15 text-sm text-[#1E3A2F] dark:text-white"
-                        />
-                        <button
-                          type="submit"
-                          className="min-h-[42px] px-4 rounded-xl bg-[#1E3A2F] text-[#BEF264] text-xs font-extrabold"
-                        >
-                          Siguiente →
-                        </button>
-                      </div>
+                    <form onSubmit={handleStep1PhoneSubmit} className="flex items-center gap-2">
+                      <input
+                        type="password"
+                        inputMode="numeric"
+                        autoFocus
+                        maxLength={12}
+                        value={phoneInput}
+                        onChange={(e) => setPhoneInput(e.target.value)}
+                        className="min-h-[40px] flex-1 px-3 rounded-xl bg-white dark:bg-[#16241D] border border-[#DCD6CC] dark:border-white/15 text-sm text-[#1E3A2F] dark:text-white focus:outline-none"
+                      />
+                      <button
+                        type="submit"
+                        className="min-h-[40px] px-4 rounded-xl bg-[#1E3A2F] text-[#BEF264] text-xs font-extrabold"
+                      >
+                        Siguiente
+                      </button>
                     </form>
                   ) : (
-                    <form onSubmit={handleStep2VerifyAuth} className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <p className="text-xs font-bold text-[#1E3A2F] dark:text-lime-300">
-                          Paso 2 de 2 — Ingresa tu clave de seguridad:
-                        </p>
-                        <button
-                          type="button"
-                          onClick={() => setAuthStep(1)}
-                          className="text-[11px] underline text-[#57534E]"
-                        >
-                          Cambiar número
-                        </button>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <KeyRound className="w-4 h-4 text-[#1E3A2F] dark:text-lime-300 shrink-0" />
-                        <input
-                          type="password"
-                          autoFocus
-                          value={pinInput}
-                          onChange={(e) => setPinInput(e.target.value)}
-                          placeholder="Escribe tu clave"
-                          className="min-h-[42px] flex-1 px-3.5 rounded-xl bg-white dark:bg-[#16241D] border border-[#DCD6CC] dark:border-white/15 text-sm text-[#1E3A2F] dark:text-white"
-                        />
-                        <button
-                          type="submit"
-                          className="min-h-[42px] px-4 rounded-xl bg-[#BEF264] text-[#1E3A2F] text-xs font-extrabold"
-                        >
-                          Desbloquear
-                        </button>
-                      </div>
+                    <form onSubmit={handleStep2VerifyAuth} className="flex items-center gap-2">
+                      <input
+                        type="password"
+                        autoFocus
+                        value={pinInput}
+                        onChange={(e) => setPinInput(e.target.value)}
+                        className="min-h-[40px] flex-1 px-3 rounded-xl bg-white dark:bg-[#16241D] border border-[#DCD6CC] dark:border-white/15 text-sm text-[#1E3A2F] dark:text-white focus:outline-none"
+                      />
+                      <button
+                        type="submit"
+                        className="min-h-[40px] px-4 rounded-xl bg-[#BEF264] text-[#1E3A2F] text-xs font-extrabold"
+                      >
+                        Siguiente
+                      </button>
                     </form>
                   )}
                 </div>
@@ -877,12 +842,13 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
                   </form>
 
                   {clubMembers.length > 0 && (
-                    <div className="space-y-1.5 max-h-40 overflow-y-auto pr-1">
+                    <div className="space-y-1.5 max-h-44 overflow-y-auto pr-1">
                       {clubMembers.map((m) => {
+                        const directCardUrl = `https://alexram77rmz-lab.github.io/alex-pet-concierge/?cel=${m.phone}&mascota=${encodeURIComponent(
+                          m.petName
+                        )}&sellos=${m.stamps}#pcs-club`;
                         const cardShareUrl = `https://wa.me/52${m.phone}?text=${encodeURIComponent(
-                          `¡Hola! 🐾 Actualicé la tarjeta PCS Club de ${m.petName}: llevas ${m.stamps}/10 sellos. Puedes ver tu tarjeta aquí: https://alexram77rmz-lab.github.io/alex-pet-concierge/?mascota=${encodeURIComponent(
-                            m.petName
-                          )}&sellos=${m.stamps}#pcs-club`
+                          `¡Hola! 🐾 Tu tarjeta PCS Club de ${m.petName} lleva ${m.stamps}/10 sellos. Mira tu tarjeta oficial aquí: ${directCardUrl}`
                         )}`;
 
                         return (
@@ -912,13 +878,20 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
                               >
                                 +
                               </button>
+                              <button
+                                type="button"
+                                onClick={() => setQrPreviewMember(m)}
+                                className="px-2 py-1 rounded bg-white/15 hover:bg-white/25 text-white font-bold text-[10px]"
+                              >
+                                Ver QR / NFC
+                              </button>
                               <a
                                 href={cardShareUrl}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="px-2 py-1 rounded bg-[#BEF264] text-[#1E3A2F] font-bold text-[10px]"
                               >
-                                Mandar WhatsApp
+                                WhatsApp
                               </a>
                               <button
                                 type="button"
@@ -932,6 +905,53 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
                           </div>
                         );
                       })}
+                    </div>
+                  )}
+
+                  {qrPreviewMember && (
+                    <div className="p-3 rounded-xl bg-[#FAF9F6] text-[#1E3A2F] flex flex-col sm:flex-row items-center justify-between gap-3">
+                      <img
+                        src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(
+                          `https://alexram77rmz-lab.github.io/alex-pet-concierge/?cel=${qrPreviewMember.phone}&mascota=${encodeURIComponent(
+                            qrPreviewMember.petName
+                          )}&sellos=${qrPreviewMember.stamps}#pcs-club`
+                        )}`}
+                        alt={`QR de ${qrPreviewMember.petName}`}
+                        width={110}
+                        height={110}
+                        className="rounded-lg border border-[#DCD6CC]"
+                      />
+                      <div className="flex-1 space-y-1.5 text-xs">
+                        <p className="font-extrabold text-sm">
+                          QR y Link NFC para {qrPreviewMember.petName} ({qrPreviewMember.phone})
+                        </p>
+                        <p className="text-[#57534E]">
+                          El cliente puede escanear este QR de tu pantalla o puedes copiar el link para grabarlo en su tarjeta NFC.
+                        </p>
+                        <div className="flex flex-wrap gap-2 pt-1">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              navigator.clipboard.writeText(
+                                `https://alexram77rmz-lab.github.io/alex-pet-concierge/?cel=${qrPreviewMember.phone}&mascota=${encodeURIComponent(
+                                  qrPreviewMember.petName
+                                )}&sellos=${qrPreviewMember.stamps}#pcs-club`
+                              );
+                              onShowToast('Link copiado para grabar en tarjeta NFC o enviar.');
+                            }}
+                            className="px-3 py-1.5 rounded-lg bg-[#1E3A2F] text-[#BEF264] font-bold"
+                          >
+                            Copiar Link para NFC
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setQrPreviewMember(null)}
+                            className="px-3 py-1.5 rounded-lg bg-[#E5E0D8] text-[#1E3A2F] font-semibold"
+                          >
+                            Cerrar QR
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   )}
                 </div>
