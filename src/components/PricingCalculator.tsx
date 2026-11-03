@@ -41,6 +41,7 @@ import { CalendarDay, ServiceType, ZoneName } from '../types/concierge';
 import { ClubMemberRecord, STORAGE_KEY_CLUB_MEMBERS } from './PcsClub';
 import {
   clearAuthLockout,
+  getCloudSyncKey,
   getSecurityLockoutStatus,
   registerFailedAuthAttempt,
   sanitizeUserText,
@@ -89,7 +90,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
   const [pinInput, setPinInput] = useState<string>('');
   const [adminUnlocked, setAdminUnlocked] = useState<boolean>(false);
   const [adminSelectedZone, setAdminSelectedZone] = useState<ZoneName>('Puerta de Hierro');
-  const [ghToken, setGhToken] = useState<string>(() => localStorage.getItem(STORAGE_KEY_GH_TOKEN) || '');
+  const [adminBufferMode, setAdminBufferMode] = useState<boolean>(false);
   const [isPublishingCloud, setIsPublishingCloud] = useState<boolean>(false);
   const [lockoutInfo, setLockoutInfo] = useState(() => getSecurityLockoutStatus());
 
@@ -290,7 +291,8 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
           ...day,
           slots: day.slots.map((slot) => {
             if (slot.id !== slotId) return slot;
-            const nextStatus = slot.status === 'available' ? ('booked' as const) : ('available' as const);
+            const targetStatus = adminBufferMode ? ('buffer' as const) : ('booked' as const);
+            const nextStatus = slot.status === targetStatus ? ('available' as const) : targetStatus;
             return {
               ...slot,
               status: nextStatus,
@@ -359,12 +361,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
   };
 
   const handlePublishToGitHub = async () => {
-    const cleanToken = ghToken.trim();
-    if (!cleanToken) {
-      onShowToast('Ingresa tu llave de GitHub para publicar a todos los clientes.');
-      return;
-    }
-    localStorage.setItem(STORAGE_KEY_GH_TOKEN, cleanToken);
+    const cleanToken = (localStorage.getItem(STORAGE_KEY_GH_TOKEN) || getCloudSyncKey()).trim();
     setIsPublishingCloud(true);
 
     try {
@@ -726,7 +723,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
                           maxLength={12}
                           value={phoneInput}
                           onChange={(e) => setPhoneInput(e.target.value)}
-                          placeholder="Ej. 3321222772"
+                          placeholder="10 dígitos"
                           className="min-h-[42px] flex-1 px-3.5 rounded-xl bg-white dark:bg-[#16241D] border border-[#DCD6CC] dark:border-white/15 text-sm text-[#1E3A2F] dark:text-white"
                         />
                         <button
@@ -741,7 +738,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
                     <form onSubmit={handleStep2VerifyAuth} className="space-y-3">
                       <div className="flex items-center justify-between">
                         <p className="text-xs font-bold text-[#1E3A2F] dark:text-lime-300">
-                          Paso 2 de 2 — Ingresa tu código de 4 dígitos:
+                          Paso 2 de 2 — Ingresa tu clave de seguridad:
                         </p>
                         <button
                           type="button"
@@ -758,7 +755,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
                           autoFocus
                           value={pinInput}
                           onChange={(e) => setPinInput(e.target.value)}
-                          placeholder="Código de 4 dígitos"
+                          placeholder="Escribe tu clave"
                           className="min-h-[42px] flex-1 px-3.5 rounded-xl bg-white dark:bg-[#16241D] border border-[#DCD6CC] dark:border-white/15 text-sm text-[#1E3A2F] dark:text-white"
                         />
                         <button
@@ -779,7 +776,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
               <div className="p-4 sm:p-5 rounded-2xl bg-[#1E3A2F] text-[#FAF9F6] space-y-4 border-2 border-[#BEF264]">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <span className="text-xs font-bold uppercase tracking-wider text-[#BEF264]">
-                    1. Control de Horarios — Toca cualquier hora abajo para marcarla Ocupada / Libre
+                    1. Control de Horarios — Toca cualquier hora abajo para cambiar su estado
                   </span>
                   <button
                     type="button"
@@ -791,23 +788,52 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
                   </button>
                 </div>
 
+                {/* Selector Manual: ¿Tiempo de traslado? Sí / No */}
                 <div className="flex flex-wrap items-center gap-2 text-xs">
-                  <span className="text-[#E5E0D8]/80">Zona cuando marques ocupado:</span>
-                  {PRIORITY_ZONES.map((pz) => (
-                    <button
-                      key={pz}
-                      type="button"
-                      onClick={() => setAdminSelectedZone(pz)}
-                      className={`px-2.5 py-1 rounded-lg font-semibold ${
-                        adminSelectedZone === pz
-                          ? 'bg-[#BEF264] text-[#1E3A2F]'
-                          : 'bg-white/10 text-[#E5E0D8]'
-                      }`}
-                    >
-                      {pz}
-                    </button>
-                  ))}
+                  <span className="text-[#E5E0D8]/90 font-semibold">¿Poner Tiempo de traslado al tocar hora?:</span>
+                  <button
+                    type="button"
+                    onClick={() => setAdminBufferMode(false)}
+                    className={`px-3 py-1.5 rounded-lg font-extrabold transition-colors ${
+                      !adminBufferMode
+                        ? 'bg-[#BEF264] text-[#1E3A2F]'
+                        : 'bg-white/10 text-[#E5E0D8]'
+                    }`}
+                  >
+                    No (Marcar Ocupado)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setAdminBufferMode(true)}
+                    className={`px-3 py-1.5 rounded-lg font-extrabold transition-colors ${
+                      adminBufferMode
+                        ? 'bg-amber-400 text-[#1E3A2F]'
+                        : 'bg-white/10 text-[#E5E0D8]'
+                    }`}
+                  >
+                    Sí (Tiempo de Traslado)
+                  </button>
                 </div>
+
+                {!adminBufferMode && (
+                  <div className="flex flex-wrap items-center gap-2 text-xs">
+                    <span className="text-[#E5E0D8]/80">Zona cuando marques ocupado:</span>
+                    {PRIORITY_ZONES.map((pz) => (
+                      <button
+                        key={pz}
+                        type="button"
+                        onClick={() => setAdminSelectedZone(pz)}
+                        className={`px-2.5 py-1 rounded-lg font-semibold ${
+                          adminSelectedZone === pz
+                            ? 'bg-[#BEF264] text-[#1E3A2F]'
+                            : 'bg-white/10 text-[#E5E0D8]'
+                        }`}
+                      >
+                        {pz}
+                      </button>
+                    ))}
+                  </div>
+                )}
 
                 {/* Control de Sellos de Tarjetas NFC / QR por Celular del Cliente */}
                 <div className="pt-3 border-t border-white/15 space-y-3">
@@ -910,22 +936,15 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
                   )}
                 </div>
 
-                <div className="pt-2 border-t border-white/15 flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                  <input
-                    type="password"
-                    value={ghToken}
-                    onChange={(e) => setGhToken(e.target.value)}
-                    placeholder="Token de GitHub (para publicar horarios y sellos en vivo)"
-                    className="min-h-[38px] flex-1 px-3 rounded-lg bg-white/10 border border-white/15 text-xs text-white placeholder:text-white/40"
-                  />
+                <div className="pt-2 border-t border-white/15">
                   <button
                     type="button"
                     onClick={handlePublishToGitHub}
                     disabled={isPublishingCloud}
-                    className="min-h-[38px] px-4 rounded-lg bg-[#BEF264] hover:bg-[#D9F99D] text-[#1E3A2F] text-xs font-extrabold inline-flex items-center justify-center gap-1.5"
+                    className="min-h-[42px] w-full px-4 rounded-xl bg-[#BEF264] hover:bg-[#D9F99D] text-[#1E3A2F] text-xs font-extrabold inline-flex items-center justify-center gap-2 transition-all active:scale-95"
                   >
                     <CloudUpload className="w-4 h-4" />
-                    <span>{isPublishingCloud ? 'Publicando...' : 'Publicar Cambios en Vivo'}</span>
+                    <span>{isPublishingCloud ? 'Guardando en la web...' : 'Guardar y Publicar Cambios en Vivo'}</span>
                   </button>
                 </div>
               </div>

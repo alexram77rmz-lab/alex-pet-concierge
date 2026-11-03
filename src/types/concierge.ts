@@ -13,7 +13,7 @@ export interface CalendarSlot {
   id: string;
   startHour24: number;
   timeRange: string;
-  status: 'available' | 'booked';
+  status: 'available' | 'booked' | 'buffer';
   bookedZone?: ZoneName;
 }
 

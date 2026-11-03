@@ -122,10 +122,10 @@ export const WEEKLY_CALENDAR: CalendarDay[] = [
   { id: 'dom', dayShort: 'Dom', dayName: 'Domingo', isWeekend: true, slots: [] },
 ];
 
-export function evaluateDaySlotsWithAutoBuffer(day: CalendarDay, clientZone: ZoneName) {
+export function evaluateDaySlotsWithAutoBuffer(day: CalendarDay, _clientZone: ZoneName) {
   const bookedCount = day.slots.filter((s) => s.status === 'booked').length;
 
-  return day.slots.map((slot, idx, arr) => {
+  return day.slots.map((slot) => {
     if (slot.status === 'booked') {
       return {
         ...slot,
@@ -134,41 +134,19 @@ export function evaluateDaySlotsWithAutoBuffer(day: CalendarDay, clientZone: Zon
       };
     }
 
+    if (slot.status === 'buffer') {
+      return {
+        ...slot,
+        effectiveStatus: 'auto_buffer' as const,
+        reasonLabel: 'Tiempo de traslado',
+      };
+    }
+
     if (bookedCount >= MAX_DAILY_HOURS) {
       return {
         ...slot,
         effectiveStatus: 'auto_buffer' as const,
         reasonLabel: 'Cupo diario de 5 hrs completo',
-      };
-    }
-
-    const prevSlot = idx > 0 ? arr[idx - 1] : null;
-    if (
-      prevSlot &&
-      prevSlot.status === 'booked' &&
-      slot.startHour24 - prevSlot.startHour24 <= 1 &&
-      prevSlot.bookedZone &&
-      prevSlot.bookedZone !== clientZone
-    ) {
-      return {
-        ...slot,
-        effectiveStatus: 'auto_buffer' as const,
-        reasonLabel: `Separado por traslado desde ${prevSlot.bookedZone}`,
-      };
-    }
-
-    const nextSlot = idx < arr.length - 1 ? arr[idx + 1] : null;
-    if (
-      nextSlot &&
-      nextSlot.status === 'booked' &&
-      nextSlot.startHour24 - slot.startHour24 <= 1 &&
-      nextSlot.bookedZone &&
-      nextSlot.bookedZone !== clientZone
-    ) {
-      return {
-        ...slot,
-        effectiveStatus: 'auto_buffer' as const,
-        reasonLabel: `Separado por traslado hacia ${nextSlot.bookedZone}`,
       };
     }
 
