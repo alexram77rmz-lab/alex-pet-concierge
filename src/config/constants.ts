@@ -54,17 +54,22 @@ export const PRICING_TABLE_ROWS: PricingTableRow[] = [
 
 export const PCS_CLUB_CONTENT = {
   title: 'PCS Club · Tu tarjeta de cliente consentido',
-  subtitle: 'Cada paseo suma un sello en tu tarjeta digital. Al décimo, tu siguiente paseo va por la casa.',
-  benefitsTitle: 'Beneficios de miembro',
+  unlockBadge: 'Se desbloquea a partir de tu 3er servicio',
+  subtitle:
+    'Al cumplir 3 servicios con nosotros desbloqueas tu membresía PCS Club. Cada paseo suma un sello en tu tarjeta digital: en el 5º paseo recibes 25% de descuento y en el 10º paseo recibes 50% de descuento.',
+  benefitsTitle: 'Beneficios exclusivos de miembro (después de 3 servicios)',
   benefits: [
-    'Prioridad para elegir tu horario',
-    'Reporte con fotos de cada paseo',
-    'Limpieza de patitas de cortesía',
-    'Detalle de cumpleaños para tu mascota',
+    'Premios naturales gourmet durante el paseo (autorizados por ti)',
+    'Toque de bruma botánica relajante + limpieza de patitas con espuma',
+    'Prioridad para apartar tu horario fijo semanal',
+    'Reporte con fotos tipo retrato y mapa GPS en cada sesión',
+    'Hidratación individual con agua purificada fresca',
+    'Detalle especial en el cumpleaños de tu mascota',
   ],
   referralText:
-    'Invita a un vecino y, cuando complete su primer servicio, ambos reciben un paseo de cortesía. Con tu tercer referido eres Anfitrión PCS y conservas prioridad de horarios.',
-  finePrint: 'Máximo 2 paseos de cortesía por mes, se canjean en horarios disponibles.',
+    'Invita a un vecino de tu zona: cuando complete su primer servicio, reciben su paseo de cortesía de referido. Con tu tercer referido eres Anfitrión PCS y conservas prioridad de horarios.',
+  finePrint:
+    'La tarjeta PCS Club se activa tras 3 servicios completados. Descuentos del 25% (paseo 5) y 50% (paseo 10) no acumulables con otras promos. Cortesías de vecino sujetas a horarios disponibles en la misma zona (máx. 1 por mes).',
 };
 
 export const SERVICE_OPTIONS: {

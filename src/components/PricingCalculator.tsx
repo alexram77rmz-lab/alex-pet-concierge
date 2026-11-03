@@ -121,6 +121,24 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
     return () => window.clearTimeout(timer);
   }, [adminUnlocked, onShowToast]);
 
+  // Permite abrir directo con el link #admin
+  useEffect(() => {
+    const checkHash = () => {
+      if (window.location.hash === '#admin') {
+        setLockoutInfo(getSecurityLockoutStatus());
+        setShowAuthModal(true);
+        setAuthStep(1);
+        const el = document.getElementById('panel-horarios-alex');
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }
+    };
+    checkHash();
+    window.addEventListener('hashchange', checkHash);
+    return () => window.removeEventListener('hashchange', checkHash);
+  }, []);
+
   // Carga en vivo el archivo schedule.json desde GitHub
   useEffect(() => {
     const fetchLiveSchedule = async () => {
@@ -549,7 +567,10 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
           </div>
 
           {/* 4. Calendario Semanal (10:00 a.m. a 9:00 p.m.) */}
-          <div className="space-y-3.5 pt-2 border-t border-[#E5E0D8]/80 dark:border-white/10">
+          <div
+            id="panel-horarios-alex"
+            className="space-y-3.5 pt-2 border-t border-[#E5E0D8]/80 dark:border-white/10"
+          >
             <div className="flex flex-wrap items-center justify-between gap-2">
               <button
                 type="button"
@@ -560,7 +581,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
                 <span>4. Horarios Disponibles (10:00 a.m. a 9:00 p.m.)</span>
               </button>
 
-              {/* Candadito discreto sin texto "Admin" */}
+              {/* Botón claro para Alex pero protegido con 2 pasos SHA-256 */}
               {!adminUnlocked ? (
                 <button
                   type="button"
@@ -569,18 +590,19 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
                     setShowAuthModal((prev) => !prev);
                     setAuthStep(1);
                   }}
-                  aria-label="Control de agenda"
-                  className="p-1.5 rounded-lg text-[#57534E]/35 hover:text-[#1E3A2F] dark:text-stone-600 transition-colors"
+                  aria-label="Control de agenda Alex"
+                  className="px-3 py-1.5 rounded-xl bg-[#FAF9F6] dark:bg-[#0E1210] border border-[#DCD6CC] dark:border-white/15 text-[#1E3A2F] dark:text-emerald-400 hover:bg-[#1E3A2F] hover:text-[#FAF9F6] text-xs font-bold inline-flex items-center gap-1.5 transition-all shadow-sm"
                 >
                   <Lock className="w-3.5 h-3.5" />
+                  <span>Mi Agenda (Alex)</span>
                 </button>
               ) : (
                 <button
                   type="button"
                   onClick={() => setAdminUnlocked(false)}
-                  className="px-2.5 py-1 rounded-lg bg-[#18181B] text-[#FAF9F6] text-[11px] font-bold inline-flex items-center gap-1"
+                  className="px-3 py-1.5 rounded-xl bg-[#18181B] text-[#FAF9F6] text-xs font-bold inline-flex items-center gap-1.5"
                 >
-                  <Unlock className="w-3 h-3 text-emerald-400" />
+                  <Unlock className="w-3.5 h-3.5 text-emerald-400" />
                   <span>Cerrar Sesión Segura</span>
                 </button>
               )}

@@ -88,8 +88,8 @@ export const Hero: React.FC = () => {
               >
                 <Award className="w-4 h-4 shrink-0 text-[#1E3A2F] dark:text-emerald-400" />
                 <span>
-                  <strong>PCS Club:</strong> Cada paseo suma un sello en tu tarjeta digital. Al décimo, tu
-                  siguiente paseo va por la casa →
+                  <strong>PCS Club:</strong> Desbloquea tu tarjeta VIP al 3er servicio — 25% OFF en el 5º
+                  paseo, 50% OFF en el 10º y premios gourmet →
                 </span>
               </a>
             </div>
