@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Award, CheckCircle2, Crown, Gift, PawPrint, QrCode, Sparkles, Users } from 'lucide-react';
+import { CheckCircle2, Crown, Gift, PawPrint, QrCode, Sparkles, Users } from 'lucide-react';
 import { PCS_CLUB_CONTENT, PRICING_TABLE_ROWS } from '../config/constants';
 
 export const PcsClub: React.FC = () => {
