@@ -258,34 +258,34 @@ export const PcsClub: React.FC = () => {
               initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="rounded-3xl bg-black text-white p-6 sm:p-8 shadow-2xl border-2 border-[#15803D] space-y-6 relative overflow-hidden"
+              className="rounded-3xl bg-white text-zinc-900 p-6 sm:p-8 shadow-xl border border-zinc-200 space-y-6 relative overflow-hidden"
             >
               {/* Encabezado de la Tarjeta de Sellos */}
-              <div className="flex items-center justify-between border-b border-white/20 pb-4">
+              <div className="flex items-center justify-between border-b border-zinc-200 pb-4">
                 <div>
-                  <span className="text-[10px] uppercase tracking-[0.22em] text-[#22C55E] font-bold block">
-                    DESDE TU 1ER SERVICIO • QR PERSONAL
+                  <span className="text-xs font-serif italic text-zinc-500 block mb-0.5">
+                    Desde tu primer servicio · QR personal
                   </span>
-                  <h3 className="text-xl sm:text-2xl font-serif italic font-bold text-white">
-                    PCS Club · Tarjeta Digital de Sellos
+                  <h3 className="text-xl sm:text-2xl font-serif italic font-bold text-zinc-900 tracking-tight">
+                    Pet Club · Tarjeta Digital
                   </h3>
                 </div>
-                <div className="w-11 h-11 aspect-square shrink-0 rounded-full bg-black border-2 border-[#15803D] flex items-center justify-center">
-                  <QrCode className="w-5 h-5 text-[#22C55E]" />
+                <div className="w-11 h-11 aspect-square shrink-0 rounded-full bg-zinc-100 border border-zinc-200 flex items-center justify-center shadow-sm">
+                  <QrCode className="w-5 h-5 text-zinc-700" />
                 </div>
               </div>
 
               {/* Resumen de Recompensas de la Tarjeta */}
               <div className="grid grid-cols-2 gap-2.5">
-                <div className="p-2.5 rounded-xl bg-black border-2 border-[#15803D] flex items-center justify-between">
-                  <span className="text-[11px] text-zinc-300">Paseo #5</span>
-                  <span className="px-2 py-0.5 rounded-full bg-[#15803D] text-white text-xs font-extrabold border border-[#22C55E]">
+                <div className="p-2.5 rounded-xl bg-zinc-50 border border-zinc-200 flex items-center justify-between">
+                  <span className="text-xs text-zinc-600 font-serif italic">Paseo #5</span>
+                  <span className="px-2.5 py-0.5 rounded-full bg-[#15803D] text-white text-xs font-bold shadow-sm">
                     25% OFF
                   </span>
                 </div>
-                <div className="p-2.5 rounded-xl bg-black border-2 border-white/30 flex items-center justify-between">
-                  <span className="text-[11px] text-white font-semibold">Paseo #10</span>
-                  <span className="px-2 py-0.5 rounded-full bg-white text-black text-xs font-extrabold">
+                <div className="p-2.5 rounded-xl bg-zinc-50 border border-zinc-200 flex items-center justify-between">
+                  <span className="text-xs text-zinc-600 font-serif italic">Paseo #10</span>
+                  <span className="px-2.5 py-0.5 rounded-full bg-zinc-900 text-white text-xs font-bold shadow-sm">
                     50% OFF
                   </span>
                 </div>
@@ -304,15 +304,15 @@ export const PcsClub: React.FC = () => {
                       className={`aspect-square rounded-2xl border flex flex-col items-center justify-center p-1.5 transition-all ${
                         isTenth
                           ? isStamped
-                            ? 'bg-white text-black border-white shadow-md'
-                            : 'bg-black text-white border-dashed border-white/60'
+                            ? 'bg-zinc-900 text-white border-zinc-900 shadow-md'
+                            : 'bg-zinc-50 text-zinc-800 border-dashed border-zinc-400'
                           : isFifth
                           ? isStamped
-                            ? 'bg-[#15803D] text-white border-[#22C55E] shadow-md'
-                            : 'bg-black text-[#22C55E] border-dashed border-[#15803D]'
+                            ? 'bg-[#15803D] text-white border-[#15803D] shadow-md'
+                            : 'bg-zinc-50 text-[#15803D] border-dashed border-[#15803D]/60'
                           : isStamped
-                          ? 'bg-white text-black border-white shadow-sm'
-                          : 'bg-black text-zinc-400 border-white/20'
+                          ? 'bg-zinc-900 text-white border-zinc-900 shadow-sm'
+                          : 'bg-zinc-50 text-zinc-400 border-zinc-200'
                       }`}
                     >
                       {isTenth ? (
@@ -343,29 +343,29 @@ export const PcsClub: React.FC = () => {
               </div>
 
               {/* Pie de la Tarjeta Digital */}
-              <div className="pt-1 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-zinc-300">
+              <div className="pt-1 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-zinc-500 font-serif italic">
                 <span className="inline-flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5 text-[#22C55E] shrink-0" />
+                  <Sparkles className="w-3.5 h-3.5 text-zinc-700 shrink-0" />
                   <span>
                     {activeMemberLabel
                       ? activeMemberLabel
                       : 'Tarjeta de ejemplo (Muestra visual). Tu tarjeta personal se actualiza automáticamente con tu código QR.'}
                   </span>
                 </span>
-                <span className="font-bold text-white bg-black border border-[#15803D] px-2.5 py-0.5 rounded-full uppercase tracking-wider text-[10px] shrink-0">
+                <span className="font-sans font-semibold text-zinc-700 bg-zinc-100 border border-zinc-300 px-2.5 py-0.5 rounded-full uppercase tracking-wider text-[10px] shrink-0 not-italic">
                   {activeMemberLabel ? 'Verificada' : 'Muestra'}
                 </span>
               </div>
 
               {/* Buscador y Registro de Tarjeta por Número del Cliente */}
-              <div className="pt-4 border-t border-white/20 space-y-3">
-                <p className="text-xs font-bold uppercase tracking-wider text-white">
+              <div className="pt-4 border-t border-zinc-200 space-y-3">
+                <p className="text-xs font-semibold text-zinc-700">
                   ¿Tienes tu Tarjeta PCS Club o Código QR? Consulta tus sellos o regístrate con tu celular:
                 </p>
 
                 <form onSubmit={handleCheckPhoneStamps} className="grid grid-cols-1 sm:grid-cols-12 gap-2">
-                  <div className="sm:col-span-5 flex items-center gap-2 px-3 rounded-xl bg-black border-2 border-[#15803D]">
-                    <Phone className="w-3.5 h-3.5 text-[#22C55E] shrink-0" />
+                  <div className="sm:col-span-5 flex items-center gap-2 px-3 rounded-xl bg-zinc-50 border border-zinc-300 focus-within:border-zinc-800">
+                    <Phone className="w-3.5 h-3.5 text-zinc-500 shrink-0" />
                     <input
                       type="tel"
                       inputMode="numeric"
@@ -373,32 +373,32 @@ export const PcsClub: React.FC = () => {
                       value={clientPhone}
                       onChange={(e) => setClientPhone(e.target.value)}
                       placeholder="Tu celular (10 dígitos)"
-                      className="min-h-[40px] w-full bg-transparent text-xs text-white placeholder:text-zinc-500 focus:outline-none"
+                      className="min-h-[40px] w-full bg-transparent text-xs text-zinc-900 placeholder:text-zinc-400 focus:outline-none"
                     />
                   </div>
 
-                  <div className="sm:col-span-4 flex items-center gap-2 px-3 rounded-xl bg-black border-2 border-[#15803D]">
-                    <PawPrint className="w-3.5 h-3.5 text-[#22C55E] shrink-0" />
+                  <div className="sm:col-span-4 flex items-center gap-2 px-3 rounded-xl bg-zinc-50 border border-zinc-300 focus-within:border-zinc-800">
+                    <PawPrint className="w-3.5 h-3.5 text-zinc-500 shrink-0" />
                     <input
                       type="text"
                       value={clientPetName}
                       onChange={(e) => setClientPetName(sanitizeUserText(e.target.value, 30))}
                       placeholder="Nombre mascota"
-                      className="min-h-[40px] w-full bg-transparent text-xs text-white placeholder:text-zinc-500 focus:outline-none"
+                      className="min-h-[40px] w-full bg-transparent text-xs text-zinc-900 placeholder:text-zinc-400 focus:outline-none"
                     />
                   </div>
 
                   <button
                     type="submit"
-                    className="sm:col-span-3 min-h-[40px] px-3 rounded-xl bg-black hover:bg-[#15803D] border-2 border-[#15803D] text-white text-xs font-bold inline-flex items-center justify-center gap-1.5 transition-all"
+                    className="sm:col-span-3 min-h-[40px] px-3 rounded-xl bg-zinc-900 hover:bg-black text-white text-xs font-bold inline-flex items-center justify-center gap-1.5 transition-all shadow-sm"
                   >
-                    <Search className="w-3.5 h-3.5 text-[#22C55E]" />
+                    <Search className="w-3.5 h-3.5 text-white" />
                     <span>Ver Sellos</span>
                   </button>
                 </form>
 
                 {lookupFeedback && (
-                  <p className="text-xs text-white bg-black border-2 border-[#15803D] rounded-xl px-3 py-2">
+                  <p className="text-xs text-zinc-800 bg-zinc-100 border border-zinc-200 rounded-xl px-3 py-2 font-serif italic">
                     {lookupFeedback}
                   </p>
                 )}
@@ -407,9 +407,9 @@ export const PcsClub: React.FC = () => {
                   href={registerClubWhatsappUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="min-h-[42px] w-full px-4 py-2 rounded-xl bg-black hover:bg-[#121212] border-2 border-[#15803D] text-white text-xs font-extrabold inline-flex items-center justify-center gap-2 transition-all active:scale-95 shadow-md"
+                  className="min-h-[42px] w-full px-4 py-2 rounded-xl bg-zinc-900 hover:bg-black text-white text-xs font-bold inline-flex items-center justify-center gap-2 transition-all active:scale-95 shadow-sm"
                 >
-                  <MessageCircle className="w-4 h-4 text-[#22C55E]" />
+                  <MessageCircle className="w-4 h-4 text-white" />
                   <span>Activar mi Tarjeta PCS Club y Recibir Promos por WhatsApp</span>
                 </a>
               </div>

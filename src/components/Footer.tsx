@@ -134,16 +134,16 @@ export const Footer: React.FC<FooterProps> = ({ onOpenLegalTab }) => {
             </button>
 
             <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6">
-              <a href="#sobre-mi" className="hover:text-[#BEF264] transition-colors">
+              <a href="#sobre-mi" className="text-white hover:text-emerald-300 transition-colors">
                 Sobre Mí
               </a>
-              <a href="#servicios" className="hover:text-[#BEF264] transition-colors">
+              <a href="#servicios" className="text-white font-bold hover:text-emerald-300 transition-colors">
                 Servicios
               </a>
-              <a href="#calculadora" className="hover:text-[#BEF264] transition-colors">
+              <a href="#calculadora" className="text-white hover:text-emerald-300 transition-colors">
                 Calculadora ($200/hr)
               </a>
-              <a href="#faq" className="hover:text-[#BEF264] transition-colors">
+              <a href="#faq" className="text-white hover:text-emerald-300 transition-colors">
                 FAQ
               </a>
             </div>
