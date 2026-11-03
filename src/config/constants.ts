@@ -1,47 +1,39 @@
 import {
   BentoServiceItem,
+  CalendarDay,
   FaqItem,
   ProtocolStep,
   QuoteBreakdown,
   ServiceType,
   TestimonialItem,
-  TimeSlotItem,
   ZoneName,
 } from '../types/concierge';
 
 /**
- * Número de WhatsApp de Alex Pet Concierge (formato internacional sin '+' ni espacios).
+ * Número directo de WhatsApp de Alex Pet Concierge: 33 2122 2772
  */
-export const WHATSAPP_PHONE = '523300000000';
+export const WHATSAPP_PHONE = '523321222772';
+export const WHATSAPP_DISPLAY = '33 2122 2772';
 
 export const INSTAGRAM_URL = 'https://instagram.com/alexpetconcierge';
 
-export const BASE_HOURLY_RATE = 200; // $200 MXN base por mascota / hora
-export const MAX_DAILY_HOURS = 5; // Límite operativo: solo 5 horas al día (Lunes a Viernes)
-export const WEEKEND_EXTRA_PER_HOUR = 60; // Cargo extra por abrir agenda en Sábado o Domingo
-export const OVERTIME_EXTRA_PER_HOUR = 50; // Cargo extra si los 5 espacios del día ya se ocuparon
-export const OUT_OF_ZONE_EXTRA = 60; // Cargo de traslado fuera de las 4 zonas base
+export const BASE_HOURLY_RATE = 200; // $200 MXN por mascota / hora
+export const MAX_DAILY_HOURS = 5; // 5 bloques al día (Lunes a Viernes)
 
 export const SERVICE_OPTIONS: {
   id: ServiceType;
   shortTitle: string;
   subtitle: string;
-  unitLabel: string;
-  idealFor: string;
 }[] = [
   {
-    id: 'Paseo Privado / Manada Familiar (Perros)',
-    shortTitle: 'Paseo de Perros (1 a 5 mascotas)',
-    subtitle: 'Solo perros de tu hogar • Ruta GPS en vivo • $200 a $180 c/u',
-    unitLabel: 'horas de paseo',
-    idealFor: '1 perro individual ($200) o tu propia manada de 2-3 ($190 c/u) o 4+ perros ($180 c/u).',
+    id: 'Paseo Privado (Perros)',
+    shortTitle: 'Paseo Privado (Perros)',
+    subtitle: 'Solo mascotas de tu casa • GPS en vivo e hidratación',
   },
   {
     id: 'Cuidado en Casa (Gatos / Perros)',
     shortTitle: 'Cuidado en Casa (Gatos / Perros)',
-    subtitle: 'Visitas de 60 min a domicilio • Areneros, alimento y compañía',
-    unitLabel: 'sesiones en casa',
-    idealFor: 'Gatos o perros que prefieren su propio espacio con atención y reporte fotográfico.',
+    subtitle: 'Visita a domicilio de 60 min • Areneros, comida y juego',
   },
 ];
 
@@ -54,168 +46,146 @@ export const PRIORITY_ZONES: ZoneName[] = [
 
 export const ALL_ZONES: ZoneName[] = [
   ...PRIORITY_ZONES,
-  'Otra zona cercana (Cargo extra traslado)',
+  'Otra zona (Confirmar por WhatsApp)',
 ];
 
 /**
- * Tiempo estimado de traslado real en auto/moto entre las 4 zonas de cobertura (en minutos).
- * Justifica por qué jamás se agenda a las 4:10 si terminas a las 4:00 en Av. Patria.
+ * Calendario semanal informativo (5 horas por día de Lunes a Viernes, con 30 min entre bloques
+ * para traslados tranquilos entre Puerta de Hierro, Av. Patria, Jardín Real y Valle Real).
  */
-export const ZONE_TRAVEL_MINUTES: Record<string, Record<string, number>> = {
-  'Puerta de Hierro': {
-    'Puerta de Hierro': 5,
-    'Av. Patria': 12,
-    'Valle Real': 16,
-    'Jardín Real': 20,
-    'Otra zona cercana (Cargo extra traslado)': 28,
-  },
-  'Av. Patria': {
-    'Puerta de Hierro': 12,
-    'Av. Patria': 8,
-    'Valle Real': 22,
-    'Jardín Real': 25,
-    'Otra zona cercana (Cargo extra traslado)': 30,
-  },
-  'Jardín Real': {
-    'Puerta de Hierro': 20,
-    'Av. Patria': 25,
-    'Valle Real': 10,
-    'Jardín Real': 5,
-    'Otra zona cercana (Cargo extra traslado)': 25,
-  },
-  'Valle Real': {
-    'Puerta de Hierro': 16,
-    'Av. Patria': 22,
-    'Valle Real': 5,
-    'Jardín Real': 10,
-    'Otra zona cercana (Cargo extra traslado)': 25,
-  },
-  'Otra zona cercana (Cargo extra traslado)': {
-    'Puerta de Hierro': 25,
-    'Av. Patria': 28,
-    'Valle Real': 25,
-    'Jardín Real': 25,
-    'Otra zona cercana (Cargo extra traslado)': 20,
-  },
-};
-
-/**
- * Los 5 bloques diarios oficiales (Lunes a Viernes).
- * Cada bloque dura 60 min y tiene 30 minutos obligatorios de colchón de traslado
- * para evitar empalmes imposibles (ej. terminar 4:00 PM en Av. Patria y empezar 4:30 PM en Jardín Real).
- */
-export const INITIAL_DAILY_SLOTS: TimeSlotItem[] = [
+export const WEEKLY_CALENDAR: CalendarDay[] = [
   {
-    id: 'slot-1',
-    slotNumber: 1,
-    timeRange: '09:00 – 10:00 hrs',
-    startTime: '09:00',
-    endTime: '10:00',
-    bufferAfter: '10:00 a 10:30 (30 min traslado entre zonas)',
-    status: 'booked',
-    bookedZone: 'Puerta de Hierro',
-    bookedPetNote: '2 perros reservados',
+    id: 'lun',
+    dayShort: 'Lun',
+    dayName: 'Lunes',
+    isWeekend: false,
+    slots: [
+      { id: 'lun-1', timeRange: '09:00 – 10:00', status: 'booked', zoneNote: 'Ocupado (Puerta de Hierro)' },
+      { id: 'lun-2', timeRange: '10:30 – 11:30', status: 'available' },
+      { id: 'lun-3', timeRange: '12:00 – 13:00', status: 'available' },
+      { id: 'lun-4', timeRange: '15:00 – 16:00', status: 'booked', zoneNote: 'Ocupado (Av. Patria)' },
+      { id: 'lun-5', timeRange: '16:30 – 17:30', status: 'available' },
+    ],
   },
   {
-    id: 'slot-2',
-    slotNumber: 2,
-    timeRange: '10:30 – 11:30 hrs',
-    startTime: '10:30',
-    endTime: '11:30',
-    bufferAfter: '11:30 a 12:00 (30 min traslado entre zonas)',
-    status: 'available',
+    id: 'mar',
+    dayShort: 'Mar',
+    dayName: 'Martes',
+    isWeekend: false,
+    slots: [
+      { id: 'mar-1', timeRange: '09:00 – 10:00', status: 'available' },
+      { id: 'mar-2', timeRange: '10:30 – 11:30', status: 'booked', zoneNote: 'Ocupado (Valle Real)' },
+      { id: 'mar-3', timeRange: '12:00 – 13:00', status: 'available' },
+      { id: 'mar-4', timeRange: '15:00 – 16:00', status: 'available' },
+      { id: 'mar-5', timeRange: '16:30 – 17:30', status: 'booked', zoneNote: 'Ocupado (Jardín Real)' },
+    ],
   },
   {
-    id: 'slot-3',
-    slotNumber: 3,
-    timeRange: '12:00 – 13:00 hrs',
-    startTime: '12:00',
-    endTime: '13:00',
-    bufferAfter: '13:00 a 15:00 (Pausa térmica / comida)',
-    status: 'available',
+    id: 'mie',
+    dayShort: 'Mié',
+    dayName: 'Miércoles',
+    isWeekend: false,
+    slots: [
+      { id: 'mie-1', timeRange: '09:00 – 10:00', status: 'booked', zoneNote: 'Ocupado (Puerta de Hierro)' },
+      { id: 'mie-2', timeRange: '10:30 – 11:30', status: 'available' },
+      { id: 'mie-3', timeRange: '12:00 – 13:00', status: 'available' },
+      { id: 'mie-4', timeRange: '15:00 – 16:00', status: 'booked', zoneNote: 'Ocupado (Av. Patria)' },
+      { id: 'mie-5', timeRange: '16:30 – 17:30', status: 'available' },
+    ],
   },
   {
-    id: 'slot-4',
-    slotNumber: 4,
-    timeRange: '15:00 – 16:00 hrs',
-    startTime: '15:00',
-    endTime: '16:00',
-    bufferAfter: '16:00 a 16:30 (30 min traslado Av. Patria → Jardín Real / Valle Real)',
-    status: 'booked',
-    bookedZone: 'Av. Patria',
-    bookedPetNote: 'Termina 4:00 PM en Av. Patria',
+    id: 'jue',
+    dayShort: 'Jue',
+    dayName: 'Jueves',
+    isWeekend: false,
+    slots: [
+      { id: 'jue-1', timeRange: '09:00 – 10:00', status: 'available' },
+      { id: 'jue-2', timeRange: '10:30 – 11:30', status: 'available' },
+      { id: 'jue-3', timeRange: '12:00 – 13:00', status: 'booked', zoneNote: 'Ocupado (Jardín Real)' },
+      { id: 'jue-4', timeRange: '15:00 – 16:00', status: 'available' },
+      { id: 'jue-5', timeRange: '16:30 – 17:30', status: 'available' },
+    ],
   },
   {
-    id: 'slot-5',
-    slotNumber: 5,
-    timeRange: '16:30 – 17:30 hrs',
-    startTime: '16:30',
-    endTime: '17:30',
-    bufferAfter: 'Fin de las 5 horas diarias',
-    status: 'available',
+    id: 'vie',
+    dayShort: 'Vie',
+    dayName: 'Viernes',
+    isWeekend: false,
+    slots: [
+      { id: 'vie-1', timeRange: '09:00 – 10:00', status: 'booked', zoneNote: 'Ocupado (Valle Real)' },
+      { id: 'vie-2', timeRange: '10:30 – 11:30', status: 'booked', zoneNote: 'Ocupado (Jardín Real)' },
+      { id: 'vie-3', timeRange: '12:00 – 13:00', status: 'available' },
+      { id: 'vie-4', timeRange: '15:00 – 16:00', status: 'booked', zoneNote: 'Ocupado (Av. Patria)' },
+      { id: 'vie-5', timeRange: '16:30 – 17:30', status: 'available' },
+    ],
+  },
+  {
+    id: 'sab',
+    dayShort: 'Sáb',
+    dayName: 'Sábado',
+    isWeekend: true,
+    slots: [],
+  },
+  {
+    id: 'dom',
+    dayShort: 'Dom',
+    dayName: 'Domingo',
+    isWeekend: true,
+    slots: [],
   },
 ];
 
 /**
- * Regla de Negocio de Alex Pet Concierge:
- * 1) Descuento por cantidad de mascotas (o por cantidad de horas):
- *    - 1 mascota (y 1 hora): 0% desc -> $200 MXN c/u
- *    - 2 a 3 mascotas (o 2 a 3 horas): 5% desc -> $190 MXN cada mascota por hora
- *    - 4 o más mascotas (o 4 a 5+ horas): 10% desc -> $180 MXN cada mascota por hora
- * 2) Control de Agenda:
- *    - Solo 5 horas al día (Lun-Vie). Si piden espacio #6 extra -> +$50 MXN/hr
- *    - Fines de semana (Sáb/Dom no se labora normalmente): Solicitud especial -> +$60 MXN/hr
- *    - Fuera de las 4 zonas base -> +$60 MXN traslado
+ * Regla de Precios Simple y Transparente:
+ * - 1 mascota (1 hr): $200 MXN c/u (0% desc)
+ * - 2 a 3 mascotas (o 2 a 3 hrs): $190 MXN c/u (5% desc)
+ * - 4 o más mascotas (o 4 a 5+ hrs): $180 MXN c/u (10% desc)
+ * Si es otra zona lejana, fin de semana o espacio extra, Alex confirma directamente por WhatsApp si aplica algún ajuste.
  */
 export function calculateQuote(params: {
   petCount: number;
   hours: number;
   isWeekend: boolean;
-  isExtraOvertimeSlot: boolean;
+  isExtraSlot: boolean;
   zone: ZoneName;
 }): QuoteBreakdown {
   const petCount = Math.min(6, Math.max(1, Math.round(params.petCount)));
   const hours = Math.min(10, Math.max(1, Math.round(params.hours)));
   const baseRatePerPet = BASE_HOURLY_RATE;
 
-  // Determinamos el nivel por número de mascotas o por volumen de horas
   let discountPercentage = 0;
   let tierKey: QuoteBreakdown['tierKey'] = 'standard_200';
-  let tierBadge = 'Tarifa Estándar Individual ($200 MXN por mascota/hr)';
+  let tierBadge = 'Tarifa estándar: $200 MXN por mascota / hora';
   let tierHelperText =
-    'Si tienes 2 o 3 mascotas baja a $190 c/u (-5%). Con 4 o más mascotas baja a $180 c/u (-10%).';
+    'A partir de 2 mascotas (o 2 horas) baja a $190 c/u (-5%). De 4 mascotas en adelante baja a $180 c/u (-10%).';
 
   if (petCount >= 4 || hours >= 5) {
     discountPercentage = 10;
     tierKey = 'pack_180';
-    tierBadge =
-      petCount >= 4
-        ? `Descuento Manada (${petCount} mascotas) • $180 MXN c/u (-10%)`
-        : `Descuento Paquete ${hours} hrs • $180 MXN c/u (-10%)`;
-    tierHelperText = `Tarifa preferencial máxima activa: pagas $180 MXN por mascota cada hora en lugar de $200.`;
+    tierBadge = 'Máximo Ahorro • $180 MXN por mascota (-10%)';
+    tierHelperText = 'Tarifa preferencial de $180 MXN cada mascota por hora.';
   } else if (petCount >= 2 || hours >= 2) {
     discountPercentage = 5;
     tierKey = 'duo_190';
-    tierBadge =
-      petCount >= 2
-        ? `Descuento Grupo (${petCount} mascotas) • $190 MXN c/u (-5%)`
-        : `Descuento ${hours} horas • $190 MXN c/u (-5%)`;
-    tierHelperText = `Ahorras 5% ($190 MXN c/u). A partir de 4 mascotas (o 5 horas) baja a $180 MXN c/u (-10%).`;
+    tierBadge = 'Descuento Aplicado • $190 MXN por mascota (-5%)';
+    tierHelperText = 'Pagas $190 MXN por mascota. Con 4+ mascotas (o 5 hrs) baja a $180 MXN c/u.';
   }
 
   const ratePerPetAfterDiscount = Math.round(baseRatePerPet * (1 - discountPercentage / 100));
   const subtotalBase = petCount * hours * baseRatePerPet;
-  const discountedBase = petCount * hours * ratePerPetAfterDiscount;
-  const discountAmount = subtotalBase - discountedBase;
+  const total = petCount * hours * ratePerPetAfterDiscount;
+  const discountAmount = subtotalBase - total;
 
-  const isOutZone = params.zone === 'Otra zona cercana (Cargo extra traslado)';
-
-  const weekendSurcharge = params.isWeekend ? WEEKEND_EXTRA_PER_HOUR * hours : 0;
-  const extraSlotSurcharge = params.isExtraOvertimeSlot ? OVERTIME_EXTRA_PER_HOUR * hours : 0;
-  const outZoneSurcharge = isOutZone ? OUT_OF_ZONE_EXTRA : 0;
-
-  const totalSurcharges = weekendSurcharge + extraSlotSurcharge + outZoneSurcharge;
-  const total = discountedBase + totalSurcharges;
+  const specialNotes: string[] = [];
+  if (params.isWeekend) {
+    specialNotes.push('Fin de semana (sujeto a disponibilidad y ajuste con Alex)');
+  }
+  if (params.isExtraSlot) {
+    specialNotes.push('Horario especial fuera de los 5 bloques (sujeto a confirmación)');
+  }
+  if (params.zone === 'Otra zona (Confirmar por WhatsApp)') {
+    specialNotes.push('Zona fuera del polígono base (confirmar si aplica traslado)');
+  }
 
   return {
     petCount,
@@ -225,14 +195,9 @@ export function calculateQuote(params: {
     ratePerPetAfterDiscount,
     subtotalBase,
     discountAmount,
-    isWeekend: params.isWeekend,
-    isExtraOvertimeSlot: params.isExtraOvertimeSlot,
-    isOutZone,
-    weekendSurcharge,
-    extraSlotSurcharge,
-    outZoneSurcharge,
-    totalSurcharges,
     total,
+    isSpecialRequest: specialNotes.length > 0,
+    specialNotes,
     tierKey,
     tierBadge,
     tierHelperText,
@@ -252,47 +217,45 @@ export function buildWhatsAppMessage(params: {
   service: ServiceType;
   petName: string;
   zone: ZoneName;
-  selectedSlotLabel: string;
-  dayLabel: string;
+  customZoneText?: string;
+  dayName: string;
+  slotLabel: string;
   quote: QuoteBreakdown;
 }): string {
   const cleanPetName =
     params.petName.trim() ||
     (params.quote.petCount === 1 ? 'mi mascota' : `mis ${params.quote.petCount} mascotas`);
-  const {
-    petCount,
-    hours,
-    ratePerPetAfterDiscount,
-    discountPercentage,
-    total,
-    isWeekend,
-    isExtraOvertimeSlot,
-  } = params.quote;
 
-  const extraTag =
-    isWeekend || isExtraOvertimeSlot
-      ? ` [Solicitud Especial: ${isWeekend ? 'Fin de Semana' : ''}${
-          isWeekend && isExtraOvertimeSlot ? ' + ' : ''
-        }${isExtraOvertimeSlot ? 'Hora Extra fuera de los 5 bloques' : ''}]`
-      : '';
+  const finalZone =
+    params.zone === 'Otra zona (Confirmar por WhatsApp)' && params.customZoneText?.trim()
+      ? `${params.customZoneText.trim()} (fuera de zona base)`
+      : params.zone;
+
+  const { petCount, hours, ratePerPetAfterDiscount, discountPercentage, total, isSpecialRequest } =
+    params.quote;
+
+  const extraNotice = isSpecialRequest
+    ? ' (Sé que es horario/zona especial, me confirmas disponibilidad o si aplica algún extra)'
+    : '';
 
   return `Hola Alex, quiero agendar ${params.service} para ${cleanPetName} (${petCount} ${
     petCount === 1 ? 'mascota' : 'mascotas'
-  } a $${ratePerPetAfterDiscount} MXN c/u) en la zona de ${params.zone}. Día: ${
-    params.dayLabel
-  } en el bloque ${params.selectedSlotLabel} (${hours} ${
+  } a $${ratePerPetAfterDiscount} MXN c/u) por ${finalZone}. Me interesa el ${
+    params.dayName
+  } en el horario de ${params.slotLabel} (${hours} ${
     hours === 1 ? 'hora' : 'horas'
-  }, ${discountPercentage}% desc.${extraTag} — Total: $${total.toLocaleString(
+  }, ${discountPercentage}% desc. — Total base: $${total.toLocaleString(
     'es-MX'
-  )} MXN). ¿Tienes disponibilidad para ese traslado y horario?`;
+  )} MXN)${extraNotice}. ¿Tienes espacio?`;
 }
 
 export function buildWhatsAppBookingUrl(params: {
   service: ServiceType;
   petName: string;
   zone: ZoneName;
-  selectedSlotLabel: string;
-  dayLabel: string;
+  customZoneText?: string;
+  dayName: string;
+  slotLabel: string;
   quote: QuoteBreakdown;
 }): string {
   const message = buildWhatsAppMessage(params);
@@ -302,14 +265,14 @@ export function buildWhatsAppBookingUrl(params: {
 export const BENTO_SERVICES: BentoServiceItem[] = [
   {
     id: 'paseos-privados',
-    tag: 'SOLO TU HOGAR • 1 A 5 MASCOTAS',
-    title: 'Paseos Exclusivos y Manada Familiar',
+    tag: 'SOLO TU CASA • DESCUENTO POR GRUPO',
+    title: 'Paseos Privados (Solo tus Mascotas)',
     description:
-      'Jamás mezclamos perros de desconocidos. Paseamos únicamente a tu mascota ($200) o a los perros de tu propia casa juntos con descuento por grupo: 2 a 3 mascotas a $190 c/u y 4+ mascotas a $180 c/u.',
+      'Sin estrés ni peleas con perros desconocidos. Si tienes varias mascotas en casa, pasean juntas con descuento: 1 mascota $200, 2 a 3 mascotas $190 c/u y 4+ mascotas $180 c/u.',
     highlights: [
-      'Cero peleas con perros ajenos: solo mascotas de tu mismo hogar',
-      'Descuento directo por manada familiar ($190 o $180 por mascota)',
-      'Hidratación con agua purificada y ritmo adaptado a tus perros',
+      'Atención 100% enfocada en el ritmo y energía de tus perros',
+      'Hidratación con agua fresca y plato portátil limpio',
+      'Cobertura base en Puerta de Hierro, Av. Patria, Jardín Real y Valle Real',
     ],
     metricLabel: 'Tarifa por Mascota',
     metricValue: '1: $200 • 2-3: $190 • 4+: $180',
@@ -318,17 +281,17 @@ export const BENTO_SERVICES: BentoServiceItem[] = [
   },
   {
     id: 'cat-home-sitting',
-    tag: 'AGENDA CONTROLADA • 5 HRS/DÍA',
-    title: 'Cupo Limitado a 5 Bloques Diarios',
+    tag: 'CUIDADO EN CASA',
+    title: 'Cat & Home Sitting',
     description:
-      'Trabajamos únicamente 5 horas al día de Lunes a Viernes con 30 minutos de colchón entre cada servicio para trasladarnos con calma entre Puerta de Hierro, Av. Patria, Jardín Real y Valle Real.',
+      'Visitas a domicilio para gatos o perros que prefieren su propio espacio. Limpieza de areneros, alimentación precisa, agua fresca, juego e interacción.',
     highlights: [
-      'Si terminamos 4:00 PM en Av. Patria, el siguiente bloque inicia 4:30 PM en Jardín Real',
-      'Nunca acortamos tu hora completa de 60 minutos por prisas de tráfico',
-      'Fines de semana o 6° bloque disponibles bajo Solicitud Especial (cargo extra)',
+      'Cero estrés de jaulas o traslados',
+      'Cuidado de 60 minutos en la tranquilidad de tu hogar',
+      'Agenda exclusiva de solo 5 horas al día (Lunes a Viernes)',
     ],
-    metricLabel: 'Capacidad Máxima',
-    metricValue: 'Solo 5 Sesiones por Día',
+    metricLabel: 'Modalidad',
+    metricValue: 'Sesión de 60 min en Casa',
     spanClass: 'md:col-span-5',
     accentVariant: 'stone',
   },
@@ -337,29 +300,29 @@ export const BENTO_SERVICES: BentoServiceItem[] = [
     tag: 'MONITOREO EN VIVO',
     title: 'Transparencia Total en Tiempo Real',
     description:
-      'Ubicación en vivo por WhatsApp desde el minuto en que salimos de tu domicilio y bitácora al finalizar con hora exacta de inicio, ruta, hidratación y reporte fotográfico.',
+      'Ubicación en vivo por WhatsApp durante todo el servicio y bitácora al finalizar con hora de inicio, ruta, hidratación y reporte fotográfico.',
     highlights: [
-      'Link de ubicación GPS en tiempo real por WhatsApp',
-      'Ideal para supervisar a distancia mientras trabajas o viajas',
-      'Cuidado en casa para gatos y perros (areneros, alimento y juego)',
+      'Ubicación en tiempo real directo a tu WhatsApp',
+      '30 minutos de margen entre bloques para llegar siempre puntual',
+      'Fotos y resumen al terminar cada sesión',
     ],
     metricLabel: 'Trazabilidad',
-    metricValue: 'GPS Activo + Bitácora Final',
+    metricValue: 'GPS en Vivo + Fotos',
     spanClass: 'md:col-span-5',
     accentVariant: 'alabaster',
   },
   {
     id: 'limpieza-patitas',
-    tag: 'PROTOCOLO HOGAR IMPECABLE',
-    title: 'Limpieza de Patitas al Regresar',
+    tag: 'CUIDADO DE TU HOGAR',
+    title: 'Limpieza al Regresar',
     description:
-      'Limpiamos las patitas de cada una de tus mascotas antes de entrar a tu casa en Puerta de Hierro, Patria, Jardín Real o Valle Real para cuidar tus pisos y muebles.',
+      'Limpiamos las patitas antes de entrar a tu casa para cuidar tus pisos y muebles, dejándolos frescos, hidratados y tranquilos.',
     highlights: [
-      'Inspección de almohadillas al terminar cada paseo',
-      'Limpieza con espuma hipoalergénica y toalla individual',
-      'Regresan relajados, hidratados y listos para descansar',
+      'Revisión de almohadillas al volver del paseo',
+      'Limpieza suave de patitas antes de cruzar tu puerta',
+      'Regresan relajados y con agua fresca servida',
     ],
-    metricLabel: 'Higiene Post-Paseo',
+    metricLabel: 'Higiene al Entrar',
     metricValue: 'Patitas 100% Limpias',
     spanClass: 'md:col-span-7',
     accentVariant: 'charcoal',
@@ -369,66 +332,66 @@ export const BENTO_SERVICES: BentoServiceItem[] = [
 export const SECURITY_PROTOCOL_STEPS: ProtocolStep[] = [
   {
     stepNumber: '01',
-    title: 'Entrevista Previa (15 min sin costo)',
-    subtitle: 'Presentación en tu domicilio',
+    title: 'Presentación Previa (15 min sin costo)',
+    subtitle: 'Nos conocemos en tu domicilio',
     description:
-      'Nos conocemos antes del primer paseo en Puerta de Hierro, Av. Patria, Jardín Real o Valle Real para evaluar a tus mascotas y acordar tus bloques fijos.',
-    durationBadge: 'Cortesía Inicial',
+      'Antes del primer servicio hacemos una visita breve sin costo para conocer a tus mascotas, su carácter y sus rutinas.',
+    durationBadge: 'Sin Costo',
   },
   {
     stepNumber: '02',
-    title: 'Colchón Logístico de 30 Minutos',
-    subtitle: 'Puntualidad real entre zonas',
+    title: 'Margen de Traslado entre Zonas',
+    subtitle: '30 min entre bloque y bloque',
     description:
-      'Dejamos 30 minutos libres entre cada cliente. Si terminamos a las 4:00 PM en Av. Patria, el siguiente bloque hacia Jardín Real o Valle Real se agenda a las 4:30 PM, jamás a las 4:10 PM.',
-    durationBadge: 'Buffer 30 min',
+      'Solo agendamos 5 horas al día con media hora libre entre cada cita (ej. de Av. Patria a las 4:00 PM hacia Jardín Real a las 4:30 PM) para nunca correr ni llegar tarde.',
+    durationBadge: 'Puntualidad',
   },
   {
     stepNumber: '03',
-    title: 'Sesión Completa de 60 Minutos + GPS',
-    subtitle: 'Ubicación en vivo e hidratación',
+    title: 'GPS en Vivo e Hidratación',
+    subtitle: 'Monitoreo por WhatsApp',
     description:
-      'Tus 60 minutos son íntegros de paseo o cuidado en casa. Recibes link GPS en vivo por WhatsApp, pausas de agua fresca y ruta segura por zonas arboladas.',
-    durationBadge: '60 Min Íntegros',
+      'Me compartes o te comparto ubicación en vivo al iniciar, cuidamos la temperatura del piso y damos pausas de agua fresca.',
+    durationBadge: '60 Minutos',
   },
   {
     stepNumber: '04',
-    title: 'Patitas Limpias y Reporte Fotográfico',
-    subtitle: 'Entrega impecable en casa',
+    title: 'Patitas Limpias y Reporte',
+    subtitle: 'Cierre impecable',
     description:
-      'Limpiamos patitas antes de entrar, dejamos agua fresca servida y te enviamos fotos y resumen de la sesión por WhatsApp.',
-    durationBadge: 'Cierre de Sesión',
+      'Limpiamos patitas antes de entrar a tu casa y te mando fotos del paseo o visita a tu WhatsApp.',
+    durationBadge: 'Reporte Final',
   },
 ];
 
 export const FAQ_ITEMS: FaqItem[] = [
   {
-    id: 'manada-descuento',
-    question: '¿Cómo funciona el descuento si tengo 2, 3 o 4 perros?',
-    answer:
-      'Paseamos exclusivamente perros de tu misma casa (jamás juntamos perros de desconocidos). Si tienes 1 mascota la tarifa es de $200 MXN/hr. Si tienes 2 o 3 mascotas aplica 5% de descuento ($190 MXN cada una). Si tienes 4 o más mascotas aplica 10% de descuento ($180 MXN cada una).',
-    highlightTag: '1: $200 • 2-3: $190 c/u • 4+: $180 c/u',
-  },
-  {
-    id: 'agenda-5-horas-traslado',
-    question: '¿Por qué solo hay 5 bloques al día y 30 minutos entre cada uno?',
-    answer:
-      'Para garantizar calidad real y puntualidad en Puerta de Hierro, Av. Patria, Jardín Real y Valle Real, operamos máximo 5 horas al día de Lunes a Viernes. Entre cada sesión dejamos 30 minutos obligatorios de traslado (por ejemplo, si terminamos a las 4:00 PM en Av. Patria, el siguiente bloque disponible en Jardín Real es a las 4:30 PM). Así tu mascota recibe sus 60 minutos completos sin prisas.',
-    highlightTag: 'Máximo 5 hrs/día + 30 min traslado',
-  },
-  {
-    id: 'fines-de-semana-y-extras',
-    question: '¿Trabajan los fines de semana o cuando ya se llenaron las 5 horas?',
-    answer:
-      'Nuestra agenda regular es de Lunes a Viernes (5 bloques diarios). Los Sábados y Domingos son días de descanso; sin embargo, puedes enviar una Solicitud Especial de Fin de Semana o de Hora Extra (#6) desde la calculadora con un cargo adicional por apertura de agenda, sujeta a confirmación directa.',
-    highlightTag: 'Solicitud Especial con Cargo Extra',
-  },
-  {
     id: 'primera-visita',
-    question: '¿Cómo funciona la primera visita y qué pasa si llueve o hace mucho calor?',
+    question: '¿Cómo funciona la primera visita?',
     answer:
-      'Iniciamos con una entrevista de presentación de 15 minutos sin costo en tu casa. En días muy calurosos o de lluvia ajustamos el horario para proteger las almohadillas de las patas del asfalto caliente o cambiamos la sesión a enriquecimiento y cuidado dentro de casa.',
-    highlightTag: 'Entrevista 15 min gratis + Protección climática',
+      'Incluye una breve entrevista de presentación de 15 minutos sin costo en tu domicilio para conocer a tu mascota, platicar de su rutina y que nos agarre confianza antes de su primer paseo o visita.',
+    highlightTag: 'Entrevista de 15 min sin costo',
+  },
+  {
+    id: 'descuento-mascotas',
+    question: '¿Cómo aplican los descuentos por varias mascotas o por horas?',
+    answer:
+      'Si es 1 mascota la tarifa es de $200 MXN por hora. Si tienes 2 o 3 mascotas (o reservas de 2 a 4 horas) baja a $190 MXN cada una (5% de descuento). Si son 4 o más mascotas (o paquete de 5+ horas) queda en $180 MXN cada una (10% de descuento).',
+    highlightTag: '$200 (1) • $190 c/u (2-3) • $180 c/u (4+)',
+  },
+  {
+    id: 'zonas-y-fines-de-semana',
+    question: '¿Qué zonas cubren y qué pasa si necesito fin de semana o estoy más lejos?',
+    answer:
+      'Mis zonas base sin cargo extra son Puerta de Hierro, Av. Patria, Jardín Real y Valle Real, trabajando 5 bloques diarios de Lunes a Viernes. Si estás en una zona más retirada, si el día ya tiene las 5 horas llenas o si necesitas Sábado o Domingo, mándame mensaje desde la calculadora y te confirmo directo por WhatsApp si tengo espacio y si aplica algún extra.',
+    highlightTag: 'Trato directo por WhatsApp',
+  },
+  {
+    id: 'lluvia-o-calor',
+    question: '¿Qué pasa si llueve o hace mucho calor?',
+    answer:
+      'Ajustamos los horarios hacia horas frescas para proteger las almohadillas de las patas del asfalto caliente y buscamos rutas con sombra. Si llueve fuerte, podemos reprogramar o cambiar la hora por cuidado y juego dentro de casa.',
+    highlightTag: 'Cuidado de almohadillas',
   },
 ];
 
@@ -436,12 +399,12 @@ export const TESTIMONIALS: TestimonialItem[] = [
   {
     id: 't1',
     petName: 'Thor, Maya, Rocco y Nala',
-    petBreed: 'Manada de 4 perros',
+    petBreed: '4 perros • Manada familiar',
     ownerName: 'Alejandro G.',
     zone: 'Jardín Real',
     quote:
-      'Tengo 4 perros y era un caos sacarlos. Con Alex salen los 4 juntos sin mezclarse con perros ajenos, me queda en $180 cada uno y llega puntualísimo con su bloque de las 4:30 PM.',
-    serviceUsed: '4 Mascotas • $180 c/u (-10%)',
+      'Tengo 4 perros y con Alex salen los 4 juntos sin juntarlos con perros ajenos. Me sale en $180 cada uno y siempre llega a tiempo.',
+    serviceUsed: '4 Mascotas • $180 c/u',
   },
   {
     id: 't2',
@@ -450,17 +413,17 @@ export const TESTIMONIALS: TestimonialItem[] = [
     ownerName: 'Mariana V.',
     zone: 'Puerta de Hierro',
     quote:
-      'Me encanta que solo toma 5 clientes al día y deja media hora para trasladarse. Siempre cumple la hora completa, veo el GPS en vivo y regresan con las patitas limpias.',
-    serviceUsed: '2 Mascotas • $190 c/u (-5%)',
+      'Se nota que solo toma 5 horas al día. Llega con calma, cumple la hora completa, me manda ubicación en vivo y les limpia las patitas al entrar.',
+    serviceUsed: '2 Mascotas • $190 c/u',
   },
   {
     id: 't3',
-    petName: 'Milo',
-    petBreed: 'Pastor Australiano',
+    petName: 'Milo & Nube',
+    petBreed: 'Gato y Perro',
     ownerName: 'Rodrigo S.',
     zone: 'Av. Patria',
     quote:
-      'Mi bloque de 3:00 a 4:00 PM por Av. Patria es sagrado. Y cuando he necesitado un sábado de emergencia, lo pido como Solicitud Especial en la calculadora y me salva el fin de semana.',
-    serviceUsed: 'Agenda Fija • Av. Patria',
+      'Súper fácil ver en su calendario qué horas tiene libres y mandarle WhatsApp directo. Total confianza para dejarle las llaves de casa.',
+    serviceUsed: 'Paseo & Cuidado en Casa',
   },
 ];
