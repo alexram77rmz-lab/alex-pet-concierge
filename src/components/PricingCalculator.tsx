@@ -17,9 +17,12 @@ import {
   PawPrint,
   Phone,
   Plus,
+  QrCode,
   RotateCcw,
   ShieldAlert,
+  Trash2,
   Unlock,
+  X,
 } from 'lucide-react';
 import {
   ALL_ZONES,
@@ -35,6 +38,7 @@ import {
   formatMXN,
 } from '../config/constants';
 import { CalendarDay, ServiceType, ZoneName } from '../types/concierge';
+import { ClubMemberRecord, STORAGE_KEY_CLUB_MEMBERS } from './PcsClub';
 import {
   clearAuthLockout,
   getSecurityLockoutStatus,
@@ -88,6 +92,23 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
   const [ghToken, setGhToken] = useState<string>(() => localStorage.getItem(STORAGE_KEY_GH_TOKEN) || '');
   const [isPublishingCloud, setIsPublishingCloud] = useState<boolean>(false);
   const [lockoutInfo, setLockoutInfo] = useState(() => getSecurityLockoutStatus());
+
+  // Control de Tarjetas NFC / QR (Sellos de clientes por celular)
+  const [clubMembers, setClubMembers] = useState<ClubMemberRecord[]>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY_CLUB_MEMBERS);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) return parsed;
+      }
+    } catch {
+      // ignore
+    }
+    return [];
+  });
+  const [newMemberPhone, setNewMemberPhone] = useState<string>('');
+  const [newMemberPet, setNewMemberPet] = useState<string>('');
+  const [newMemberStamps, setNewMemberStamps] = useState<number>(1);
 
   // Contador de 3 toques secretos para abrir el candado
   const secretTapCountRef = useRef<number>(0);
@@ -157,6 +178,11 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
           if (data && Array.isArray(data.days)) {
             setCalendarDays(data.days);
             localStorage.setItem(STORAGE_KEY_CALENDAR, JSON.stringify(data.days));
+          }
+          if (data && Array.isArray(data.members)) {
+            setClubMembers(data.members);
+            localStorage.setItem(STORAGE_KEY_CLUB_MEMBERS, JSON.stringify(data.members));
+            window.dispatchEvent(new CustomEvent('pcs-members-updated'));
           }
         }
       } catch {
@@ -238,6 +264,12 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
       setPinInput('');
       setAuthStep(1);
       onShowToast('Identidad verificada en 2 pasos.');
+      window.setTimeout(() => {
+        const el = document.getElementById('panel-horarios-alex');
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 120);
     } else {
       const updatedLockout = registerFailedAuthAttempt();
       setLockoutInfo(updatedLockout);
@@ -278,6 +310,54 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
     onShowToast('Todos los horarios de la semana quedaron 100% libres.');
   };
 
+  const handleSaveClubMember = (e: React.FormEvent) => {
+    e.preventDefault();
+    const cleanPhone = newMemberPhone.replace(/\D/g, '');
+    const cleanPet = sanitizeUserText(newMemberPet, 30) || 'Mascota';
+    if (cleanPhone.length !== 10) {
+      onShowToast('Ingresa el celular del cliente a 10 dígitos.');
+      return;
+    }
+    const clampedStamps = Math.min(10, Math.max(1, newMemberStamps));
+    setClubMembers((prev) => {
+      const exists = prev.some((m) => m.phone === cleanPhone);
+      const updated = exists
+        ? prev.map((m) =>
+            m.phone === cleanPhone ? { phone: cleanPhone, petName: cleanPet, stamps: clampedStamps } : m
+          )
+        : [...prev, { phone: cleanPhone, petName: cleanPet, stamps: clampedStamps }];
+      localStorage.setItem(STORAGE_KEY_CLUB_MEMBERS, JSON.stringify(updated));
+      window.dispatchEvent(new CustomEvent('pcs-members-updated'));
+      return updated;
+    });
+    setNewMemberPhone('');
+    setNewMemberPet('');
+    setNewMemberStamps(1);
+    onShowToast(`Sellos de ${cleanPet} (${cleanPhone}) actualizados a ${clampedStamps}/10.`);
+  };
+
+  const handleAdjustMemberStamps = (phone: string, delta: number) => {
+    setClubMembers((prev) => {
+      const updated = prev.map((m) => {
+        if (m.phone !== phone) return m;
+        const next = Math.min(10, Math.max(1, m.stamps + delta));
+        return { ...m, stamps: next };
+      });
+      localStorage.setItem(STORAGE_KEY_CLUB_MEMBERS, JSON.stringify(updated));
+      window.dispatchEvent(new CustomEvent('pcs-members-updated'));
+      return updated;
+    });
+  };
+
+  const handleDeleteMember = (phone: string) => {
+    setClubMembers((prev) => {
+      const updated = prev.filter((m) => m.phone !== phone);
+      localStorage.setItem(STORAGE_KEY_CLUB_MEMBERS, JSON.stringify(updated));
+      window.dispatchEvent(new CustomEvent('pcs-members-updated'));
+      return updated;
+    });
+  };
+
   const handlePublishToGitHub = async () => {
     const cleanToken = ghToken.trim();
     if (!cleanToken) {
@@ -305,6 +385,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
       const payloadObj = {
         updatedAt: new Date().toISOString(),
         days: calendarDays,
+        members: clubMembers,
       };
       const contentBase64 = btoa(unescape(encodeURIComponent(JSON.stringify(payloadObj, null, 2))));
 
@@ -600,82 +681,105 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
               )}
             </div>
 
-            {/* Verificación en 2 Pasos (Teléfono + Código con Hash SHA-256 y Bloqueo Anti-Hackeo) */}
+            {/* Ventana Emergente (Popup Modal) en medio de la pantalla para los 2 Pasos de Alex */}
             {showAuthModal && !adminUnlocked && (
-              <div className="p-4 rounded-2xl bg-[#FAF9F6] dark:bg-[#0E1210] border border-[#DCD6CC] dark:border-white/15 space-y-3">
-                {lockoutInfo.isLocked ? (
-                  <div className="flex items-center gap-2.5 text-xs text-red-700 dark:text-red-400 font-semibold">
-                    <ShieldAlert className="w-4 h-4 shrink-0" />
-                    <span>
-                      Protección anti-hackeo activa: Acceso bloqueado por {lockoutInfo.remainingMinutes}{' '}
-                      minutos tras múltiples intentos fallidos.
-                    </span>
+              <div className="fixed inset-0 z-50 bg-[#1E3A2F]/80 backdrop-blur-sm flex items-center justify-center p-4">
+                <div className="w-full max-w-md p-6 rounded-3xl bg-[#FAF9F6] dark:bg-[#141A17] border-2 border-[#BEF264] shadow-2xl space-y-4">
+                  <div className="flex items-center justify-between border-b border-[#E5E0D8] dark:border-white/10 pb-3">
+                    <div>
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-[#4D7C0F] dark:text-lime-300 block">
+                        ACCESO PROTEGIDO (SHA-256)
+                      </span>
+                      <h3 className="text-lg font-serif italic font-bold text-[#1E3A2F] dark:text-[#FAF9F6]">
+                        Panel de Control — Alex
+                      </h3>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setShowAuthModal(false)}
+                      aria-label="Cerrar ventana"
+                      className="w-8 h-8 rounded-full bg-[#E5E0D8]/60 dark:bg-white/10 flex items-center justify-center text-[#1E3A2F] dark:text-white"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
                   </div>
-                ) : authStep === 1 ? (
-                  <form onSubmit={handleStep1PhoneSubmit} className="space-y-2">
-                    <p className="text-[11px] font-bold uppercase tracking-wider text-[#1E3A2F] dark:text-emerald-400">
-                      Verificación Paso 1 de 2 — Confirma tu número celular (10 dígitos)
-                    </p>
-                    <div className="flex items-center gap-2">
-                      <Phone className="w-4 h-4 text-[#1E3A2F] shrink-0" />
-                      <input
-                        type="tel"
-                        inputMode="numeric"
-                        maxLength={12}
-                        value={phoneInput}
-                        onChange={(e) => setPhoneInput(e.target.value)}
-                        placeholder="Ej. 33 2122 2772"
-                        className="min-h-[38px] flex-1 px-3 rounded-lg bg-white dark:bg-[#161D19] border border-[#DCD6CC] dark:border-white/15 text-xs"
-                      />
-                      <button
-                        type="submit"
-                        className="min-h-[38px] px-4 rounded-lg bg-[#1E3A2F] text-[#FAF9F6] text-xs font-bold"
-                      >
-                        Siguiente →
-                      </button>
+
+                  {lockoutInfo.isLocked ? (
+                    <div className="flex items-center gap-2.5 text-xs text-red-700 dark:text-red-400 font-semibold">
+                      <ShieldAlert className="w-4 h-4 shrink-0" />
+                      <span>
+                        Protección anti-hackeo activa: Acceso bloqueado por {lockoutInfo.remainingMinutes}{' '}
+                        minutos tras múltiples intentos fallidos.
+                      </span>
                     </div>
-                  </form>
-                ) : (
-                  <form onSubmit={handleStep2VerifyAuth} className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <p className="text-[11px] font-bold uppercase tracking-wider text-[#1E3A2F] dark:text-emerald-400">
-                        Verificación Paso 2 de 2 — Código de Seguridad (Cifrado SHA-256)
+                  ) : authStep === 1 ? (
+                    <form onSubmit={handleStep1PhoneSubmit} className="space-y-3">
+                      <p className="text-xs font-bold text-[#1E3A2F] dark:text-lime-300">
+                        Paso 1 de 2 — Ingresa tu número celular (10 dígitos):
                       </p>
-                      <button
-                        type="button"
-                        onClick={() => setAuthStep(1)}
-                        className="text-[11px] underline text-[#57534E]"
-                      >
-                        Cambiar número
-                      </button>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <KeyRound className="w-4 h-4 text-[#1E3A2F] shrink-0" />
-                      <input
-                        type="password"
-                        value={pinInput}
-                        onChange={(e) => setPinInput(e.target.value)}
-                        placeholder="Código de 4 dígitos"
-                        className="min-h-[38px] flex-1 px-3 rounded-lg bg-white dark:bg-[#161D19] border border-[#DCD6CC] dark:border-white/15 text-xs"
-                      />
-                      <button
-                        type="submit"
-                        className="min-h-[38px] px-4 rounded-lg bg-[#1E3A2F] text-[#FAF9F6] text-xs font-bold"
-                      >
-                        Desbloquear
-                      </button>
-                    </div>
-                  </form>
-                )}
+                      <div className="flex items-center gap-2">
+                        <Phone className="w-4 h-4 text-[#1E3A2F] dark:text-lime-300 shrink-0" />
+                        <input
+                          type="tel"
+                          inputMode="numeric"
+                          autoFocus
+                          maxLength={12}
+                          value={phoneInput}
+                          onChange={(e) => setPhoneInput(e.target.value)}
+                          placeholder="Ej. 3321222772"
+                          className="min-h-[42px] flex-1 px-3.5 rounded-xl bg-white dark:bg-[#16241D] border border-[#DCD6CC] dark:border-white/15 text-sm text-[#1E3A2F] dark:text-white"
+                        />
+                        <button
+                          type="submit"
+                          className="min-h-[42px] px-4 rounded-xl bg-[#1E3A2F] text-[#BEF264] text-xs font-extrabold"
+                        >
+                          Siguiente →
+                        </button>
+                      </div>
+                    </form>
+                  ) : (
+                    <form onSubmit={handleStep2VerifyAuth} className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <p className="text-xs font-bold text-[#1E3A2F] dark:text-lime-300">
+                          Paso 2 de 2 — Ingresa tu código de 4 dígitos:
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => setAuthStep(1)}
+                          className="text-[11px] underline text-[#57534E]"
+                        >
+                          Cambiar número
+                        </button>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <KeyRound className="w-4 h-4 text-[#1E3A2F] dark:text-lime-300 shrink-0" />
+                        <input
+                          type="password"
+                          autoFocus
+                          value={pinInput}
+                          onChange={(e) => setPinInput(e.target.value)}
+                          placeholder="Código de 4 dígitos"
+                          className="min-h-[42px] flex-1 px-3.5 rounded-xl bg-white dark:bg-[#16241D] border border-[#DCD6CC] dark:border-white/15 text-sm text-[#1E3A2F] dark:text-white"
+                        />
+                        <button
+                          type="submit"
+                          className="min-h-[42px] px-4 rounded-xl bg-[#BEF264] text-[#1E3A2F] text-xs font-extrabold"
+                        >
+                          Desbloquear
+                        </button>
+                      </div>
+                    </form>
+                  )}
+                </div>
               </div>
             )}
 
             {/* Barra de herramientas Admin (Solo visible tras pasar los 2 pasos SHA-256) */}
             {adminUnlocked && (
-              <div className="p-4 rounded-2xl bg-[#1E3A2F] text-[#FAF9F6] space-y-3 border border-[#BEF264]/30">
+              <div className="p-4 sm:p-5 rounded-2xl bg-[#1E3A2F] text-[#FAF9F6] space-y-4 border-2 border-[#BEF264]">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <span className="text-xs font-bold uppercase tracking-wider text-[#BEF264]">
-                    Panel Protegido — Toca cualquier hora abajo para marcarla Ocupada / Libre
+                    1. Control de Horarios — Toca cualquier hora abajo para marcarla Ocupada / Libre
                   </span>
                   <button
                     type="button"
@@ -705,12 +809,113 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
                   ))}
                 </div>
 
-                <div className="pt-2 border-t border-white/10 flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                {/* Control de Sellos de Tarjetas NFC / QR por Celular del Cliente */}
+                <div className="pt-3 border-t border-white/15 space-y-3">
+                  <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#BEF264]">
+                    <QrCode className="w-4 h-4" />
+                    <span>2. Tarjetas NFC / QR — Sellos de Clientes (Por Celular)</span>
+                  </div>
+
+                  <form onSubmit={handleSaveClubMember} className="grid grid-cols-1 sm:grid-cols-12 gap-2">
+                    <input
+                      type="tel"
+                      inputMode="numeric"
+                      maxLength={12}
+                      value={newMemberPhone}
+                      onChange={(e) => setNewMemberPhone(e.target.value)}
+                      placeholder="Celular cliente (10 dígitos)"
+                      className="sm:col-span-4 min-h-[36px] px-3 rounded-lg bg-[#162C23] border border-white/15 text-xs text-white placeholder:text-white/50"
+                    />
+                    <input
+                      type="text"
+                      value={newMemberPet}
+                      onChange={(e) => setNewMemberPet(e.target.value)}
+                      placeholder="Mascota (ej. Bruno)"
+                      className="sm:col-span-4 min-h-[36px] px-3 rounded-lg bg-[#162C23] border border-white/15 text-xs text-white placeholder:text-white/50"
+                    />
+                    <input
+                      type="number"
+                      min={1}
+                      max={10}
+                      value={newMemberStamps}
+                      onChange={(e) => setNewMemberStamps(Number(e.target.value))}
+                      placeholder="Sellos"
+                      className="sm:col-span-2 min-h-[36px] px-2.5 rounded-lg bg-[#162C23] border border-white/15 text-xs text-white text-center"
+                    />
+                    <button
+                      type="submit"
+                      className="sm:col-span-2 min-h-[36px] px-3 rounded-lg bg-[#BEF264] text-[#1E3A2F] text-xs font-extrabold"
+                    >
+                      Guardar
+                    </button>
+                  </form>
+
+                  {clubMembers.length > 0 && (
+                    <div className="space-y-1.5 max-h-40 overflow-y-auto pr-1">
+                      {clubMembers.map((m) => {
+                        const cardShareUrl = `https://wa.me/52${m.phone}?text=${encodeURIComponent(
+                          `¡Hola! 🐾 Actualicé la tarjeta PCS Club de ${m.petName}: llevas ${m.stamps}/10 sellos. Puedes ver tu tarjeta aquí: https://alexram77rmz-lab.github.io/alex-pet-concierge/?mascota=${encodeURIComponent(
+                            m.petName
+                          )}&sellos=${m.stamps}#pcs-club`
+                        )}`;
+
+                        return (
+                          <div
+                            key={m.phone}
+                            className="p-2 rounded-lg bg-[#162C23] border border-white/10 flex flex-wrap items-center justify-between gap-2 text-xs"
+                          >
+                            <div>
+                              <span className="font-bold text-[#BEF264]">{m.petName}</span>{' '}
+                              <span className="text-[#E5E0D8]/80">({m.phone})</span>
+                            </div>
+                            <div className="flex items-center gap-1.5">
+                              <button
+                                type="button"
+                                onClick={() => handleAdjustMemberStamps(m.phone, -1)}
+                                className="w-6 h-6 rounded bg-white/10 font-bold"
+                              >
+                                -
+                              </button>
+                              <span className="px-2 py-0.5 rounded bg-[#BEF264]/20 text-[#BEF264] font-extrabold">
+                                {m.stamps}/10
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => handleAdjustMemberStamps(m.phone, 1)}
+                                className="w-6 h-6 rounded bg-white/10 font-bold"
+                              >
+                                +
+                              </button>
+                              <a
+                                href={cardShareUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="px-2 py-1 rounded bg-[#BEF264] text-[#1E3A2F] font-bold text-[10px]"
+                              >
+                                Mandar WhatsApp
+                              </a>
+                              <button
+                                type="button"
+                                onClick={() => handleDeleteMember(m.phone)}
+                                className="p-1 text-red-300 hover:text-red-200"
+                                aria-label="Eliminar cliente"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+
+                <div className="pt-2 border-t border-white/15 flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                   <input
                     type="password"
                     value={ghToken}
                     onChange={(e) => setGhToken(e.target.value)}
-                    placeholder="Token de GitHub (requerido para publicar en la nube)"
+                    placeholder="Token de GitHub (para publicar horarios y sellos en vivo)"
                     className="min-h-[38px] flex-1 px-3 rounded-lg bg-white/10 border border-white/15 text-xs text-white placeholder:text-white/40"
                   />
                   <button

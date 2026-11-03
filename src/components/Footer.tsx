@@ -117,10 +117,16 @@ export const Footer: React.FC = () => {
           </div>
         </div>
 
-        {/* Bottom Copyright Bar + Acceso oculto justo debajo de Sobre Mí / Servicios */}
+        {/* Bottom Copyright Bar + Acceso oculto al tocar "© 2026 PET CONCIERGE SERVICE. Todos los derechos reservados." */}
         <div className="pt-8 border-t border-white/15 flex flex-col items-center justify-between gap-4 text-xs text-[#E5E0D8]/70">
           <div className="w-full flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p>© {new Date().getFullYear()} {BRAND_NAME}. Todos los derechos reservados.</p>
+            <button
+              type="button"
+              onClick={handleTriggerHiddenAdmin}
+              className="text-left hover:text-[#BEF264] transition-colors cursor-pointer select-none"
+            >
+              © {new Date().getFullYear()} {BRAND_NAME}. Todos los derechos reservados.
+            </button>
             <div className="flex flex-wrap items-center justify-center gap-5">
               <a href="#sobre-mi" className="hover:text-[#BEF264] transition-colors">
                 Sobre Mí
@@ -135,18 +141,6 @@ export const Footer: React.FC = () => {
                 FAQ
               </a>
             </div>
-          </div>
-
-          {/* Botón camuflado hasta abajo del todo, debajo de Sobre Mí y Servicios */}
-          <div className="w-full flex justify-center sm:justify-end">
-            <button
-              type="button"
-              onClick={handleTriggerHiddenAdmin}
-              aria-label="PCS Zapopan"
-              className="text-[10px] tracking-[0.25em] uppercase text-[#E5E0D8]/25 hover:text-[#BEF264]/70 transition-colors py-1 px-2 select-none"
-            >
-              PCS • ZPN
-            </button>
           </div>
         </div>
       </div>
