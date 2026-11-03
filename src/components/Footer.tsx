@@ -9,8 +9,13 @@ import {
   WHATSAPP_DISPLAY,
   WHATSAPP_PHONE,
 } from '../config/constants';
+import { LegalTab } from './LegalModal';
 
-export const Footer: React.FC = () => {
+interface FooterProps {
+  onOpenLegalTab?: (tab: LegalTab) => void;
+}
+
+export const Footer: React.FC<FooterProps> = ({ onOpenLegalTab }) => {
   const directWhatsappUrl = `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(
     'Hola Alex, vi Pet Concierge Service y me gustaría recibir información sobre tus servicios (Paseo Privado / Cuidado en Casa).'
   )}`;
@@ -118,8 +123,8 @@ export const Footer: React.FC = () => {
         </div>
 
         {/* Bottom Copyright Bar + Acceso oculto al tocar "© 2026 PET CONCIERGE SERVICE. Todos los derechos reservados." */}
-        <div className="pt-8 border-t border-white/15 flex flex-col items-center justify-between gap-4 text-xs text-[#E5E0D8]/70">
-          <div className="w-full flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="pt-8 border-t border-white/15 flex flex-col gap-4 text-xs text-[#E5E0D8]/70">
+          <div className="w-full flex flex-col md:flex-row items-center justify-between gap-4">
             <button
               type="button"
               onClick={handleTriggerHiddenAdmin}
@@ -127,7 +132,8 @@ export const Footer: React.FC = () => {
             >
               © {new Date().getFullYear()} {BRAND_NAME}. Todos los derechos reservados.
             </button>
-            <div className="flex flex-wrap items-center justify-center gap-5">
+
+            <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6">
               <a href="#sobre-mi" className="hover:text-[#BEF264] transition-colors">
                 Sobre Mí
               </a>
@@ -141,6 +147,33 @@ export const Footer: React.FC = () => {
                 FAQ
               </a>
             </div>
+          </div>
+
+          {/* Enlaces Legales Oficiales y Política de Cookies */}
+          <div className="w-full pt-3 border-t border-white/5 flex flex-wrap items-center justify-center md:justify-end gap-4 text-[11px] text-[#E5E0D8]/60">
+            <button
+              type="button"
+              onClick={() => onOpenLegalTab?.('privacidad')}
+              className="hover:text-[#BEF264] transition-colors underline underline-offset-2"
+            >
+              Aviso de Privacidad (LFPDPPP)
+            </button>
+            <span>•</span>
+            <button
+              type="button"
+              onClick={() => onOpenLegalTab?.('terminos')}
+              className="hover:text-[#BEF264] transition-colors underline underline-offset-2"
+            >
+              Términos del Servicio
+            </button>
+            <span>•</span>
+            <button
+              type="button"
+              onClick={() => onOpenLegalTab?.('cookies')}
+              className="hover:text-[#BEF264] transition-colors underline underline-offset-2"
+            >
+              Política de Cookies
+            </button>
           </div>
         </div>
       </div>

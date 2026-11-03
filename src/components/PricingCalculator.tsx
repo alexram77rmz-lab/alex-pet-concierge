@@ -320,21 +320,37 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
       return;
     }
     const clampedStamps = Math.min(10, Math.max(1, newMemberStamps));
+    const savedRecord = { phone: cleanPhone, petName: cleanPet, stamps: clampedStamps };
     setClubMembers((prev) => {
       const exists = prev.some((m) => m.phone === cleanPhone);
       const updated = exists
         ? prev.map((m) =>
-            m.phone === cleanPhone ? { phone: cleanPhone, petName: cleanPet, stamps: clampedStamps } : m
+            m.phone === cleanPhone ? savedRecord : m
           )
-        : [...prev, { phone: cleanPhone, petName: cleanPet, stamps: clampedStamps }];
+        : [...prev, savedRecord];
       localStorage.setItem(STORAGE_KEY_CLUB_MEMBERS, JSON.stringify(updated));
       window.dispatchEvent(new CustomEvent('pcs-members-updated'));
       return updated;
     });
+    setQrPreviewMember(savedRecord);
     setNewMemberPhone('');
     setNewMemberPet('');
     setNewMemberStamps(1);
-    onShowToast(`Sellos de ${cleanPet} (${cleanPhone}) actualizados a ${clampedStamps}/10.`);
+    onShowToast(`Guardado y generado QR para ${cleanPet} (${cleanPhone}).`);
+  };
+
+  const handleQuickPreviewQr = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    const cleanPhone = newMemberPhone.replace(/\D/g, '') || '3321222772';
+    const cleanPet = sanitizeUserText(newMemberPet, 30) || 'Mascota';
+    const clampedStamps = Math.min(10, Math.max(1, newMemberStamps || 1));
+    const member: ClubMemberRecord = {
+      phone: cleanPhone,
+      petName: cleanPet,
+      stamps: clampedStamps,
+    };
+    setQrPreviewMember(member);
+    onShowToast(`Mostrando código QR para ${cleanPet}.`);
   };
 
   const handleAdjustMemberStamps = (phone: string, delta: number) => {
@@ -802,44 +818,82 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
 
                 {/* Control de Sellos de Tarjetas NFC / QR por Celular del Cliente */}
                 <div className="pt-3 border-t border-white/15 space-y-3">
-                  <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#BEF264]">
-                    <QrCode className="w-4 h-4" />
-                    <span>2. Tarjetas NFC / QR — Sellos de Clientes (Por Celular)</span>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#BEF264]">
+                      <QrCode className="w-4 h-4" />
+                      <span>2. Tarjetas NFC / QR — Sellos de Clientes</span>
+                    </div>
+                    <span className="text-[11px] text-[#E5E0D8]/80 font-medium">
+                      {clubMembers.length} {clubMembers.length === 1 ? 'cliente guardado' : 'clientes guardados'}
+                    </span>
                   </div>
 
-                  <form onSubmit={handleSaveClubMember} className="grid grid-cols-1 sm:grid-cols-12 gap-2">
-                    <input
-                      type="tel"
-                      inputMode="numeric"
-                      maxLength={12}
-                      value={newMemberPhone}
-                      onChange={(e) => setNewMemberPhone(e.target.value)}
-                      placeholder="Celular cliente (10 dígitos)"
-                      className="sm:col-span-4 min-h-[36px] px-3 rounded-lg bg-[#162C23] border border-white/15 text-xs text-white placeholder:text-white/50"
-                    />
-                    <input
-                      type="text"
-                      value={newMemberPet}
-                      onChange={(e) => setNewMemberPet(e.target.value)}
-                      placeholder="Mascota (ej. Bruno)"
-                      className="sm:col-span-4 min-h-[36px] px-3 rounded-lg bg-[#162C23] border border-white/15 text-xs text-white placeholder:text-white/50"
-                    />
-                    <input
-                      type="number"
-                      min={1}
-                      max={10}
-                      value={newMemberStamps}
-                      onChange={(e) => setNewMemberStamps(Number(e.target.value))}
-                      placeholder="Sellos"
-                      className="sm:col-span-2 min-h-[36px] px-2.5 rounded-lg bg-[#162C23] border border-white/15 text-xs text-white text-center"
-                    />
-                    <button
-                      type="submit"
-                      className="sm:col-span-2 min-h-[36px] px-3 rounded-lg bg-[#BEF264] text-[#1E3A2F] text-xs font-extrabold"
-                    >
-                      Guardar
-                    </button>
+                  <form onSubmit={handleSaveClubMember} className="space-y-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-12 gap-2">
+                      <input
+                        type="tel"
+                        inputMode="numeric"
+                        maxLength={12}
+                        value={newMemberPhone}
+                        onChange={(e) => setNewMemberPhone(e.target.value)}
+                        placeholder="Celular cliente (10 dígitos)"
+                        className="sm:col-span-5 min-h-[38px] px-3 rounded-lg bg-[#162C23] border border-white/15 text-xs text-white placeholder:text-white/50"
+                      />
+                      <input
+                        type="text"
+                        value={newMemberPet}
+                        onChange={(e) => setNewMemberPet(e.target.value)}
+                        placeholder="Mascota (ej. Bruno)"
+                        className="sm:col-span-4 min-h-[38px] px-3 rounded-lg bg-[#162C23] border border-white/15 text-xs text-white placeholder:text-white/50"
+                      />
+                      <input
+                        type="number"
+                        min={1}
+                        max={10}
+                        value={newMemberStamps}
+                        onChange={(e) => setNewMemberStamps(Number(e.target.value))}
+                        placeholder="Sellos"
+                        className="sm:col-span-3 min-h-[38px] px-2.5 rounded-lg bg-[#162C23] border border-white/15 text-xs text-white text-center"
+                      />
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-2 pt-0.5">
+                      <button
+                        type="submit"
+                        className="min-h-[36px] px-4 rounded-lg bg-[#BEF264] text-[#1E3A2F] text-xs font-extrabold inline-flex items-center gap-1.5 active:scale-95 transition-all shadow-sm"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                        <span>Guardar Cliente</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={handleQuickPreviewQr}
+                        className="min-h-[36px] px-4 rounded-lg bg-white/15 hover:bg-white/25 text-white text-xs font-bold inline-flex items-center gap-1.5 active:scale-95 transition-all"
+                      >
+                        <QrCode className="w-3.5 h-3.5 text-[#BEF264]" />
+                        <span>Generar / Ver QR en Pantalla</span>
+                      </button>
+                    </div>
                   </form>
+
+                  {/* Explicación clara si todavía no hay clientes registrados */}
+                  {clubMembers.length === 0 && (
+                    <div className="p-3.5 rounded-xl bg-[#162C23] border border-dashed border-[#BEF264]/40 text-xs text-[#E5E0D8] space-y-1.5">
+                      <p className="font-extrabold text-[#BEF264] flex items-center gap-1.5">
+                        <Info className="w-4 h-4 shrink-0 text-[#BEF264]" />
+                        <span>¿Por qué no aparece todavía el botón "Ver QR / NFC"?</span>
+                      </p>
+                      <p className="leading-relaxed text-[#E5E0D8]/90">
+                        Porque aún no has guardado a ningún cliente en la lista. Para generar la tarjeta y ver su QR:
+                      </p>
+                      <ol className="list-decimal list-inside space-y-0.5 text-white pl-1 font-medium">
+                        <li>Escribe arriba el celular de tu cliente (10 dígitos) y el nombre de su mascota.</li>
+                        <li>Dale clic a <strong>"Guardar Cliente"</strong> o a <strong>"Generar / Ver QR en Pantalla"</strong>.</li>
+                        <li>Al instante aparecerá su código QR personal para escanear y el link directo para grabarlo en su tarjeta física NFC.</li>
+                      </ol>
+                    </div>
+                  )}
 
                   {clubMembers.length > 0 && (
                     <div className="space-y-1.5 max-h-44 overflow-y-auto pr-1">
