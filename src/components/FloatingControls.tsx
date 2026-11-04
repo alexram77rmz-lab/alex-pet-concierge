@@ -55,7 +55,7 @@ export const FloatingControls: React.FC<FloatingControlsProps> = ({ toastMessage
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.85 }}
             aria-label="Volver arriba"
-            className="fixed bottom-24 md:bottom-8 right-4 sm:right-6 z-40 min-h-[48px] min-w-[48px] rounded-full bg-[#1E3A2F] text-[#BEF264] border border-[#BEF264]/40 shadow-luxury flex items-center justify-center hover:-translate-y-0.5 active:scale-95 transition-all"
+            className="fixed bottom-24 md:bottom-8 right-4 sm:right-6 z-40 min-h-[48px] min-w-[48px] rounded-full bg-[#1E3A2F] text-white border border-white/30 shadow-luxury flex items-center justify-center hover:-translate-y-0.5 active:scale-95 transition-all"
           >
             <ArrowUp className="w-5 h-5" />
           </motion.button>

@@ -687,7 +687,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
                   onClick={() => setAdminUnlocked(false)}
                   className="px-3 py-1.5 rounded-xl bg-[#1E3A2F] text-[#FAF9F6] text-xs font-bold inline-flex items-center gap-1.5"
                 >
-                  <Unlock className="w-3.5 h-3.5 text-[#BEF264]" />
+                  <Unlock className="w-3.5 h-3.5 text-white" />
                   <span>Cerrar Sesión Segura</span>
                 </button>
               )}
@@ -726,7 +726,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
                       />
                       <button
                         type="submit"
-                        className="min-h-[40px] px-4 rounded-xl bg-[#1E3A2F] text-[#BEF264] text-xs font-extrabold"
+                        className="min-h-[40px] px-4 rounded-xl bg-[#1E3A2F] text-white border border-white/25 text-xs font-extrabold"
                       >
                         Siguiente
                       </button>
@@ -742,7 +742,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
                       />
                       <button
                         type="submit"
-                        className="min-h-[40px] px-4 rounded-xl bg-[#BEF264] text-[#1E3A2F] text-xs font-extrabold"
+                        className="min-h-[40px] px-4 rounded-xl bg-white text-[#1E3A2F] text-xs font-extrabold"
                       >
                         Siguiente
                       </button>
@@ -754,9 +754,9 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
 
             {/* Barra de herramientas Admin (Solo visible tras pasar los 2 pasos SHA-256) */}
             {adminUnlocked && (
-              <div className="p-4 sm:p-5 rounded-2xl bg-[#1E3A2F] text-[#FAF9F6] space-y-4 border-2 border-[#BEF264]">
+              <div className="p-4 sm:p-5 rounded-2xl bg-[#1E3A2F] text-[#FAF9F6] space-y-4 border-2 border-white/30">
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <span className="text-xs font-bold uppercase tracking-wider text-[#BEF264]">
+                  <span className="text-xs font-bold uppercase tracking-wider text-white">
                     1. Control de Horarios — Toca cualquier hora abajo para cambiar su estado
                   </span>
                   <button
@@ -777,7 +777,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
                     onClick={() => setAdminBufferMode(false)}
                     className={`px-3 py-1.5 rounded-lg font-extrabold transition-colors ${
                       !adminBufferMode
-                        ? 'bg-[#BEF264] text-[#1E3A2F]'
+                        ? 'bg-white text-[#1E3A2F]'
                         : 'bg-white/10 text-[#E5E0D8]'
                     }`}
                   >
@@ -806,7 +806,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
                         onClick={() => setAdminSelectedZone(pz)}
                         className={`px-2.5 py-1 rounded-lg font-semibold ${
                           adminSelectedZone === pz
-                            ? 'bg-[#BEF264] text-[#1E3A2F]'
+                            ? 'bg-white text-[#1E3A2F]'
                             : 'bg-white/10 text-[#E5E0D8]'
                         }`}
                       >
@@ -819,7 +819,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
                 {/* Control de Sellos de Tarjetas PCS Club por Celular del Cliente */}
                 <div className="pt-3 border-t border-white/15 space-y-3">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#BEF264]">
+                    <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-white">
                       <QrCode className="w-4 h-4" />
                       <span>2. Tarjeta PCS Club — Sellos de Clientes</span>
                     </div>
@@ -860,7 +860,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
                     <div className="flex flex-wrap items-center gap-2 pt-0.5">
                       <button
                         type="submit"
-                        className="min-h-[36px] px-4 rounded-lg bg-[#BEF264] text-[#1E3A2F] text-xs font-extrabold inline-flex items-center gap-1.5 active:scale-95 transition-all shadow-sm"
+                        className="min-h-[36px] px-4 rounded-lg bg-white text-[#1E3A2F] text-xs font-extrabold inline-flex items-center gap-1.5 active:scale-95 transition-all shadow-sm"
                       >
                         <Plus className="w-3.5 h-3.5" />
                         <span>Guardar Cliente</span>
@@ -871,7 +871,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
                         onClick={handleQuickPreviewQr}
                         className="min-h-[36px] px-4 rounded-lg bg-white/15 hover:bg-white/25 text-white text-xs font-bold inline-flex items-center gap-1.5 active:scale-95 transition-all"
                       >
-                        <QrCode className="w-3.5 h-3.5 text-[#BEF264]" />
+                        <QrCode className="w-3.5 h-3.5 text-white" />
                         <span>Generar / Ver QR en Pantalla</span>
                       </button>
                     </div>
@@ -879,9 +879,9 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
 
                   {/* Explicación clara si todavía no hay clientes registrados */}
                   {clubMembers.length === 0 && (
-                    <div className="p-3.5 rounded-xl bg-[#162C23] border border-dashed border-[#BEF264]/40 text-xs text-[#E5E0D8] space-y-1.5">
-                      <p className="font-extrabold text-[#BEF264] flex items-center gap-1.5">
-                        <Info className="w-4 h-4 shrink-0 text-[#BEF264]" />
+                    <div className="p-3.5 rounded-xl bg-[#162C23] border border-dashed border-white/30 text-xs text-[#E5E0D8] space-y-1.5">
+                      <p className="font-extrabold text-white flex items-center gap-1.5">
+                        <Info className="w-4 h-4 shrink-0 text-white" />
                         <span>¿Por qué no aparece todavía el botón "Ver Código QR"?</span>
                       </p>
                       <p className="leading-relaxed text-[#E5E0D8]/90">
@@ -911,7 +911,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
                             className="p-2 rounded-lg bg-[#162C23] border border-white/10 flex flex-wrap items-center justify-between gap-2 text-xs"
                           >
                             <div>
-                              <span className="font-bold text-[#BEF264]">{m.petName}</span>{' '}
+                              <span className="font-bold text-white">{m.petName}</span>{' '}
                               <span className="text-[#E5E0D8]/80">({m.phone})</span>
                             </div>
                             <div className="flex items-center gap-1.5">
@@ -922,7 +922,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
                               >
                                 -
                               </button>
-                              <span className="px-2 py-0.5 rounded bg-[#BEF264]/20 text-[#BEF264] font-extrabold">
+                              <span className="px-2 py-0.5 rounded bg-white/20 text-white font-extrabold">
                                 {m.stamps}/10
                               </span>
                               <button
@@ -943,7 +943,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
                                 href={cardShareUrl}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="px-2 py-1 rounded bg-[#BEF264] text-[#1E3A2F] font-bold text-[10px]"
+                                className="px-2 py-1 rounded bg-white text-[#1E3A2F] font-bold text-[10px]"
                               >
                                 WhatsApp
                               </a>
@@ -993,7 +993,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
                               );
                               onShowToast('Enlace personal del cliente copiado.');
                             }}
-                            className="px-3 py-1.5 rounded-lg bg-[#1E3A2F] text-[#BEF264] font-bold"
+                            className="px-3 py-1.5 rounded-lg bg-[#1E3A2F] text-white border border-white/25 font-bold"
                           >
                             Copiar Enlace Directo
                           </button>
@@ -1015,7 +1015,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
                     type="button"
                     onClick={handlePublishToGitHub}
                     disabled={isPublishingCloud}
-                    className="min-h-[42px] w-full px-4 rounded-xl bg-[#BEF264] hover:bg-[#D9F99D] text-[#1E3A2F] text-xs font-extrabold inline-flex items-center justify-center gap-2 transition-all active:scale-95"
+                    className="min-h-[42px] w-full px-4 rounded-xl bg-white hover:bg-zinc-100 text-[#1E3A2F] text-xs font-extrabold inline-flex items-center justify-center gap-2 transition-all active:scale-95 shadow-sm"
                   >
                     <CloudUpload className="w-4 h-4" />
                     <span>{isPublishingCloud ? 'Guardando en la web...' : 'Guardar y Publicar Cambios en Vivo'}</span>
@@ -1186,57 +1186,57 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
         </div>
 
         {/* Columna Derecha: Resumen y Botón a WhatsApp 33 2122 2772 (5 cols) */}
-        <div className="lg:col-span-5 lg:sticky lg:top-28 rounded-3xl bg-[#1E3A2F] text-[#FAF9F6] p-6 sm:p-8 shadow-luxury space-y-6">
-          <div className="pb-4 border-b border-white/15 space-y-1">
-            <p className="text-xs uppercase tracking-[0.18em] text-[#E5E0D8]/80 font-semibold">
+        <div className="lg:col-span-5 lg:sticky lg:top-28 rounded-3xl bg-white text-zinc-900 p-6 sm:p-8 shadow-xl border border-zinc-200 space-y-6">
+          <div className="pb-4 border-b border-zinc-200 space-y-1">
+            <p className="text-xs font-serif italic text-zinc-500">
               Resumen de tu Solicitud
             </p>
-            <h3 className="text-xl font-bold">{selectedService}</h3>
-            <p className="text-xs text-[#E5E0D8]">
+            <h3 className="text-xl font-serif italic font-bold text-zinc-900 tracking-tight">{selectedService}</h3>
+            <p className="text-xs text-zinc-500">
               {activeDay.dayName} {specificDate ? `(${specificDate})` : ''} •{' '}
               {requestExtraSlot ? 'Horario Especial a confirmar' : selectedSlotRange} • {zone}
             </p>
           </div>
 
           <div className="space-y-3 text-sm">
-            <div className="flex items-center justify-between text-[#FAF9F6]/85">
+            <div className="flex items-center justify-between text-zinc-600">
               <span>
                 Subtotal ({quote.petCount} {quote.petCount === 1 ? 'perro' : 'perros'} × $
                 {BASE_HOURLY_RATE} × {quote.hours} {quote.hours === 1 ? 'hr' : 'hrs'})
               </span>
-              <span className="font-semibold">{formatMXN(quote.subtotalBase)} MXN</span>
+              <span className="font-semibold text-zinc-900">{formatMXN(quote.subtotalBase)} MXN</span>
             </div>
 
             <div className="flex items-center justify-between">
-              <span className="text-[#E5E0D8]">
+              <span className="text-zinc-600">
                 Descuento ({quote.discountPercentage}% menos → ${quote.ratePerPetAfterDiscount} c/u)
               </span>
-              <span className="font-bold text-emerald-300">
+              <span className="font-bold text-[#15803D]">
                 {quote.discountAmount > 0 ? `-${formatMXN(quote.discountAmount)} MXN` : '$0 MXN'}
               </span>
             </div>
 
-            <div className="flex items-center justify-between text-[#FAF9F6]/90 pt-2 border-t border-white/10">
+            <div className="flex items-center justify-between text-zinc-600 pt-2 border-t border-zinc-200">
               <span>Tarifa por perro / hora</span>
-              <span className="px-2.5 py-0.5 rounded-lg bg-white/10 font-bold text-[#E5E0D8]">
+              <span className="px-2.5 py-0.5 rounded-lg bg-zinc-100 font-bold text-zinc-800">
                 {formatMXN(quote.ratePerPetAfterDiscount)} MXN c/u
               </span>
             </div>
 
-            <div className="pt-4 border-t border-white/20 flex items-baseline justify-between">
+            <div className="pt-4 border-t border-zinc-200 flex items-baseline justify-between">
               <div>
-                <span className="text-xs uppercase tracking-widest text-[#E5E0D8]/80 block">
+                <span className="text-xs uppercase tracking-widest text-zinc-500 block">
                   Total
                 </span>
-                <span className="text-[11px] text-[#E5E0D8]/75">{quote.tierBadge}</span>
+                <span className="text-[11px] text-zinc-400 font-serif italic">{quote.tierBadge}</span>
               </div>
               <motion.span
                 key={quote.total}
                 initial={{ opacity: 0.6, y: -3 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="text-3xl sm:text-4xl font-extrabold tracking-tight text-[#FAF9F6]"
+                className="text-3xl sm:text-4xl font-extrabold tracking-tight text-zinc-900"
               >
-                {formatMXN(quote.total)} <span className="text-base font-semibold text-[#E5E0D8]">MXN</span>
+                {formatMXN(quote.total)} <span className="text-base font-semibold text-zinc-500">MXN</span>
               </motion.span>
             </div>
           </div>
@@ -1254,26 +1254,26 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
               </div>
             </div>
           ) : (
-            <div className="p-3.5 rounded-2xl bg-[#162C23] border border-[#BEF264]/25 flex items-center gap-2 text-xs text-[#E5E0D8]">
-              <CheckCircle2 className="w-4 h-4 text-[#BEF264] shrink-0" />
+            <div className="p-3.5 rounded-2xl bg-zinc-50 border border-zinc-200 flex items-center gap-2 text-xs text-zinc-700">
+              <CheckCircle2 className="w-4 h-4 text-[#15803D] shrink-0" />
               <span>Horario disponible y zona dentro de cobertura normal (sin cargos extra).</span>
             </div>
           )}
 
           {/* Vista previa del mensaje */}
           <div className="space-y-1.5">
-            <div className="flex items-center justify-between text-xs text-[#E5E0D8]/80">
+            <div className="flex items-center justify-between text-xs text-zinc-500">
               <span>Se enviará al WhatsApp {WHATSAPP_DISPLAY}:</span>
               <button
                 type="button"
                 onClick={handleCopyQuote}
-                className="min-h-[32px] px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/15 text-[#FAF9F6] inline-flex items-center gap-1 text-[11px]"
+                className="min-h-[32px] px-2.5 py-1 rounded-lg bg-zinc-100 hover:bg-zinc-200 text-zinc-800 inline-flex items-center gap-1 text-[11px] transition-colors"
               >
                 <Copy className="w-3 h-3" />
                 <span>Copiar</span>
               </button>
             </div>
-            <div className="p-3 rounded-2xl bg-[#142820] border border-white/10 text-xs text-[#FAF9F6]/90 leading-relaxed italic">
+            <div className="p-3 rounded-2xl bg-zinc-50 border border-zinc-200 text-xs text-zinc-700 leading-relaxed font-serif italic">
               “{whatsappMessage}”
             </div>
           </div>
@@ -1284,9 +1284,9 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => onShowToast(`Abriendo WhatsApp (${WHATSAPP_DISPLAY})...`)}
-            className="min-h-[52px] w-full px-6 py-3.5 rounded-2xl bg-[#BEF264] hover:bg-[#D9F99D] text-[#1E3A2F] font-extrabold text-base shadow-lg flex items-center justify-center gap-2.5 hover:-translate-y-0.5 active:scale-95 transition-all"
+            className="min-h-[52px] w-full px-6 py-3.5 rounded-2xl bg-[#1E3A2F] hover:bg-[#12241D] text-white font-extrabold text-base shadow-lg flex items-center justify-center gap-2.5 hover:-translate-y-0.5 active:scale-95 transition-all"
           >
-            <MessageCircle className="w-5 h-5 text-[#1E3A2F]" />
+            <MessageCircle className="w-5 h-5 text-white" />
             <span>Reservar por WhatsApp ({WHATSAPP_DISPLAY})</span>
           </a>
         </div>

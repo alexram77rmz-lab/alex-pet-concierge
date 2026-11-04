@@ -46,13 +46,13 @@ export const CookieBanner: React.FC<CookieBannerProps> = ({ onOpenLegalTab }) =>
           role="region"
           aria-label="Aviso de Cookies y Privacidad"
         >
-          <div className="p-4 sm:p-5 rounded-2xl bg-[#1E3A2F] text-[#FAF9F6] border border-[#BEF264]/40 shadow-luxury space-y-3 backdrop-blur-md">
+          <div className="p-4 sm:p-5 rounded-2xl bg-[#1E3A2F] text-[#FAF9F6] border border-white/20 shadow-luxury space-y-3 backdrop-blur-md">
             <div className="flex items-start gap-3">
-              <div className="w-8 h-8 rounded-full bg-[#BEF264]/20 border border-[#BEF264]/40 flex items-center justify-center shrink-0 mt-0.5">
-                <Cookie className="w-4 h-4 text-[#BEF264]" />
+              <div className="w-8 h-8 rounded-full bg-white/10 border border-white/20 flex items-center justify-center shrink-0 mt-0.5">
+                <Cookie className="w-4 h-4 text-white" />
               </div>
               <div className="space-y-1">
-                <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-[#BEF264]">
+                <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-white">
                   <ShieldCheck className="w-3.5 h-3.5" />
                   <span>Privacidad &amp; Cookies</span>
                 </div>
@@ -66,7 +66,7 @@ export const CookieBanner: React.FC<CookieBannerProps> = ({ onOpenLegalTab }) =>
               <button
                 type="button"
                 onClick={() => onOpenLegalTab('cookies')}
-                className="text-[11px] font-medium text-[#BEF264] hover:underline"
+                className="text-[11px] font-medium text-white hover:underline"
               >
                 Ver Política y Términos
               </button>
@@ -74,7 +74,7 @@ export const CookieBanner: React.FC<CookieBannerProps> = ({ onOpenLegalTab }) =>
               <button
                 type="button"
                 onClick={handleAccept}
-                className="px-4 py-1.5 rounded-xl bg-[#BEF264] hover:bg-[#D9F99D] text-[#1E3A2F] text-xs font-extrabold inline-flex items-center gap-1.5 active:scale-95 transition-all shadow-sm"
+                className="px-4 py-1.5 rounded-xl bg-white hover:bg-zinc-100 text-[#1E3A2F] text-xs font-extrabold inline-flex items-center gap-1.5 active:scale-95 transition-all shadow-sm"
               >
                 <Check className="w-3.5 h-3.5" />
                 <span>Aceptar</span>

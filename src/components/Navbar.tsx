@@ -33,7 +33,7 @@ export const Navbar: React.FC<NavbarProps> = ({ darkMode, onToggleDarkMode }) =>
             className="min-h-[44px] inline-flex items-center gap-3 group focus:outline-none"
             aria-label={`${BRAND_NAME} - Inicio`}
           >
-            <span className="w-10 h-10 aspect-square shrink-0 rounded-full bg-[#1E3A2F] border-2 border-[#BEF264]/60 text-[#FAF9F6] flex items-center justify-center text-xs font-extrabold tracking-wider shadow-sm group-hover:scale-105 transition-transform">
+            <span className="w-10 h-10 aspect-square shrink-0 rounded-full bg-[#1E3A2F] border-2 border-white/40 text-[#FAF9F6] flex items-center justify-center text-xs font-extrabold tracking-wider shadow-sm group-hover:scale-105 transition-transform">
               {BRAND_SHORT}
             </span>
             <div className="flex flex-col">
@@ -67,7 +67,7 @@ export const Navbar: React.FC<NavbarProps> = ({ darkMode, onToggleDarkMode }) =>
               rel="noopener noreferrer"
               aria-label={`Instagram ${INSTAGRAM_HANDLE}`}
               title={`Síguenos en Instagram (${INSTAGRAM_HANDLE})`}
-              className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-full border border-[#E5E0D8] dark:border-white/15 text-[#1E3A2F] dark:text-[#BEF264] hover:bg-[#E4F2D3] dark:hover:bg-white/10 active:scale-95 transition-all"
+              className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-full border border-[#E5E0D8] dark:border-white/15 text-[#1E3A2F] dark:text-white hover:bg-[#E4F2D3] dark:hover:bg-white/10 active:scale-95 transition-all"
             >
               <Instagram className="w-4 h-4" />
             </a>

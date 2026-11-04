@@ -59,7 +59,7 @@ export const LegalModal: React.FC<LegalModalProps> = ({
               onClick={() => onSelectTab('privacidad')}
               className={`pb-2.5 px-3 text-xs sm:text-sm font-bold border-b-2 flex items-center gap-1.5 transition-all whitespace-nowrap ${
                 activeTab === 'privacidad'
-                  ? 'border-[#1E3A2F] text-[#1E3A2F] dark:border-[#BEF264] dark:text-[#BEF264]'
+                  ? 'border-[#1E3A2F] text-[#1E3A2F] dark:border-white dark:text-white'
                   : 'border-transparent text-[#57534E] dark:text-stone-400 hover:text-[#18181B]'
               }`}
             >
@@ -72,7 +72,7 @@ export const LegalModal: React.FC<LegalModalProps> = ({
               onClick={() => onSelectTab('terminos')}
               className={`pb-2.5 px-3 text-xs sm:text-sm font-bold border-b-2 flex items-center gap-1.5 transition-all whitespace-nowrap ${
                 activeTab === 'terminos'
-                  ? 'border-[#1E3A2F] text-[#1E3A2F] dark:border-[#BEF264] dark:text-[#BEF264]'
+                  ? 'border-[#1E3A2F] text-[#1E3A2F] dark:border-white dark:text-white'
                   : 'border-transparent text-[#57534E] dark:text-stone-400 hover:text-[#18181B]'
               }`}
             >
@@ -85,7 +85,7 @@ export const LegalModal: React.FC<LegalModalProps> = ({
               onClick={() => onSelectTab('cookies')}
               className={`pb-2.5 px-3 text-xs sm:text-sm font-bold border-b-2 flex items-center gap-1.5 transition-all whitespace-nowrap ${
                 activeTab === 'cookies'
-                  ? 'border-[#1E3A2F] text-[#1E3A2F] dark:border-[#BEF264] dark:text-[#BEF264]'
+                  ? 'border-[#1E3A2F] text-[#1E3A2F] dark:border-white dark:text-white'
                   : 'border-transparent text-[#57534E] dark:text-stone-400 hover:text-[#18181B]'
               }`}
             >
@@ -204,7 +204,7 @@ export const LegalModal: React.FC<LegalModalProps> = ({
               onClick={onClose}
               className="px-5 py-2.5 rounded-xl bg-[#1E3A2F] hover:bg-[#2A5041] text-[#FAF9F6] text-xs sm:text-sm font-bold inline-flex items-center gap-1.5 transition-all active:scale-95 shadow-sm"
             >
-              <Check className="w-4 h-4 text-[#BEF264]" />
+              <Check className="w-4 h-4 text-white" />
               <span>Entendido y de Acuerdo</span>
             </button>
           </div>

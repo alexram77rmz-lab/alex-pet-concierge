@@ -128,12 +128,12 @@ export const PcsClub: React.FC = () => {
       {/* BLOQUE 1: TABLA DE PRECIOS OFICIAL */}
       <div className="max-w-3xl mx-auto space-y-6">
         <div className="text-center space-y-2">
-          <span className="inline-block px-3.5 py-1 rounded-full bg-[#E4F2D3] dark:bg-white/10 text-[#1E3A2F] dark:text-lime-200 text-[11px] font-bold uppercase tracking-[0.18em]">
+          <span className="inline-block px-3.5 py-1 rounded-full bg-[#E4F2D3] dark:bg-white/10 text-[#1E3A2F] dark:text-emerald-300 text-[11px] font-bold uppercase tracking-[0.18em]">
             Tarifas Claras por Hora
           </span>
           <h2 className="text-2xl sm:text-4xl font-bold tracking-tight text-[#1E3A2F] dark:text-[#FAF9F6]">
             Tabla de{' '}
-            <span className="font-serif italic font-semibold text-[#4D7C0F] dark:text-lime-300">
+            <span className="font-serif italic font-semibold text-[#15803D] dark:text-[#22C55E]">
               precios por domicilio
             </span>
           </h2>
@@ -158,7 +158,7 @@ export const PcsClub: React.FC = () => {
                     <td className="py-3.5 px-4 sm:px-6 font-semibold text-[#1E3A2F] dark:text-[#FAF9F6]">
                       <span>{row.dogsLabel}</span>
                     </td>
-                    <td className="py-3.5 px-4 sm:px-6 text-center font-bold text-[#4D7C0F] dark:text-lime-300">
+                    <td className="py-3.5 px-4 sm:px-6 text-center font-bold text-[#15803D] dark:text-[#22C55E]">
                       ${row.pricePerDog}
                     </td>
                     <td className="py-3.5 px-4 sm:px-6 text-right font-extrabold text-[#1E3A2F] dark:text-[#FAF9F6]">

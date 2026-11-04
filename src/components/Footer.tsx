@@ -31,7 +31,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenLegalTab }) => {
           {/* Brand Column (4 cols) */}
           <div className="lg:col-span-4 space-y-4">
             <div className="flex items-center gap-3">
-              <span className="w-10 h-10 aspect-square shrink-0 rounded-full bg-[#2A5041] border-2 border-[#BEF264]/70 text-[#FAF9F6] flex items-center justify-center text-xs font-extrabold tracking-wider shadow-sm">
+              <span className="w-10 h-10 aspect-square shrink-0 rounded-full bg-[#2A5041] border-2 border-white/70 text-[#FAF9F6] flex items-center justify-center text-xs font-extrabold tracking-wider shadow-sm">
                 {BRAND_SHORT}
               </span>
               <span className="text-base font-bold tracking-[0.2em] uppercase">
@@ -44,16 +44,16 @@ export const Footer: React.FC<FooterProps> = ({ onOpenLegalTab }) => {
               en tiempo real, hidratación, patitas limpias con espuma y reporte fotográfico.
             </p>
 
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#2A5041] border border-[#BEF264]/30 text-xs text-[#FAF9F6]">
-              <ShieldCheck className="w-4 h-4 text-[#BEF264]" />
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#2A5041] border border-white/20 text-xs text-[#FAF9F6]">
+              <ShieldCheck className="w-4 h-4 text-white" />
               <span>Solo mascotas de tu hogar • Atención personal</span>
             </div>
           </div>
 
           {/* Operating Hours Column (3 cols) */}
           <div className="lg:col-span-3 space-y-3">
-            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-[#BEF264]">
-              <Clock className="w-4 h-4 text-[#BEF264]" />
+            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-white">
+              <Clock className="w-4 h-4 text-white" />
               <span>Horarios de Atención</span>
             </div>
             <ul className="space-y-2 text-sm text-[#FAF9F6]/90">
@@ -63,7 +63,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenLegalTab }) => {
               </li>
               <li className="flex justify-between border-b border-white/10 pb-1.5">
                 <span className="text-[#E5E0D8]/80">Cupo Diario</span>
-                <span className="font-semibold text-[#BEF264]">Máx. 5 servicios / día</span>
+                <span className="font-semibold text-white">Máx. 5 servicios / día</span>
               </li>
               <li className="flex justify-between border-b border-white/10 pb-1.5">
                 <span className="text-[#E5E0D8]/80">Sábados y Domingos</span>
@@ -74,15 +74,15 @@ export const Footer: React.FC<FooterProps> = ({ onOpenLegalTab }) => {
 
           {/* Priority Coverage Zones (3 cols) */}
           <div className="lg:col-span-3 space-y-3">
-            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-[#BEF264]">
-              <MapPin className="w-4 h-4 text-[#BEF264]" />
+            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-white">
+              <MapPin className="w-4 h-4 text-white" />
               <span>Zonas de Cobertura</span>
             </div>
             <div className="flex flex-wrap gap-1.5">
               {PRIORITY_ZONES.map((zone) => (
                 <span
                   key={zone}
-                  className="px-2.5 py-1 rounded-lg bg-[#2A5041] border border-[#BEF264]/25 text-xs text-[#FAF9F6]"
+                  className="px-2.5 py-1 rounded-lg bg-[#2A5041] border border-white/20 text-xs text-[#FAF9F6]"
                 >
                   {zone}
                 </span>
@@ -95,7 +95,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenLegalTab }) => {
 
           {/* Direct Channels (2 cols) */}
           <div className="lg:col-span-2 space-y-3">
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#BEF264]">
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-white">
               Contacto Directo
             </p>
             <div className="flex flex-col gap-2.5">
@@ -103,7 +103,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenLegalTab }) => {
                 href={directWhatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="min-h-[44px] px-4 py-2.5 rounded-xl bg-[#BEF264] hover:bg-[#D9F99D] text-[#1E3A2F] text-xs font-extrabold inline-flex items-center justify-center gap-2 transition-all active:scale-95 shadow-sm"
+                className="min-h-[44px] px-4 py-2.5 rounded-xl bg-white hover:bg-zinc-100 text-[#1E3A2F] text-xs font-extrabold inline-flex items-center justify-center gap-2 transition-all active:scale-95 shadow-md"
               >
                 <MessageCircle className="w-4 h-4" />
                 <span>WhatsApp: {WHATSAPP_DISPLAY}</span>
@@ -115,7 +115,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenLegalTab }) => {
                 rel="noopener noreferrer"
                 className="min-h-[44px] px-4 py-2.5 rounded-xl bg-[#2A5041] hover:bg-[#346350] border border-white/15 text-[#FAF9F6] text-xs font-bold inline-flex items-center justify-center gap-2 transition-all active:scale-95"
               >
-                <Instagram className="w-4 h-4 text-[#BEF264]" />
+                <Instagram className="w-4 h-4 text-white" />
                 <span>{INSTAGRAM_HANDLE}</span>
               </a>
             </div>
@@ -128,7 +128,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenLegalTab }) => {
             <button
               type="button"
               onClick={handleTriggerHiddenAdmin}
-              className="text-left hover:text-[#BEF264] transition-colors cursor-pointer select-none"
+              className="text-left hover:text-white transition-colors cursor-pointer select-none"
             >
               © {new Date().getFullYear()} {BRAND_NAME}. Todos los derechos reservados.
             </button>
@@ -154,7 +154,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenLegalTab }) => {
             <button
               type="button"
               onClick={() => onOpenLegalTab?.('privacidad')}
-              className="hover:text-[#BEF264] transition-colors underline underline-offset-2"
+              className="hover:text-white transition-colors underline underline-offset-2"
             >
               Aviso de Privacidad (LFPDPPP)
             </button>
@@ -162,7 +162,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenLegalTab }) => {
             <button
               type="button"
               onClick={() => onOpenLegalTab?.('terminos')}
-              className="hover:text-[#BEF264] transition-colors underline underline-offset-2"
+              className="hover:text-white transition-colors underline underline-offset-2"
             >
               Términos del Servicio
             </button>
@@ -170,7 +170,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenLegalTab }) => {
             <button
               type="button"
               onClick={() => onOpenLegalTab?.('cookies')}
-              className="hover:text-[#BEF264] transition-colors underline underline-offset-2"
+              className="hover:text-white transition-colors underline underline-offset-2"
             >
               Política de Cookies
             </button>
