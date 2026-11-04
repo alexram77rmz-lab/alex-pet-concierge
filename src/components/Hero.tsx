@@ -38,7 +38,7 @@ export const Hero: React.FC = () => {
             <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-[#E5E0D8]/70 dark:bg-white/10 border border-[#DCD6CC] dark:border-white/15">
               <span className="w-2 h-2 rounded-full bg-[#1E3A2F] dark:bg-emerald-400 animate-pulse" />
               <span className="text-xs sm:text-sm font-semibold tracking-wide text-[#1E3A2F] dark:text-[#E5E0D8]">
-                Horario 10:00 a.m. a 9:00 p.m. • Máximo 5 Servicios al Día
+                Horario 9:00 a.m. a 9:00 p.m. • Máximo 5 Servicios al Día
               </span>
             </div>
 

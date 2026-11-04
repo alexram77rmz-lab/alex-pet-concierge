@@ -78,7 +78,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
   });
 
   const [selectedDayId, setSelectedDayId] = useState<string>('lun');
-  const [selectedSlotRange, setSelectedSlotRange] = useState<string>('10:00 a.m. – 11:00 a.m.');
+  const [selectedSlotRange, setSelectedSlotRange] = useState<string>('9:00 a.m. – 10:00 a.m.');
   const [requestExtraSlot, setRequestExtraSlot] = useState<boolean>(false);
 
   // Seguridad en 2 pasos (Teléfono 10 dígitos + Código SHA-256 + Anti-Fuerza Bruta)
@@ -507,7 +507,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
       {/* Encabezado limpio */}
       <div className="max-w-3xl mx-auto text-center mb-12 space-y-3">
         <span className="inline-block px-3.5 py-1 rounded-full bg-[#E5E0D8]/70 dark:bg-white/10 text-[#1E3A2F] dark:text-[#E5E0D8] text-xs font-bold uppercase tracking-widest">
-          Horario de 10:00 a.m. a 9:00 p.m. • Máximo 5 Horas al Día
+          Horario de 9:00 a.m. a 9:00 p.m. • Máximo 5 Horas al Día
         </span>
 
         <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-[#18181B] dark:text-[#FAF9F6]">
@@ -666,7 +666,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
             )}
           </div>
 
-          {/* 4. Calendario Semanal (10:00 a.m. a 9:00 p.m.) */}
+          {/* 4. Calendario Semanal (9:00 a.m. a 9:00 p.m.) */}
           <div
             id="panel-horarios-alex"
             className="space-y-3.5 pt-2 border-t border-[#E5E0D8]/80 dark:border-white/10"
@@ -678,7 +678,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
                 className="text-xs font-bold uppercase tracking-wider text-[#57534E] dark:text-stone-400 flex items-center gap-1.5 select-none"
               >
                 <Calendar className="w-4 h-4 text-[#1E3A2F] dark:text-emerald-400" />
-                <span>4. Horarios Disponibles (10:00 a.m. a 9:00 p.m.)</span>
+                <span>4. Horarios Disponibles (9:00 a.m. a 9:00 p.m.)</span>
               </button>
 
               {adminUnlocked && (

@@ -59,7 +59,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenLegalTab }) => {
             <ul className="space-y-2 text-sm text-[#FAF9F6]/90">
               <li className="flex justify-between border-b border-white/10 pb-1.5">
                 <span className="text-[#E5E0D8]/80">Lunes a Viernes</span>
-                <span className="font-semibold">10:00 a.m. – 9:00 p.m.</span>
+                <span className="font-semibold">9:00 a.m. – 9:00 p.m.</span>
               </li>
               <li className="flex justify-between border-b border-white/10 pb-1.5">
                 <span className="text-[#E5E0D8]/80">Cupo Diario</span>

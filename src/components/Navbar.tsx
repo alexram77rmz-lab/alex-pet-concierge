@@ -41,7 +41,7 @@ export const Navbar: React.FC<NavbarProps> = ({ darkMode, onToggleDarkMode }) =>
                 {BRAND_NAME}
               </span>
               <span className="text-[10px] tracking-[0.14em] text-[#57534E] dark:text-stone-400 uppercase">
-                10:00 A.M. – 9:00 P.M. • Paseos &amp; Cuidado
+                9:00 A.M. – 9:00 P.M. • Paseos &amp; Cuidado
               </span>
             </div>
           </a>
@@ -129,7 +129,7 @@ export const Navbar: React.FC<NavbarProps> = ({ darkMode, onToggleDarkMode }) =>
               <div className="px-3 py-2 rounded-xl bg-[#E5E0D8]/40 dark:bg-white/5 flex items-center justify-between text-xs text-[#57534E] dark:text-stone-300">
                 <span className="inline-flex items-center gap-1.5 font-medium">
                   <ShieldCheck className="w-4 h-4 text-[#1E3A2F] dark:text-emerald-400" />
-                  10:00 a.m. a 9:00 p.m. • Cero Manadas Ajenas
+                  9:00 a.m. a 9:00 p.m. • Cero Manadas Ajenas
                 </span>
                 <span className="font-semibold text-[#1E3A2F] dark:text-[#E5E0D8]">$200 a $160 MXN</span>
               </div>

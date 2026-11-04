@@ -29,7 +29,7 @@ export const FOUNDER_BIO = {
     'No somos una app masiva ni envío desconocidos a tu casa. Yo personalmente paso por tus mascotas, cuido su paseo o visita de principio a fin, te comparto mi ubicación en vivo por WhatsApp y te las regreso tranquilas, hidratadas y con sus patitas limpias con espuma.',
   highlights: [
     'Trato directo conmigo por WhatsApp (33 2122 2772)',
-    'Horario de 10:00 a.m. a 9:00 p.m. (máximo 5 servicios al día)',
+    'Horario de 9:00 a.m. a 9:00 p.m. (máximo 5 servicios al día)',
     'Citas separadas automáticamente para llegar siempre puntual a tu zona',
   ],
 };
@@ -103,6 +103,7 @@ export const ALL_ZONES: ZoneName[] = [
 ];
 
 const createCleanDaySlots = (prefix: string) => [
+  { id: `${prefix}-9`, startHour24: 9, timeRange: '9:00 a.m. – 10:00 a.m.', status: 'available' as const },
   { id: `${prefix}-10`, startHour24: 10, timeRange: '10:00 a.m. – 11:00 a.m.', status: 'available' as const },
   { id: `${prefix}-12`, startHour24: 12, timeRange: '12:00 p.m. – 1:00 p.m.', status: 'available' as const },
   { id: `${prefix}-14`, startHour24: 14, timeRange: '2:00 p.m. – 3:00 p.m.', status: 'available' as const },
@@ -367,7 +368,7 @@ export const SECURITY_PROTOCOL_STEPS: ProtocolStep[] = [
   {
     stepNumber: '02',
     title: 'Citas Separadas',
-    subtitle: '10:00 a.m. a 9:00 p.m.',
+    subtitle: '9:00 a.m. a 9:00 p.m.',
     description: 'Horarios con margen entre zonas para llegar siempre puntual.',
     durationBadge: 'Puntual',
   },
@@ -413,7 +414,7 @@ export const FAQ_ITEMS: FaqItem[] = [
     id: 'lluvia-o-calor',
     question: '¿Qué pasa si llueve o hace mucho calor?',
     answer:
-      'Trabajamos de 10:00 a.m. a 9:00 p.m., por lo que en días calurosos elegimos horarios frescos para proteger las almohadillas de las patas. Si llueve fuerte, podemos reprogramar o cambiar la sesión por cuidado y juego en casa.',
+      'Trabajamos de 9:00 a.m. a 9:00 p.m., por lo que en días calurosos elegimos horarios frescos para proteger las almohadillas de las patas. Si llueve fuerte, podemos reprogramar o cambiar la sesión por cuidado y juego en casa.',
     highlightTag: 'Cuidado de almohadillas',
   },
 ];
