@@ -7,6 +7,7 @@ import {
   QuoteBreakdown,
   ServiceType,
   TestimonialItem,
+  WeekDateInfo,
   ZoneName,
 } from '../types/concierge';
 
@@ -124,6 +125,65 @@ export const WEEKLY_CALENDAR: CalendarDay[] = [
   { id: 'sab', dayShort: 'Sáb', dayName: 'Sábado', isWeekend: true, slots: [] },
   { id: 'dom', dayShort: 'Dom', dayName: 'Domingo', isWeekend: true, slots: [] },
 ];
+
+/**
+ * Calcula en tiempo real las fechas exactas de la semana en curso (Lunes a Domingo)
+ * basadas en la fecha actual del dispositivo.
+ */
+export function getCurrentWeekDates(): Record<string, WeekDateInfo> {
+  const now = new Date();
+  const currentDay = now.getDay(); // 0: Dom, 1: Lun, ..., 6: Sáb
+  const diffToMonday = currentDay === 0 ? -6 : 1 - currentDay;
+  const monday = new Date(now);
+  monday.setDate(now.getDate() + diffToMonday);
+
+  const monthNames = [
+    'ene', 'feb', 'mar', 'abr', 'may', 'jun',
+    'jul', 'ago', 'sep', 'oct', 'nov', 'dic',
+  ];
+  const fullMonthNames = [
+    'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
+    'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre',
+  ];
+  const dayNames: Record<string, string> = {
+    lun: 'Lunes',
+    mar: 'Martes',
+    mie: 'Miércoles',
+    jue: 'Jueves',
+    vie: 'Viernes',
+    sab: 'Sábado',
+    dom: 'Domingo',
+  };
+
+  const daysOrder = ['lun', 'mar', 'mie', 'jue', 'vie', 'sab', 'dom'];
+  const result: Record<string, WeekDateInfo> = {};
+
+  daysOrder.forEach((id, idx) => {
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + idx);
+
+    const isToday =
+      d.getDate() === now.getDate() &&
+      d.getMonth() === now.getMonth() &&
+      d.getFullYear() === now.getFullYear();
+
+    const isPast =
+      !isToday && d < new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+    result[id] = {
+      id,
+      dayNumber: d.getDate(),
+      monthShort: monthNames[d.getMonth()],
+      monthFull: fullMonthNames[d.getMonth()],
+      badge: `${d.getDate()} ${monthNames[d.getMonth()]}`,
+      fullDateLabel: `${dayNames[id]} ${d.getDate()} de ${fullMonthNames[d.getMonth()]}`,
+      isToday,
+      isPast,
+    };
+  });
+
+  return result;
+}
 
 export function evaluateDaySlotsWithAutoBuffer(day: CalendarDay, _clientZone: ZoneName) {
   const bookedCount = day.slots.filter((s) => s.status === 'booked').length;

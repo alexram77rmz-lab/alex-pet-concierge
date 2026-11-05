@@ -34,6 +34,7 @@ import {
   calculateQuote,
   evaluateDaySlotsWithAutoBuffer,
   formatMXN,
+  getCurrentWeekDates,
 } from '../config/constants';
 import { CalendarDay, ServiceType, ZoneName } from '../types/concierge';
 import { ClubMemberRecord, STORAGE_KEY_CLUB_MEMBERS } from './PcsClub';
@@ -77,7 +78,13 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
     return WEEKLY_CALENDAR;
   });
 
-  const [selectedDayId, setSelectedDayId] = useState<string>('lun');
+  const weekDates = useMemo(() => getCurrentWeekDates(), []);
+
+  const [selectedDayId, setSelectedDayId] = useState<string>(() => {
+    const dayMap = ['dom', 'lun', 'mar', 'mie', 'jue', 'vie', 'sab'];
+    const todayIndex = new Date().getDay();
+    return dayMap[todayIndex] || 'mie';
+  });
   const [selectedSlotRange, setSelectedSlotRange] = useState<string>('9:00 a.m. – 10:00 a.m.');
   const [requestExtraSlot, setRequestExtraSlot] = useState<boolean>(false);
 
@@ -447,7 +454,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
         petName: sanitizeUserText(petName, 50),
         zone,
         customZoneText: sanitizeUserText(customZoneText, 50),
-        dayName: activeDay.dayName,
+        dayName: weekDates[activeDay.id]?.fullDateLabel || activeDay.dayName,
         specificDate: sanitizeUserText(specificDate, 20),
         slotLabel: requestExtraSlot ? 'Horario Especial / Extra' : selectedSlotRange,
         quote,
@@ -472,7 +479,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
         petName: sanitizeUserText(petName, 50),
         zone,
         customZoneText: sanitizeUserText(customZoneText, 50),
-        dayName: activeDay.dayName,
+        dayName: weekDates[activeDay.id]?.fullDateLabel || activeDay.dayName,
         specificDate: sanitizeUserText(specificDate, 20),
         slotLabel: requestExtraSlot ? 'Horario Especial / Extra' : selectedSlotRange,
         quote,
@@ -1024,19 +1031,29 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
               </div>
             )}
 
+            {/* Cabecera de fechas de la semana */}
+            <div className="flex items-center justify-between text-xs text-[#57534E] dark:text-stone-400 pb-0.5">
+              <span className="font-bold text-[#18181B] dark:text-[#FAF9F6]">
+                Semana del {weekDates['lun']?.dayNumber} de {weekDates['lun']?.monthShort} al {weekDates['dom']?.dayNumber} de {weekDates['dom']?.monthShort}
+              </span>
+              <span className="text-[11px] text-[#1E3A2F] dark:text-emerald-400 font-bold">
+                {weekDates[activeDay.id]?.fullDateLabel}
+              </span>
+            </div>
+
             {/* Pestañas de días Lun - Dom */}
             <div className="grid grid-cols-7 gap-1.5">
               {calendarDays.map((day) => {
                 const isSelected = selectedDayId === day.id;
-                const smartSlots = evaluateDaySlotsWithAutoBuffer(day, zone);
-                const freeCount = smartSlots.filter((s) => s.effectiveStatus === 'available').length;
+                const dateInfo = weekDates[day.id];
+
 
                 return (
                   <button
                     key={day.id}
                     type="button"
                     onClick={() => handleSelectDay(day.id)}
-                    className={`min-h-[58px] p-1.5 rounded-xl border flex flex-col items-center justify-center transition-all ${
+                    className={`min-h-[64px] p-1 sm:p-1.5 rounded-xl border flex flex-col items-center justify-between transition-all ${
                       isSelected
                         ? 'bg-[#1E3A2F] text-[#FAF9F6] border-[#1E3A2F]'
                         : day.isWeekend
@@ -1044,17 +1061,20 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
                         : 'bg-[#FAF9F6] dark:bg-[#0E1210] text-[#18181B] dark:text-[#FAF9F6] border-[#E5E0D8] dark:border-white/10'
                     }`}
                   >
-                    <span className="text-xs font-bold">{day.dayShort}</span>
+                    <span className="text-[11px] font-bold uppercase tracking-tight">{day.dayShort}</span>
+                    <span className="text-sm font-extrabold my-0.5">{dateInfo?.dayNumber}</span>
                     <span
-                      className={`text-[10px] mt-0.5 ${
+                      className={`text-[9px] font-semibold px-1 rounded ${
                         isSelected
                           ? 'text-[#E5E0D8]'
+                          : dateInfo?.isToday
+                          ? 'bg-[#1E3A2F] text-white font-extrabold'
                           : day.isWeekend
                           ? 'text-amber-700 dark:text-amber-400'
-                          : 'text-[#1E3A2F] dark:text-emerald-400'
+                          : 'text-[#1E3A2F] dark:text-emerald-400 font-bold'
                       }`}
                     >
-                      {day.isWeekend ? 'Extra' : `${freeCount} disp.`}
+                      {dateInfo?.isToday ? 'Hoy' : day.isWeekend ? 'Extra' : 'Libre'}
                     </span>
                   </button>
                 );
@@ -1065,7 +1085,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
             {activeDay.isWeekend ? (
               <div className="p-4 rounded-2xl bg-[#FAF9F6] dark:bg-[#0E1210] border border-[#E5E0D8] dark:border-white/10 space-y-2 text-xs sm:text-sm">
                 <p className="font-bold text-[#18181B] dark:text-[#FAF9F6]">
-                  {activeDay.dayName}: Día de descanso regular
+                  {weekDates[activeDay.id]?.fullDateLabel || activeDay.dayName}: Solicitud especial de fin de semana
                 </p>
                 <p className="text-[#57534E] dark:text-stone-300">
                   Los fines de semana normalmente no laboro, pero puedes enviarme tu solicitud por WhatsApp y
@@ -1074,6 +1094,14 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
               </div>
             ) : (
               <div className="space-y-2.5">
+                <div className="flex items-center justify-between text-xs pt-1">
+                  <span className="font-bold text-[#18181B] dark:text-[#FAF9F6]">
+                    Horarios para {weekDates[activeDay.id]?.fullDateLabel || activeDay.dayName}:
+                  </span>
+                  <span className="text-[11px] text-[#57534E] dark:text-stone-400">
+                    9:00 a.m. – 9:00 p.m.
+                  </span>
+                </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                   {evaluatedSlots.map((slot) => {
                     const isUnavailable = slot.effectiveStatus !== 'available';
@@ -1193,7 +1221,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
             </p>
             <h3 className="text-xl font-serif italic font-bold text-zinc-900 tracking-tight">{selectedService}</h3>
             <p className="text-xs text-zinc-500">
-              {activeDay.dayName} {specificDate ? `(${specificDate})` : ''} •{' '}
+              {weekDates[activeDay.id]?.fullDateLabel || activeDay.dayName} {specificDate ? `(${specificDate})` : ''} •{' '}
               {requestExtraSlot ? 'Horario Especial a confirmar' : selectedSlotRange} • {zone}
             </p>
           </div>

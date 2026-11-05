@@ -27,6 +27,17 @@ export interface CalendarDay {
   slots: CalendarSlot[];
 }
 
+export interface WeekDateInfo {
+  id: string;
+  dayNumber: number;
+  monthShort: string;
+  monthFull: string;
+  badge: string;
+  fullDateLabel: string;
+  isToday: boolean;
+  isPast: boolean;
+}
+
 export interface PricingTableRow {
   dogsLabel: string;
   petCount: number;
