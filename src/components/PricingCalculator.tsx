@@ -507,7 +507,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
       {/* Encabezado limpio */}
       <div className="max-w-3xl mx-auto text-center mb-12 space-y-3">
         <span className="inline-block px-3.5 py-1 rounded-full bg-[#E5E0D8]/70 dark:bg-white/10 text-[#1E3A2F] dark:text-[#E5E0D8] text-xs font-bold uppercase tracking-widest">
-          Horario de 9:00 a.m. a 9:00 p.m. • Máximo 5 Horas al Día
+          Horario de 9:00 a.m. a 9:00 p.m. • Máximo 6 Horas al Día
         </span>
 
         <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-[#18181B] dark:text-[#FAF9F6]">
@@ -519,8 +519,8 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
 
         <p className="text-sm sm:text-base text-[#57534E] dark:text-stone-300">
           <strong>$200 por 1 perro, $190 c/u por 2, $180 c/u por 3, $170 c/u por 4 y $160 c/u por 5</strong>{' '}
-          (del mismo domicilio). Cobertura en{' '}
-          <strong>Puerta de Hierro, Colomos, Jardín Real y Valle Real</strong>.
+          (del mismo domicilio). Exclusivo para{' '}
+          <strong>Puerta de Hierro, Colomos, Providencia, Jardín Real, Valle Real y cotos residenciales</strong>.
         </p>
       </div>
 
@@ -597,7 +597,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
 
             <div className="space-y-2">
               <label className="text-xs font-bold uppercase tracking-wider text-[#57534E] dark:text-stone-400 block">
-                Horas / Sesiones (Máx 5/día)
+                Horas / Sesiones (Máx 6/día)
               </label>
               <div className="min-h-[54px] px-3 rounded-xl bg-[#FAF9F6] dark:bg-[#0E1210] border border-[#E5E0D8] dark:border-white/10 flex items-center justify-between">
                 <button
@@ -630,7 +630,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
           {/* 3. Zona */}
           <div className="space-y-2.5 pt-2 border-t border-[#E5E0D8]/80 dark:border-white/10">
             <label className="text-xs font-bold uppercase tracking-wider text-[#57534E] dark:text-stone-400 block">
-              3. Selecciona tu Zona
+              3. Exclusivo para tu Zona o Coto
             </label>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {ALL_ZONES.map((z) => {
@@ -653,13 +653,13 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
               })}
             </div>
 
-            {zone === 'Otra zona (Confirmar por WhatsApp)' && (
+            {(zone === 'Otra colonia o coto residencial' || zone === 'Otra zona (Confirmar por WhatsApp)') && (
               <div className="pt-1">
                 <input
                   type="text"
                   value={customZoneText}
                   onChange={(e) => setCustomZoneText(sanitizeUserText(e.target.value, 50))}
-                  placeholder="Escribe tu colonia (te confirmo por WhatsApp si aplica algún extra)"
+                  placeholder="Escribe tu colonia o coto (ej. Camino Viejo a Tesistán, La Cima, etc.)"
                   className="min-h-[44px] w-full px-3.5 py-2 rounded-xl bg-[#FAF9F6] dark:bg-[#0E1210] border border-[#DCD6CC] dark:border-white/15 text-xs sm:text-sm"
                 />
               </div>
@@ -1256,7 +1256,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
           ) : (
             <div className="p-3.5 rounded-2xl bg-zinc-50 border border-zinc-200 flex items-center gap-2 text-xs text-zinc-700">
               <CheckCircle2 className="w-4 h-4 text-[#15803D] shrink-0" />
-              <span>Horario disponible y zona dentro de cobertura normal (sin cargos extra).</span>
+              <span>Horario disponible y atención personalizada directa en tu domicilio.</span>
             </div>
           )}
 

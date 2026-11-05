@@ -146,7 +146,7 @@ export const LegalModal: React.FC<LegalModalProps> = ({
                 <div className="space-y-1.5">
                   <h4 className="font-bold text-[#18181B] dark:text-[#FAF9F6]">2. Tarifas y Descuentos por Domicilio</h4>
                   <p>
-                    Las tarifas oficiales son: 1 perro: $200 MXN; 2 perros: $190 c/u ($380 total); 3 perros: $180 c/u ($540 total); 4 perros: $170 c/u ($680 total); 5 perros: $160 c/u ($800 total). El cupo máximo diario es de 5 servicios para garantizar puntualidad y dedicación plena.
+                    Las tarifas oficiales son: 1 perro: $200 MXN; 2 perros: $190 c/u ($380 total); 3 perros: $180 c/u ($540 total); 4 perros: $170 c/u ($680 total); 5 perros: $160 c/u ($800 total). El cupo máximo diario es de 6 servicios para garantizar puntualidad y dedicación plena.
                   </p>
                 </div>
 

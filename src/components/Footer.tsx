@@ -63,7 +63,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenLegalTab }) => {
               </li>
               <li className="flex justify-between border-b border-white/10 pb-1.5">
                 <span className="text-[#E5E0D8]/80">Cupo Diario</span>
-                <span className="font-semibold text-white">Máx. 5 servicios / día</span>
+                <span className="font-semibold text-white">Máx. 6 servicios / día</span>
               </li>
               <li className="flex justify-between border-b border-white/10 pb-1.5">
                 <span className="text-[#E5E0D8]/80">Sábados y Domingos</span>
@@ -76,7 +76,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenLegalTab }) => {
           <div className="lg:col-span-3 space-y-3">
             <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-white">
               <MapPin className="w-4 h-4 text-white" />
-              <span>Zonas de Cobertura</span>
+              <span>Exclusivo para</span>
             </div>
             <div className="flex flex-wrap gap-1.5">
               {PRIORITY_ZONES.map((zone) => (
@@ -89,7 +89,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenLegalTab }) => {
               ))}
             </div>
             <p className="text-xs text-[#E5E0D8]/75">
-              ¿Te encuentras en otra colonia? Escríbeme por WhatsApp para revisar distancia.
+              ¿Vives en otra colonia o coto? Escríbeme por WhatsApp y con gusto coordinamos tu servicio.
             </p>
           </div>
 

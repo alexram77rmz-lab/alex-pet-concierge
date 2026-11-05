@@ -38,7 +38,7 @@ export const Hero: React.FC = () => {
             <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-[#E5E0D8]/70 dark:bg-white/10 border border-[#DCD6CC] dark:border-white/15">
               <span className="w-2 h-2 rounded-full bg-[#1E3A2F] dark:bg-emerald-400 animate-pulse" />
               <span className="text-xs sm:text-sm font-semibold tracking-wide text-[#1E3A2F] dark:text-[#E5E0D8]">
-                Horario 9:00 a.m. a 9:00 p.m. • Máximo 5 Servicios al Día
+                Horario 9:00 a.m. a 9:00 p.m. • Máximo 6 Servicios al Día
               </span>
             </div>
 
@@ -53,7 +53,7 @@ export const Hero: React.FC = () => {
 
             {/* Exact Subtitle with Promo */}
             <p className="text-base sm:text-lg lg:text-xl text-[#57534E] dark:text-stone-300 leading-relaxed max-w-2xl">
-              Cobertura en Puerta de Hierro, Colomos, Jardín Real y Valle Real. Paseos solo para las
+              Exclusivo para Puerta de Hierro, Colomos, Providencia, Jardín Real, Valle Real y cotos residenciales de Zapopan. Paseos solo para las
               mascotas de tu casa:{' '}
               <strong className="text-[#18181B] dark:text-[#FAF9F6] font-bold">
                 $200 por 1 perro, $190 c/u por 2, $180 c/u por 3, $170 c/u por 4 y $160 c/u por 5

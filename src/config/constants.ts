@@ -29,13 +29,13 @@ export const FOUNDER_BIO = {
     'No somos una app masiva ni envío desconocidos a tu casa. Yo personalmente paso por tus mascotas, cuido su paseo o visita de principio a fin, te comparto mi ubicación en vivo por WhatsApp y te las regreso tranquilas, hidratadas y con sus patitas limpias con espuma.',
   highlights: [
     'Trato directo conmigo por WhatsApp (33 2122 2772)',
-    'Horario de 9:00 a.m. a 9:00 p.m. (máximo 5 servicios al día)',
+    'Horario de 9:00 a.m. a 9:00 p.m. (máximo 6 servicios al día)',
     'Citas separadas automáticamente para llegar siempre puntual a tu zona',
   ],
 };
 
 export const BASE_HOURLY_RATE = 200; // $200 MXN base por 1 perro
-export const MAX_DAILY_HOURS = 5; // Máximo 5 servicios por día
+export const MAX_DAILY_HOURS = 6; // Máximo 6 servicios por día
 
 /**
  * Tabla oficial de precios por perros del mismo domicilio:
@@ -93,13 +93,14 @@ export const SERVICE_OPTIONS: {
 export const PRIORITY_ZONES: ZoneName[] = [
   'Puerta de Hierro',
   'Colomos',
+  'Providencia',
   'Jardín Real',
   'Valle Real',
 ];
 
 export const ALL_ZONES: ZoneName[] = [
   ...PRIORITY_ZONES,
-  'Otra zona (Confirmar por WhatsApp)',
+  'Otra colonia o coto residencial',
 ];
 
 const createCleanDaySlots = (prefix: string) => [
@@ -110,6 +111,7 @@ const createCleanDaySlots = (prefix: string) => [
   { id: `${prefix}-16`, startHour24: 16, timeRange: '4:00 p.m. – 5:00 p.m.', status: 'available' as const },
   { id: `${prefix}-17`, startHour24: 17, timeRange: '5:00 p.m. – 6:00 p.m.', status: 'available' as const },
   { id: `${prefix}-18`, startHour24: 18, timeRange: '6:00 p.m. – 7:00 p.m.', status: 'available' as const },
+  { id: `${prefix}-19`, startHour24: 19, timeRange: '7:00 p.m. – 8:00 p.m.', status: 'available' as const },
   { id: `${prefix}-20`, startHour24: 20, timeRange: '8:00 p.m. – 9:00 p.m.', status: 'available' as const },
 ];
 
@@ -147,7 +149,7 @@ export function evaluateDaySlotsWithAutoBuffer(day: CalendarDay, _clientZone: Zo
       return {
         ...slot,
         effectiveStatus: 'auto_buffer' as const,
-        reasonLabel: 'Cupo diario de 5 hrs completo',
+        reasonLabel: 'Cupo diario de 6 hrs completo',
       };
     }
 
@@ -209,9 +211,6 @@ export function calculateQuote(params: {
   if (params.isExtraSlot) {
     specialNotes.push('Fecha u horario especial (sujeto a confirmación)');
   }
-  if (params.zone === 'Otra zona (Confirmar por WhatsApp)') {
-    specialNotes.push('Zona fuera del polígono base (confirmar si aplica traslado)');
-  }
 
   return {
     petCount,
@@ -253,9 +252,13 @@ export function buildWhatsAppMessage(params: {
     params.petName.trim() ||
     (params.quote.petCount === 1 ? 'mi mascota' : `mis ${params.quote.petCount} mascotas`);
 
+  const isCustomZone =
+    params.zone === 'Otra colonia o coto residencial' ||
+    params.zone === 'Otra zona (Confirmar por WhatsApp)';
+
   const finalZone =
-    params.zone === 'Otra zona (Confirmar por WhatsApp)' && params.customZoneText?.trim()
-      ? `${params.customZoneText.trim()} (fuera de zona base)`
+    isCustomZone && params.customZoneText?.trim()
+      ? params.customZoneText.trim()
       : params.zone;
 
   const datePart = params.specificDate?.trim()

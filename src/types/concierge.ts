@@ -3,8 +3,10 @@ export type ServiceType = 'Paseo Privado (Perros)' | 'Cuidado en Casa (Gatos / P
 export type ZoneName =
   | 'Puerta de Hierro'
   | 'Colomos'
+  | 'Providencia'
   | 'Jardín Real'
   | 'Valle Real'
+  | 'Otra colonia o coto residencial'
   | 'Otra zona (Confirmar por WhatsApp)';
 
 export type DiscountTierKey = 'tier_1' | 'tier_2' | 'tier_3' | 'tier_4' | 'tier_5';
