@@ -130,12 +130,12 @@ export const WEEKLY_CALENDAR: CalendarDay[] = [
  * Calcula en tiempo real las fechas exactas de la semana en curso (Lunes a Domingo)
  * basadas en la fecha actual del dispositivo.
  */
-export function getCurrentWeekDates(): Record<string, WeekDateInfo> {
+export function getCurrentWeekDates(weekOffset: number = 0): Record<string, WeekDateInfo> {
   const now = new Date();
   const currentDay = now.getDay(); // 0: Dom, 1: Lun, ..., 6: Sáb
   const diffToMonday = currentDay === 0 ? -6 : 1 - currentDay;
   const monday = new Date(now);
-  monday.setDate(now.getDate() + diffToMonday);
+  monday.setDate(now.getDate() + diffToMonday + (weekOffset * 7));
 
   const monthNames = [
     'ene', 'feb', 'mar', 'abr', 'may', 'jun',
@@ -157,18 +157,20 @@ export function getCurrentWeekDates(): Record<string, WeekDateInfo> {
 
   const daysOrder = ['lun', 'mar', 'mie', 'jue', 'vie', 'sab', 'dom'];
   const result: Record<string, WeekDateInfo> = {};
+  const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
   daysOrder.forEach((id, idx) => {
     const d = new Date(monday);
     d.setDate(monday.getDate() + idx);
+    const dMidnight = new Date(d.getFullYear(), d.getMonth(), d.getDate());
 
     const isToday =
+      weekOffset === 0 &&
       d.getDate() === now.getDate() &&
       d.getMonth() === now.getMonth() &&
       d.getFullYear() === now.getFullYear();
 
-    const isPast =
-      !isToday && d < new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const isPast = weekOffset === 0 && dMidnight < todayMidnight;
 
     result[id] = {
       id,

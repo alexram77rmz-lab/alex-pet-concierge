@@ -78,7 +78,8 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
     return WEEKLY_CALENDAR;
   });
 
-  const weekDates = useMemo(() => getCurrentWeekDates(), []);
+  const [weekOffset, setWeekOffset] = useState<0 | 1>(0);
+  const weekDates = useMemo(() => getCurrentWeekDates(weekOffset), [weekOffset]);
 
   const [selectedDayId, setSelectedDayId] = useState<string>(() => {
     const dayMap = ['dom', 'lun', 'mar', 'mie', 'jue', 'vie', 'sab'];
@@ -221,6 +222,11 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
   }, [zone, activeDay, evaluatedSlots, selectedSlotRange, requestExtraSlot]);
 
   const handleSelectDay = (dayId: string) => {
+    const dateInfo = weekDates[dayId];
+    if (dateInfo?.isPast) {
+      onShowToast('Ese día ya pasó en esta semana. Elige hoy o un día próximo.');
+      return;
+    }
     setSelectedDayId(dayId);
     const dayObj = calendarDays.find((d) => d.id === dayId);
     if (!dayObj) return;
@@ -234,6 +240,25 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
       setSelectedSlotRange(firstAvailable ? firstAvailable.timeRange : 'Horario extra a acordar');
     }
   };
+
+  const handleSelectWeekOffset = (offset: 0 | 1) => {
+    setWeekOffset(offset);
+    if (offset === 0) {
+      const dayMap = ['dom', 'lun', 'mar', 'mie', 'jue', 'vie', 'sab'];
+      const todayIndex = new Date().getDay();
+      const todayId = dayMap[todayIndex] || 'mie';
+      handleSelectDay(todayId);
+    } else {
+      handleSelectDay('lun');
+    }
+  };
+
+  useEffect(() => {
+    const dayMap = ['dom', 'lun', 'mar', 'mie', 'jue', 'vie', 'sab'];
+    const todayIndex = new Date().getDay();
+    const todayId = dayMap[todayIndex] || 'mie';
+    handleSelectDay(todayId);
+  }, []);
 
   // Paso 1: Validar formato de teléfono (10 dígitos)
   const handleStep1PhoneSubmit = (e: React.FormEvent) => {
@@ -1031,41 +1056,70 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
               </div>
             )}
 
-            {/* Cabecera de fechas de la semana */}
-            <div className="flex items-center justify-between text-xs text-[#57534E] dark:text-stone-400 pb-0.5">
-              <span className="font-bold text-[#18181B] dark:text-[#FAF9F6]">
-                Semana del {weekDates['lun']?.dayNumber} de {weekDates['lun']?.monthShort} al {weekDates['dom']?.dayNumber} de {weekDates['dom']?.monthShort}
-              </span>
-              <span className="text-[11px] text-[#1E3A2F] dark:text-emerald-400 font-bold">
+            {/* Selector de Semana (Esta semana vs Siguiente semana) */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-1">
+              <div className="inline-flex p-1 rounded-xl bg-[#FAF9F6] dark:bg-[#0E1210] border border-[#DCD6CC] dark:border-white/10 self-start">
+                <button
+                  type="button"
+                  onClick={() => handleSelectWeekOffset(0)}
+                  className={`min-h-[34px] px-3.5 rounded-lg text-xs font-bold transition-all ${
+                    weekOffset === 0
+                      ? 'bg-[#1E3A2F] text-white shadow-sm'
+                      : 'text-[#57534E] dark:text-stone-300 hover:text-[#18181B]'
+                  }`}
+                >
+                  Esta Semana ({weekDates['lun']?.dayNumber} - {weekDates['dom']?.dayNumber} {weekDates['dom']?.monthShort})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleSelectWeekOffset(1)}
+                  className={`min-h-[34px] px-3.5 rounded-lg text-xs font-bold transition-all ${
+                    weekOffset === 1
+                      ? 'bg-[#1E3A2F] text-white shadow-sm'
+                      : 'text-[#57534E] dark:text-stone-300 hover:text-[#18181B]'
+                  }`}
+                >
+                  Siguiente Semana →
+                </button>
+              </div>
+
+              <span className="text-xs font-bold text-[#1E3A2F] dark:text-emerald-400">
                 {weekDates[activeDay.id]?.fullDateLabel}
               </span>
             </div>
 
             {/* Pestañas de días Lun - Dom */}
-            <div className="grid grid-cols-7 gap-1.5">
+            <div className="grid grid-cols-7 gap-1 sm:gap-1.5">
               {calendarDays.map((day) => {
                 const isSelected = selectedDayId === day.id;
                 const dateInfo = weekDates[day.id];
-
+                const isPast = dateInfo?.isPast;
 
                 return (
                   <button
                     key={day.id}
                     type="button"
+                    disabled={isPast}
                     onClick={() => handleSelectDay(day.id)}
                     className={`min-h-[64px] p-1 sm:p-1.5 rounded-xl border flex flex-col items-center justify-between transition-all ${
-                      isSelected
-                        ? 'bg-[#1E3A2F] text-[#FAF9F6] border-[#1E3A2F]'
+                      isPast
+                        ? 'opacity-30 bg-stone-100 dark:bg-white/5 cursor-not-allowed border-stone-200 dark:border-white/5 select-none'
+                        : isSelected
+                        ? 'bg-[#1E3A2F] text-[#FAF9F6] border-[#1E3A2F] shadow-sm ring-2 ring-[#1E3A2F]/20'
+                        : dateInfo?.isToday
+                        ? 'bg-[#E4F2D3]/70 dark:bg-emerald-950/40 text-[#1E3A2F] dark:text-[#FAF9F6] border-[#1E3A2F]/50 font-bold'
                         : day.isWeekend
                         ? 'bg-[#FAF9F6]/60 dark:bg-white/5 text-[#57534E] dark:text-stone-400 border-dashed border-[#DCD6CC] dark:border-white/10'
-                        : 'bg-[#FAF9F6] dark:bg-[#0E1210] text-[#18181B] dark:text-[#FAF9F6] border-[#E5E0D8] dark:border-white/10'
+                        : 'bg-[#FAF9F6] dark:bg-[#0E1210] text-[#18181B] dark:text-[#FAF9F6] border-[#E5E0D8] dark:border-white/10 hover:border-[#1E3A2F]/50'
                     }`}
                   >
                     <span className="text-[11px] font-bold uppercase tracking-tight">{day.dayShort}</span>
                     <span className="text-sm font-extrabold my-0.5">{dateInfo?.dayNumber}</span>
                     <span
                       className={`text-[9px] font-semibold px-1 rounded ${
-                        isSelected
+                        isPast
+                          ? 'text-stone-400 dark:text-stone-600'
+                          : isSelected
                           ? 'text-[#E5E0D8]'
                           : dateInfo?.isToday
                           ? 'bg-[#1E3A2F] text-white font-extrabold'
@@ -1074,7 +1128,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
                           : 'text-[#1E3A2F] dark:text-emerald-400 font-bold'
                       }`}
                     >
-                      {dateInfo?.isToday ? 'Hoy' : day.isWeekend ? 'Extra' : 'Libre'}
+                      {isPast ? 'Pasado' : dateInfo?.isToday ? 'Hoy' : day.isWeekend ? 'Extra' : 'Libre'}
                     </span>
                   </button>
                 );
