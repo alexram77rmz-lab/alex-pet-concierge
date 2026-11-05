@@ -24,7 +24,6 @@ import {
 } from 'lucide-react';
 import {
   ALL_ZONES,
-  BASE_HOURLY_RATE,
   PRIORITY_ZONES,
   SERVICE_OPTIONS,
   WEEKLY_CALENDAR,
@@ -51,7 +50,8 @@ interface PricingCalculatorProps {
   onShowToast: (message: string) => void;
 }
 
-const STORAGE_KEY_CALENDAR = 'pcs_calendar_v2';
+const STORAGE_KEY_CALENDAR = 'pcs_calendar_v4';
+const SCHEDULE_SCHEMA_VERSION = 4;
 const STORAGE_KEY_GH_TOKEN = 'pcs_gh_token_v1';
 const GITHUB_REPO = 'alexram77rmz-lab/alex-pet-concierge';
 const GITHUB_FILE_PATH = 'public/schedule.json';
@@ -183,7 +183,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
         const res = await fetch(rawUrl, { cache: 'no-store' });
         if (res.ok) {
           const data = await res.json();
-          if (data && Array.isArray(data.days)) {
+          if (data && data.schemaVersion === SCHEDULE_SCHEMA_VERSION && Array.isArray(data.days)) {
             setCalendarDays(data.days);
             localStorage.setItem(STORAGE_KEY_CALENDAR, JSON.stringify(data.days));
           }
@@ -211,7 +211,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
   );
 
   useEffect(() => {
-    if (activeDay.isWeekend || requestExtraSlot) return;
+    if (activeDay.id === 'dom' || requestExtraSlot) return;
     const current = evaluatedSlots.find((s) => s.timeRange === selectedSlotRange);
     if (!current || current.effectiveStatus !== 'available') {
       const nextAvailable = evaluatedSlots.find((s) => s.effectiveStatus === 'available');
@@ -221,9 +221,11 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
     }
   }, [zone, activeDay, evaluatedSlots, selectedSlotRange, requestExtraSlot]);
 
-  const handleSelectDay = (dayId: string) => {
-    const dateInfo = weekDates[dayId];
-    if (dateInfo?.isPast) {
+  const handleSelectDay = (dayId: string, customOffset?: 0 | 1) => {
+    const targetOffset = customOffset !== undefined ? customOffset : weekOffset;
+    const targetDates = customOffset !== undefined ? getCurrentWeekDates(customOffset) : weekDates;
+    const dateInfo = targetDates[dayId];
+    if (targetOffset === 0 && dateInfo?.isPast) {
       onShowToast('Ese día ya pasó en esta semana. Elige hoy o un día próximo.');
       return;
     }
@@ -247,9 +249,9 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
       const dayMap = ['dom', 'lun', 'mar', 'mie', 'jue', 'vie', 'sab'];
       const todayIndex = new Date().getDay();
       const todayId = dayMap[todayIndex] || 'mie';
-      handleSelectDay(todayId);
+      handleSelectDay(todayId, 0);
     } else {
-      handleSelectDay('lun');
+      handleSelectDay('lun', 1);
     }
   };
 
@@ -427,6 +429,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
       }
 
       const payloadObj = {
+        schemaVersion: SCHEDULE_SCHEMA_VERSION,
         updatedAt: new Date().toISOString(),
         days: calendarDays,
         members: clubMembers,
@@ -550,9 +553,25 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
         </h2>
 
         <p className="text-sm sm:text-base text-[#57534E] dark:text-stone-300">
-          <strong>$200 por 1 perro, $190 c/u por 2, $180 c/u por 3, $170 c/u por 4 y $160 c/u por 5</strong>{' '}
-          (del mismo domicilio). Exclusivo para{' '}
-          <strong>Puerta de Hierro, Colomos, Providencia, Jardín Real, Valle Real y cotos residenciales</strong>.
+          {activeDay.isWeekend ? (
+            <>
+              <strong className="text-amber-700 dark:text-amber-400">
+                Tarifa Fin de Semana (Sábado / Domingo): $250 por 1 perro, $240 c/u por 2, $230 c/u por 3, $220 c/u por 4 y $210 c/u por 5
+              </strong>{' '}
+              (del mismo domicilio).
+            </>
+          ) : (
+            <>
+              <strong>$200 por 1 perro, $190 c/u por 2, $180 c/u por 3, $170 c/u por 4 y $160 c/u por 5</strong>{' '}
+              (Lunes a Viernes • Sábados tarifa fin de semana $250 base).
+            </>
+          )}{' '}
+          Exclusivo para{' '}
+          <strong>Puerta de Hierro, Colomos, Jardín Real y Valle Real</strong> •{' '}
+          <span className="font-semibold text-[#1E3A2F] dark:text-emerald-300">
+            Zona VIP disponible para cotizar en Camino Viejo a Tesistán y cotos residenciales
+          </span>
+          .
         </p>
       </div>
 
@@ -600,13 +619,22 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
           {/* 2. Mascotas y Horas */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-[#E5E0D8]/80 dark:border-white/10">
             <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-wider text-[#57534E] dark:text-stone-400 block">
-                2. Perros del mismo domicilio
-              </label>
+              <div className="flex items-center justify-between gap-2">
+                <label className="text-xs font-bold uppercase tracking-wider text-[#57534E] dark:text-stone-400 block">
+                  2. Perros del mismo domicilio
+                </label>
+                {activeDay.isWeekend && (
+                  <span className="px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-800 dark:text-amber-300 text-[10px] font-extrabold">
+                    Sáb/Dom: $250 base
+                  </span>
+                )}
+              </div>
               <div className="grid grid-cols-5 gap-1.5">
                 {[1, 2, 3, 4, 5].map((n) => {
                   const active = petCount === n;
-                  const priceMap: Record<number, number> = { 1: 200, 2: 190, 3: 180, 4: 170, 5: 160 };
+                  const priceMap: Record<number, number> = activeDay.isWeekend
+                    ? { 1: 250, 2: 240, 3: 230, 4: 220, 5: 210 }
+                    : { 1: 200, 2: 190, 3: 180, 4: 170, 5: 160 };
                   const price = priceMap[n];
                   return (
                     <button
@@ -661,12 +689,18 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
 
           {/* 3. Zona */}
           <div className="space-y-2.5 pt-2 border-t border-[#E5E0D8]/80 dark:border-white/10">
-            <label className="text-xs font-bold uppercase tracking-wider text-[#57534E] dark:text-stone-400 block">
-              3. Exclusivo para tu Zona o Coto
-            </label>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            <div className="flex flex-wrap items-center justify-between gap-1">
+              <label className="text-xs font-bold uppercase tracking-wider text-[#57534E] dark:text-stone-400 block">
+                3. Exclusivo para Puerta de Hierro, Colomos, Jardín Real y Valle Real
+              </label>
+              <span className="text-[11px] font-semibold text-[#1E3A2F] dark:text-emerald-400">
+                + Zona VIP disponible para cotizar (Camino Viejo a Tesistán)
+              </span>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {ALL_ZONES.map((z) => {
                 const active = zone === z;
+                const isVipZone = z.startsWith('Zona VIP');
                 return (
                   <button
                     key={z}
@@ -675,6 +709,8 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
                     className={`min-h-[46px] px-3 py-2 rounded-xl border text-xs font-semibold flex items-center gap-1.5 text-left transition-all ${
                       active
                         ? 'bg-[#1E3A2F] text-[#FAF9F6] border-[#1E3A2F]'
+                        : isVipZone
+                        ? 'bg-[#E4F2D3]/50 dark:bg-emerald-950/30 text-[#1E3A2F] dark:text-emerald-200 border-[#1E3A2F]/30 dark:border-emerald-500/30'
                         : 'bg-[#FAF9F6] dark:bg-[#0E1210] text-[#18181B] dark:text-stone-200 border-[#E5E0D8] dark:border-white/10'
                     }`}
                   >
@@ -685,15 +721,20 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
               })}
             </div>
 
-            {(zone === 'Otra colonia o coto residencial' || zone === 'Otra zona (Confirmar por WhatsApp)') && (
-              <div className="pt-1">
+            {(zone === 'Zona VIP: Camino Viejo a Tesistán / Cotos' ||
+              zone === 'Otra colonia o coto residencial' ||
+              zone === 'Otra zona (Confirmar por WhatsApp)') && (
+              <div className="pt-1 space-y-1">
                 <input
                   type="text"
                   value={customZoneText}
                   onChange={(e) => setCustomZoneText(sanitizeUserText(e.target.value, 50))}
-                  placeholder="Escribe tu colonia o coto (ej. Camino Viejo a Tesistán, La Cima, etc.)"
+                  placeholder="Escribe el nombre de tu coto o colonia (ej. Camino Viejo a Tesistán, Capital Norte, La Cima...)"
                   className="min-h-[44px] w-full px-3.5 py-2 rounded-xl bg-[#FAF9F6] dark:bg-[#0E1210] border border-[#DCD6CC] dark:border-white/15 text-xs sm:text-sm"
                 />
+                <p className="text-[11px] text-[#57534E] dark:text-stone-400">
+                  Zona VIP disponible para cotizar en Camino Viejo a Tesistán y cotos residenciales cercanos.
+                </p>
               </div>
             )}
           </div>
@@ -1151,19 +1192,21 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
                 {activeDay.id === 'sab' && (
                   <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-600/25 text-xs text-amber-900 dark:text-amber-200 space-y-1">
                     <p className="font-extrabold flex items-center gap-1.5">
-                      <span>Sábado: Horarios matutinos (9:00 a.m. a 3:00 p.m.) • Tarifa fin de semana $250 MXN</span>
+                      <span>Sábado: Horarios matutinos (9:00 a.m. a 3:00 p.m.) • Tarifa fin de semana $250 MXN base ($250 por 1 perro, $240 c/u por 2, $230 c/u por 3)</span>
                     </p>
                     <p className="text-[11px] opacity-90 leading-relaxed">
                       De 4:00 p.m. a 9:00 p.m. no disponible por compromisos escolares.
                     </p>
                   </div>
                 )}
-                <div className="flex items-center justify-between text-xs pt-1">
+                <div className="flex flex-wrap items-center justify-between gap-1 text-xs pt-1">
                   <span className="font-bold text-[#18181B] dark:text-[#FAF9F6]">
                     Horarios para {weekDates[activeDay.id]?.fullDateLabel || activeDay.dayName}:
                   </span>
                   <span className="text-[11px] text-[#57534E] dark:text-stone-400">
-                    {activeDay.id === 'sab' ? '9:00 a.m. – 3:00 p.m. (Tarifa fin de semana $250)' : '9:00 a.m. – 9:00 p.m.'}
+                    {activeDay.id === 'sab'
+                      ? '9:00 a.m. – 3:00 p.m. (15 min de traslado entre cada cita • $250 base)'
+                      : 'Con 15 min de margen entre cada cita para llegar puntual'}
                   </span>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -1294,7 +1337,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
             <div className="flex items-center justify-between text-zinc-600">
               <span>
                 Subtotal ({quote.petCount} {quote.petCount === 1 ? 'perro' : 'perros'} × $
-                {BASE_HOURLY_RATE} × {quote.hours} {quote.hours === 1 ? 'hr' : 'hrs'})
+                {quote.baseRatePerPet} × {quote.hours} {quote.hours === 1 ? 'hr' : 'hrs'})
               </span>
               <span className="font-semibold text-zinc-900">{formatMXN(quote.subtotalBase)} MXN</span>
             </div>
@@ -1309,7 +1352,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
             </div>
 
             <div className="flex items-center justify-between text-zinc-600 pt-2 border-t border-zinc-200">
-              <span>Tarifa por perro / hora</span>
+              <span>Tarifa por perro / hora {activeDay.isWeekend ? '(Fin de semana)' : ''}</span>
               <span className="px-2.5 py-0.5 rounded-lg bg-zinc-100 font-bold text-zinc-800">
                 {formatMXN(quote.ratePerPetAfterDiscount)} MXN c/u
               </span>
@@ -1320,7 +1363,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
                 <span className="text-xs uppercase tracking-widest text-zinc-500 block">
                   Total
                 </span>
-                <span className="text-[11px] text-zinc-400 font-serif italic">{quote.tierBadge}</span>
+                <span className="text-[11px] text-zinc-500 font-serif italic">{quote.tierBadge}</span>
               </div>
               <motion.span
                 key={quote.total}
@@ -1334,10 +1377,10 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
           </div>
 
           {quote.isSpecialRequest ? (
-            <div className="p-3.5 rounded-2xl bg-white/10 border border-white/15 flex items-start gap-2.5 text-xs text-[#E5E0D8]">
-              <Info className="w-4 h-4 text-amber-300 shrink-0 mt-0.5" />
+            <div className="p-3.5 rounded-2xl bg-amber-50 border border-amber-200 flex items-start gap-2.5 text-xs text-amber-900">
+              <Info className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
               <div className="space-y-1">
-                <p className="font-bold text-white">Detalles a confirmar en WhatsApp:</p>
+                <p className="font-bold text-amber-950">Detalles de tarifa / horario en WhatsApp:</p>
                 <ul className="list-disc list-inside space-y-0.5">
                   {quote.specialNotes.map((note) => (
                     <li key={note}>{note}</li>

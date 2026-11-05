@@ -94,32 +94,33 @@ export const SERVICE_OPTIONS: {
 export const PRIORITY_ZONES: ZoneName[] = [
   'Puerta de Hierro',
   'Colomos',
-  'Providencia',
   'Jardín Real',
   'Valle Real',
 ];
 
 export const ALL_ZONES: ZoneName[] = [
   ...PRIORITY_ZONES,
+  'Zona VIP: Camino Viejo a Tesistán / Cotos',
   'Otra colonia o coto residencial',
 ];
 
 const createCleanDaySlots = (prefix: string) => [
   { id: `${prefix}-9`, startHour24: 9, timeRange: '9:00 a.m. – 10:00 a.m.', status: 'available' as const },
-  { id: `${prefix}-10`, startHour24: 10, timeRange: '10:00 a.m. – 11:00 a.m.', status: 'available' as const },
-  { id: `${prefix}-12`, startHour24: 12, timeRange: '12:00 p.m. – 1:00 p.m.', status: 'available' as const },
+  { id: `${prefix}-1015`, startHour24: 10, timeRange: '10:15 a.m. – 11:15 a.m.', status: 'available' as const },
+  { id: `${prefix}-1130`, startHour24: 11, timeRange: '11:30 a.m. – 12:30 p.m.', status: 'available' as const },
+  { id: `${prefix}-1245`, startHour24: 12, timeRange: '12:45 p.m. – 1:45 p.m.', status: 'available' as const },
   { id: `${prefix}-14`, startHour24: 14, timeRange: '2:00 p.m. – 3:00 p.m.', status: 'available' as const },
   { id: `${prefix}-16`, startHour24: 16, timeRange: '4:00 p.m. – 5:00 p.m.', status: 'available' as const },
-  { id: `${prefix}-17`, startHour24: 17, timeRange: '5:00 p.m. – 6:00 p.m.', status: 'available' as const },
-  { id: `${prefix}-18`, startHour24: 18, timeRange: '6:00 p.m. – 7:00 p.m.', status: 'available' as const },
-  { id: `${prefix}-19`, startHour24: 19, timeRange: '7:00 p.m. – 8:00 p.m.', status: 'available' as const },
-  { id: `${prefix}-20`, startHour24: 20, timeRange: '8:00 p.m. – 9:00 p.m.', status: 'available' as const },
+  { id: `${prefix}-1715`, startHour24: 17, timeRange: '5:15 p.m. – 6:15 p.m.', status: 'available' as const },
+  { id: `${prefix}-1830`, startHour24: 18, timeRange: '6:30 p.m. – 7:30 p.m.', status: 'available' as const },
+  { id: `${prefix}-1945`, startHour24: 19, timeRange: '7:45 p.m. – 8:45 p.m.', status: 'available' as const },
 ];
 
 const createSaturdaySlots = (prefix: string) => [
   { id: `${prefix}-9`, startHour24: 9, timeRange: '9:00 a.m. – 10:00 a.m.', status: 'available' as const },
-  { id: `${prefix}-10`, startHour24: 10, timeRange: '10:00 a.m. – 11:00 a.m.', status: 'available' as const },
-  { id: `${prefix}-12`, startHour24: 12, timeRange: '12:00 p.m. – 1:00 p.m.', status: 'available' as const },
+  { id: `${prefix}-1015`, startHour24: 10, timeRange: '10:15 a.m. – 11:15 a.m.', status: 'available' as const },
+  { id: `${prefix}-1130`, startHour24: 11, timeRange: '11:30 a.m. – 12:30 p.m.', status: 'available' as const },
+  { id: `${prefix}-1245`, startHour24: 12, timeRange: '12:45 p.m. – 1:45 p.m.', status: 'available' as const },
   { id: `${prefix}-14`, startHour24: 14, timeRange: '2:00 p.m. – 3:00 p.m.', status: 'available' as const },
 ];
 
@@ -335,28 +336,30 @@ export function buildWhatsAppMessage(params: {
     (params.quote.petCount === 1 ? 'mi mascota' : `mis ${params.quote.petCount} mascotas`);
 
   const isCustomZone =
+    params.zone === 'Zona VIP: Camino Viejo a Tesistán / Cotos' ||
     params.zone === 'Otra colonia o coto residencial' ||
     params.zone === 'Otra zona (Confirmar por WhatsApp)';
 
   const finalZone =
     isCustomZone && params.customZoneText?.trim()
-      ? params.customZoneText.trim()
+      ? `${params.zone} (${params.customZoneText.trim()})`
       : params.zone;
 
   const datePart = params.specificDate?.trim()
     ? `${params.dayName} (${params.specificDate.trim()})`
     : params.dayName;
 
-  const { petCount, hours, ratePerPetAfterDiscount, discountPercentage, total, isSpecialRequest } =
+  const { petCount, hours, baseRatePerPet, ratePerPetAfterDiscount, discountPercentage, total, isSpecialRequest } =
     params.quote;
 
+  const weekendTag = baseRatePerPet === 250 ? ' [Tarifa Fin de Semana $250 base]' : '';
   const extraNotice = isSpecialRequest
-    ? ' (Me confirmas disponibilidad o si aplica algún ajuste por horario/zona)'
+    ? ' (Me confirmas disponibilidad para este horario/zona)'
     : '';
 
   return `Hola Alex, vi Pet Concierge Service y quiero agendar ${params.service} para ${cleanPetName} (${petCount} ${
     petCount === 1 ? 'perro/mascota' : 'mascotas del mismo domicilio'
-  } a $${ratePerPetAfterDiscount} MXN c/u) por ${finalZone}. Me interesa el ${datePart} en el horario de ${
+  } a $${ratePerPetAfterDiscount} MXN c/u${weekendTag}) por ${finalZone}. Me interesa el ${datePart} en el horario de ${
     params.slotLabel
   } (${hours} ${
     hours === 1 ? 'hora' : 'horas'

@@ -92,8 +92,8 @@ export const Footer: React.FC<FooterProps> = ({ onOpenLegalTab }) => {
                 </span>
               ))}
             </div>
-            <p className="text-xs text-[#E5E0D8]/75">
-              ¿Vives en otra colonia o coto? Escríbeme por WhatsApp y con gusto coordinamos tu servicio.
+            <p className="text-xs text-[#E5E0D8]/85 leading-relaxed">
+              <strong className="text-white">Zona VIP para cotizar:</strong> Disponibilidad en Camino Viejo a Tesistán y cotos residenciales cercanos por WhatsApp.
             </p>
           </div>
 

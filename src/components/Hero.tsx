@@ -53,12 +53,13 @@ export const Hero: React.FC = () => {
 
             {/* Exact Subtitle with Promo */}
             <p className="text-base sm:text-lg lg:text-xl text-[#57534E] dark:text-stone-300 leading-relaxed max-w-2xl">
-              Exclusivo para Puerta de Hierro, Colomos, Providencia, Jardín Real, Valle Real y cotos residenciales de Zapopan. Paseos solo para las
+              Exclusivo para <strong className="text-[#18181B] dark:text-[#FAF9F6] font-bold">Puerta de Hierro, Colomos, Jardín Real y Valle Real</strong>{' '}
+              (con <strong className="text-[#1E3A2F] dark:text-emerald-300 font-bold">Zona VIP para cotizar en Camino Viejo a Tesistán y cotos residenciales</strong>). Paseos solo para las
               mascotas de tu casa:{' '}
               <strong className="text-[#18181B] dark:text-[#FAF9F6] font-bold">
                 $200 por 1 perro, $190 c/u por 2, $180 c/u por 3, $170 c/u por 4 y $160 c/u por 5
               </strong>
-              , con horarios separados para un servicio rápido y puntual, GPS en vivo y limpieza de patitas
+              , con 15 minutos de espacio entre citas para llegar siempre puntual, GPS en vivo y limpieza de patitas
               con espuma.
             </p>
 
@@ -203,7 +204,7 @@ export const Hero: React.FC = () => {
                 <div className="p-2 rounded-xl bg-[#FAF9F6] dark:bg-[#0E1210] border border-[#E5E0D8]/80 dark:border-white/10">
                   <Clock className="w-3.5 h-3.5 mx-auto text-[#1E3A2F] dark:text-emerald-400 mb-0.5" />
                   <p className="text-[10px] text-[#57534E] dark:text-stone-400">Horario</p>
-                  <p className="text-xs font-bold text-[#18181B] dark:text-[#FAF9F6]">10am - 9pm</p>
+                  <p className="text-xs font-bold text-[#18181B] dark:text-[#FAF9F6]">9am - 9pm</p>
                 </div>
                 <div className="p-2 rounded-xl bg-[#FAF9F6] dark:bg-[#0E1210] border border-[#E5E0D8]/80 dark:border-white/10">
                   <Droplets className="w-3.5 h-3.5 mx-auto text-[#1E3A2F] dark:text-emerald-400 mb-0.5" />
