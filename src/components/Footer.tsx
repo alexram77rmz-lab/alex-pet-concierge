@@ -66,7 +66,11 @@ export const Footer: React.FC<FooterProps> = ({ onOpenLegalTab }) => {
                 <span className="font-semibold text-white">Máx. 6 servicios / día</span>
               </li>
               <li className="flex justify-between border-b border-white/10 pb-1.5">
-                <span className="text-[#E5E0D8]/80">Sábados y Domingos</span>
+                <span className="text-[#E5E0D8]/80">Sábados</span>
+                <span className="font-semibold text-white">9:00 a.m. – 3:00 p.m. ($250)</span>
+              </li>
+              <li className="flex justify-between border-b border-white/10 pb-1.5">
+                <span className="text-[#E5E0D8]/80">Domingos y Sáb tarde</span>
                 <span className="font-semibold text-[#E5E0D8]">Solo bajo solicitud</span>
               </li>
             </ul>

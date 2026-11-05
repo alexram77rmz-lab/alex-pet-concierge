@@ -230,9 +230,9 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
     setSelectedDayId(dayId);
     const dayObj = calendarDays.find((d) => d.id === dayId);
     if (!dayObj) return;
-    if (dayObj.isWeekend) {
+    if (dayObj.id === 'dom') {
       setRequestExtraSlot(true);
-      setSelectedSlotRange('Horario de fin de semana a acordar');
+      setSelectedSlotRange('Horario de domingo a acordar');
     } else {
       setRequestExtraSlot(false);
       const smart = evaluateDaySlotsWithAutoBuffer(dayObj, zone);
@@ -1136,24 +1136,34 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
             </div>
 
             {/* Horas del día seleccionado */}
-            {activeDay.isWeekend ? (
+            {activeDay.id === 'dom' ? (
               <div className="p-4 rounded-2xl bg-[#FAF9F6] dark:bg-[#0E1210] border border-[#E5E0D8] dark:border-white/10 space-y-2 text-xs sm:text-sm">
                 <p className="font-bold text-[#18181B] dark:text-[#FAF9F6]">
-                  {weekDates[activeDay.id]?.fullDateLabel || activeDay.dayName}: Solicitud especial de fin de semana
+                  {weekDates[activeDay.id]?.fullDateLabel || activeDay.dayName}: Día de descanso regular
                 </p>
                 <p className="text-[#57534E] dark:text-stone-300">
-                  Los fines de semana normalmente no laboro, pero puedes enviarme tu solicitud por WhatsApp y
-                  acordamos disponibilidad.
+                  Los domingos normalmente no laboro, pero puedes enviarme tu solicitud por WhatsApp y
+                  acordamos si hay disponibilidad especial.
                 </p>
               </div>
             ) : (
               <div className="space-y-2.5">
+                {activeDay.id === 'sab' && (
+                  <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-600/25 text-xs text-amber-900 dark:text-amber-200 space-y-1">
+                    <p className="font-extrabold flex items-center gap-1.5">
+                      <span>Sábado: Horarios matutinos (9:00 a.m. a 3:00 p.m.) • Tarifa fin de semana $250 MXN</span>
+                    </p>
+                    <p className="text-[11px] opacity-90 leading-relaxed">
+                      De 4:00 p.m. a 9:00 p.m. no disponible por compromisos escolares.
+                    </p>
+                  </div>
+                )}
                 <div className="flex items-center justify-between text-xs pt-1">
                   <span className="font-bold text-[#18181B] dark:text-[#FAF9F6]">
                     Horarios para {weekDates[activeDay.id]?.fullDateLabel || activeDay.dayName}:
                   </span>
                   <span className="text-[11px] text-[#57534E] dark:text-stone-400">
-                    9:00 a.m. – 9:00 p.m.
+                    {activeDay.id === 'sab' ? '9:00 a.m. – 3:00 p.m. (Tarifa fin de semana $250)' : '9:00 a.m. – 9:00 p.m.'}
                   </span>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">

@@ -116,13 +116,20 @@ const createCleanDaySlots = (prefix: string) => [
   { id: `${prefix}-20`, startHour24: 20, timeRange: '8:00 p.m. – 9:00 p.m.', status: 'available' as const },
 ];
 
+const createSaturdaySlots = (prefix: string) => [
+  { id: `${prefix}-9`, startHour24: 9, timeRange: '9:00 a.m. – 10:00 a.m.', status: 'available' as const },
+  { id: `${prefix}-10`, startHour24: 10, timeRange: '10:00 a.m. – 11:00 a.m.', status: 'available' as const },
+  { id: `${prefix}-12`, startHour24: 12, timeRange: '12:00 p.m. – 1:00 p.m.', status: 'available' as const },
+  { id: `${prefix}-14`, startHour24: 14, timeRange: '2:00 p.m. – 3:00 p.m.', status: 'available' as const },
+];
+
 export const WEEKLY_CALENDAR: CalendarDay[] = [
   { id: 'lun', dayShort: 'Lun', dayName: 'Lunes', isWeekend: false, slots: createCleanDaySlots('lun') },
   { id: 'mar', dayShort: 'Mar', dayName: 'Martes', isWeekend: false, slots: createCleanDaySlots('mar') },
   { id: 'mie', dayShort: 'Mié', dayName: 'Miércoles', isWeekend: false, slots: createCleanDaySlots('mie') },
   { id: 'jue', dayShort: 'Jue', dayName: 'Jueves', isWeekend: false, slots: createCleanDaySlots('jue') },
   { id: 'vie', dayShort: 'Vie', dayName: 'Viernes', isWeekend: false, slots: createCleanDaySlots('vie') },
-  { id: 'sab', dayShort: 'Sáb', dayName: 'Sábado', isWeekend: true, slots: [] },
+  { id: 'sab', dayShort: 'Sáb', dayName: 'Sábado', isWeekend: true, slots: createSaturdaySlots('sab') },
   { id: 'dom', dayShort: 'Dom', dayName: 'Domingo', isWeekend: true, slots: [] },
 ];
 
@@ -240,27 +247,40 @@ export function calculateQuote(params: {
 }): QuoteBreakdown {
   const petCount = Math.min(5, Math.max(1, Math.round(params.petCount)));
   const hours = Math.min(10, Math.max(1, Math.round(params.hours)));
-  const baseRatePerPet = BASE_HOURLY_RATE;
+  const baseRatePerPet = params.isWeekend ? 250 : BASE_HOURLY_RATE;
 
-  const discountByCount: Record<number, { pct: number; rate: number; key: QuoteBreakdown['tierKey'] }> = {
-    1: { pct: 0, rate: 200, key: 'tier_1' },
-    2: { pct: 5, rate: 190, key: 'tier_2' },
-    3: { pct: 10, rate: 180, key: 'tier_3' },
-    4: { pct: 15, rate: 170, key: 'tier_4' },
-    5: { pct: 20, rate: 160, key: 'tier_5' },
-  };
+  const discountByCount: Record<number, { pct: number; rate: number; key: QuoteBreakdown['tierKey'] }> = params.isWeekend
+    ? {
+        1: { pct: 0, rate: 250, key: 'tier_1' },
+        2: { pct: 5, rate: 240, key: 'tier_2' },
+        3: { pct: 10, rate: 230, key: 'tier_3' },
+        4: { pct: 15, rate: 220, key: 'tier_4' },
+        5: { pct: 20, rate: 210, key: 'tier_5' },
+      }
+    : {
+        1: { pct: 0, rate: 200, key: 'tier_1' },
+        2: { pct: 5, rate: 190, key: 'tier_2' },
+        3: { pct: 10, rate: 180, key: 'tier_3' },
+        4: { pct: 15, rate: 170, key: 'tier_4' },
+        5: { pct: 20, rate: 160, key: 'tier_5' },
+      };
 
   const selectedTier = discountByCount[petCount] || discountByCount[1];
   const discountPercentage = selectedTier.pct;
   const ratePerPetAfterDiscount = selectedTier.rate;
   const tierKey = selectedTier.key;
 
-  const tierBadge =
-    petCount === 1
+  const tierBadge = params.isWeekend
+    ? petCount === 1
+      ? 'Fin de semana: $250 MXN por hora'
+      : `${petCount} mascotas: $${ratePerPetAfterDiscount} MXN c/u (Tarifa fin de semana)`
+    : petCount === 1
       ? '1 mascota: $200 MXN por hora'
       : `${petCount} mascotas (${discountPercentage}% menos): $${ratePerPetAfterDiscount} MXN c/u`;
 
-  const tierHelperText = 'Descuento válido solo para mascotas del mismo domicilio.';
+  const tierHelperText = params.isWeekend
+    ? 'Tarifa especial de fin de semana ($250/hr base). Descuento aplica para mascotas del mismo domicilio.'
+    : 'Descuento válido solo para mascotas del mismo domicilio.';
 
   const subtotalBase = petCount * hours * baseRatePerPet;
   const total = petCount * hours * ratePerPetAfterDiscount;
@@ -268,7 +288,7 @@ export function calculateQuote(params: {
 
   const specialNotes: string[] = [];
   if (params.isWeekend) {
-    specialNotes.push('Fin de semana (sujeto a disponibilidad y ajuste con Alex)');
+    specialNotes.push('Tarifa especial de fin de semana ($250/hr base)');
   }
   if (params.isExtraSlot) {
     specialNotes.push('Fecha u horario especial (sujeto a confirmación)');
