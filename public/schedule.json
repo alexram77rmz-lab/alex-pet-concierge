@@ -1,5 +1,6 @@
 {
-  "updatedAt": "2026-11-03T22:46:22.353Z",
+  "schemaVersion": 4,
+  "updatedAt": "2026-11-05T23:20:00.000Z",
   "days": [
     {
       "id": "lun",
@@ -7,48 +8,15 @@
       "dayName": "Lunes",
       "isWeekend": false,
       "slots": [
-        {
-          "id": "lun-10",
-          "startHour24": 10,
-          "timeRange": "10:00 a.m. – 11:00 a.m.",
-          "status": "available"
-        },
-        {
-          "id": "lun-12",
-          "startHour24": 12,
-          "timeRange": "12:00 p.m. – 1:00 p.m.",
-          "status": "available"
-        },
-        {
-          "id": "lun-14",
-          "startHour24": 14,
-          "timeRange": "2:00 p.m. – 3:00 p.m.",
-          "status": "available"
-        },
-        {
-          "id": "lun-16",
-          "startHour24": 16,
-          "timeRange": "4:00 p.m. – 5:00 p.m.",
-          "status": "available"
-        },
-        {
-          "id": "lun-17",
-          "startHour24": 17,
-          "timeRange": "5:00 p.m. – 6:00 p.m.",
-          "status": "available"
-        },
-        {
-          "id": "lun-18",
-          "startHour24": 18,
-          "timeRange": "6:00 p.m. – 7:00 p.m.",
-          "status": "available"
-        },
-        {
-          "id": "lun-20",
-          "startHour24": 20,
-          "timeRange": "8:00 p.m. – 9:00 p.m.",
-          "status": "available"
-        }
+        { "id": "lun-9", "startHour24": 9, "timeRange": "9:00 a.m. – 10:00 a.m.", "status": "available" },
+        { "id": "lun-1015", "startHour24": 10, "timeRange": "10:15 a.m. – 11:15 a.m.", "status": "available" },
+        { "id": "lun-1130", "startHour24": 11, "timeRange": "11:30 a.m. – 12:30 p.m.", "status": "available" },
+        { "id": "lun-1245", "startHour24": 12, "timeRange": "12:45 p.m. – 1:45 p.m.", "status": "available" },
+        { "id": "lun-14", "startHour24": 14, "timeRange": "2:00 p.m. – 3:00 p.m.", "status": "available" },
+        { "id": "lun-16", "startHour24": 16, "timeRange": "4:00 p.m. – 5:00 p.m.", "status": "available" },
+        { "id": "lun-1715", "startHour24": 17, "timeRange": "5:15 p.m. – 6:15 p.m.", "status": "available" },
+        { "id": "lun-1830", "startHour24": 18, "timeRange": "6:30 p.m. – 7:30 p.m.", "status": "available" },
+        { "id": "lun-1945", "startHour24": 19, "timeRange": "7:45 p.m. – 8:45 p.m.", "status": "available" }
       ]
     },
     {
@@ -57,48 +25,15 @@
       "dayName": "Martes",
       "isWeekend": false,
       "slots": [
-        {
-          "id": "mar-10",
-          "startHour24": 10,
-          "timeRange": "10:00 a.m. – 11:00 a.m.",
-          "status": "available"
-        },
-        {
-          "id": "mar-12",
-          "startHour24": 12,
-          "timeRange": "12:00 p.m. – 1:00 p.m.",
-          "status": "available"
-        },
-        {
-          "id": "mar-14",
-          "startHour24": 14,
-          "timeRange": "2:00 p.m. – 3:00 p.m.",
-          "status": "available"
-        },
-        {
-          "id": "mar-16",
-          "startHour24": 16,
-          "timeRange": "4:00 p.m. – 5:00 p.m.",
-          "status": "available"
-        },
-        {
-          "id": "mar-17",
-          "startHour24": 17,
-          "timeRange": "5:00 p.m. – 6:00 p.m.",
-          "status": "available"
-        },
-        {
-          "id": "mar-18",
-          "startHour24": 18,
-          "timeRange": "6:00 p.m. – 7:00 p.m.",
-          "status": "available"
-        },
-        {
-          "id": "mar-20",
-          "startHour24": 20,
-          "timeRange": "8:00 p.m. – 9:00 p.m.",
-          "status": "available"
-        }
+        { "id": "mar-9", "startHour24": 9, "timeRange": "9:00 a.m. – 10:00 a.m.", "status": "available" },
+        { "id": "mar-1015", "startHour24": 10, "timeRange": "10:15 a.m. – 11:15 a.m.", "status": "available" },
+        { "id": "mar-1130", "startHour24": 11, "timeRange": "11:30 a.m. – 12:30 p.m.", "status": "available" },
+        { "id": "mar-1245", "startHour24": 12, "timeRange": "12:45 p.m. – 1:45 p.m.", "status": "available" },
+        { "id": "mar-14", "startHour24": 14, "timeRange": "2:00 p.m. – 3:00 p.m.", "status": "available" },
+        { "id": "mar-16", "startHour24": 16, "timeRange": "4:00 p.m. – 5:00 p.m.", "status": "available" },
+        { "id": "mar-1715", "startHour24": 17, "timeRange": "5:15 p.m. – 6:15 p.m.", "status": "available" },
+        { "id": "mar-1830", "startHour24": 18, "timeRange": "6:30 p.m. – 7:30 p.m.", "status": "available" },
+        { "id": "mar-1945", "startHour24": 19, "timeRange": "7:45 p.m. – 8:45 p.m.", "status": "available" }
       ]
     },
     {
@@ -107,48 +42,15 @@
       "dayName": "Miércoles",
       "isWeekend": false,
       "slots": [
-        {
-          "id": "mie-10",
-          "startHour24": 10,
-          "timeRange": "10:00 a.m. – 11:00 a.m.",
-          "status": "available"
-        },
-        {
-          "id": "mie-12",
-          "startHour24": 12,
-          "timeRange": "12:00 p.m. – 1:00 p.m.",
-          "status": "available"
-        },
-        {
-          "id": "mie-14",
-          "startHour24": 14,
-          "timeRange": "2:00 p.m. – 3:00 p.m.",
-          "status": "available"
-        },
-        {
-          "id": "mie-16",
-          "startHour24": 16,
-          "timeRange": "4:00 p.m. – 5:00 p.m.",
-          "status": "available"
-        },
-        {
-          "id": "mie-17",
-          "startHour24": 17,
-          "timeRange": "5:00 p.m. – 6:00 p.m.",
-          "status": "available"
-        },
-        {
-          "id": "mie-18",
-          "startHour24": 18,
-          "timeRange": "6:00 p.m. – 7:00 p.m.",
-          "status": "available"
-        },
-        {
-          "id": "mie-20",
-          "startHour24": 20,
-          "timeRange": "8:00 p.m. – 9:00 p.m.",
-          "status": "available"
-        }
+        { "id": "mie-9", "startHour24": 9, "timeRange": "9:00 a.m. – 10:00 a.m.", "status": "available" },
+        { "id": "mie-1015", "startHour24": 10, "timeRange": "10:15 a.m. – 11:15 a.m.", "status": "available" },
+        { "id": "mie-1130", "startHour24": 11, "timeRange": "11:30 a.m. – 12:30 p.m.", "status": "available" },
+        { "id": "mie-1245", "startHour24": 12, "timeRange": "12:45 p.m. – 1:45 p.m.", "status": "available" },
+        { "id": "mie-14", "startHour24": 14, "timeRange": "2:00 p.m. – 3:00 p.m.", "status": "available" },
+        { "id": "mie-16", "startHour24": 16, "timeRange": "4:00 p.m. – 5:00 p.m.", "status": "available" },
+        { "id": "mie-1715", "startHour24": 17, "timeRange": "5:15 p.m. – 6:15 p.m.", "status": "available" },
+        { "id": "mie-1830", "startHour24": 18, "timeRange": "6:30 p.m. – 7:30 p.m.", "status": "available" },
+        { "id": "mie-1945", "startHour24": 19, "timeRange": "7:45 p.m. – 8:45 p.m.", "status": "available" }
       ]
     },
     {
@@ -157,48 +59,15 @@
       "dayName": "Jueves",
       "isWeekend": false,
       "slots": [
-        {
-          "id": "jue-10",
-          "startHour24": 10,
-          "timeRange": "10:00 a.m. – 11:00 a.m.",
-          "status": "available"
-        },
-        {
-          "id": "jue-12",
-          "startHour24": 12,
-          "timeRange": "12:00 p.m. – 1:00 p.m.",
-          "status": "available"
-        },
-        {
-          "id": "jue-14",
-          "startHour24": 14,
-          "timeRange": "2:00 p.m. – 3:00 p.m.",
-          "status": "available"
-        },
-        {
-          "id": "jue-16",
-          "startHour24": 16,
-          "timeRange": "4:00 p.m. – 5:00 p.m.",
-          "status": "available"
-        },
-        {
-          "id": "jue-17",
-          "startHour24": 17,
-          "timeRange": "5:00 p.m. – 6:00 p.m.",
-          "status": "available"
-        },
-        {
-          "id": "jue-18",
-          "startHour24": 18,
-          "timeRange": "6:00 p.m. – 7:00 p.m.",
-          "status": "available"
-        },
-        {
-          "id": "jue-20",
-          "startHour24": 20,
-          "timeRange": "8:00 p.m. – 9:00 p.m.",
-          "status": "available"
-        }
+        { "id": "jue-9", "startHour24": 9, "timeRange": "9:00 a.m. – 10:00 a.m.", "status": "available" },
+        { "id": "jue-1015", "startHour24": 10, "timeRange": "10:15 a.m. – 11:15 a.m.", "status": "available" },
+        { "id": "jue-1130", "startHour24": 11, "timeRange": "11:30 a.m. – 12:30 p.m.", "status": "available" },
+        { "id": "jue-1245", "startHour24": 12, "timeRange": "12:45 p.m. – 1:45 p.m.", "status": "available" },
+        { "id": "jue-14", "startHour24": 14, "timeRange": "2:00 p.m. – 3:00 p.m.", "status": "available" },
+        { "id": "jue-16", "startHour24": 16, "timeRange": "4:00 p.m. – 5:00 p.m.", "status": "available" },
+        { "id": "jue-1715", "startHour24": 17, "timeRange": "5:15 p.m. – 6:15 p.m.", "status": "available" },
+        { "id": "jue-1830", "startHour24": 18, "timeRange": "6:30 p.m. – 7:30 p.m.", "status": "available" },
+        { "id": "jue-1945", "startHour24": 19, "timeRange": "7:45 p.m. – 8:45 p.m.", "status": "available" }
       ]
     },
     {
@@ -207,48 +76,15 @@
       "dayName": "Viernes",
       "isWeekend": false,
       "slots": [
-        {
-          "id": "vie-10",
-          "startHour24": 10,
-          "timeRange": "10:00 a.m. – 11:00 a.m.",
-          "status": "available"
-        },
-        {
-          "id": "vie-12",
-          "startHour24": 12,
-          "timeRange": "12:00 p.m. – 1:00 p.m.",
-          "status": "available"
-        },
-        {
-          "id": "vie-14",
-          "startHour24": 14,
-          "timeRange": "2:00 p.m. – 3:00 p.m.",
-          "status": "available"
-        },
-        {
-          "id": "vie-16",
-          "startHour24": 16,
-          "timeRange": "4:00 p.m. – 5:00 p.m.",
-          "status": "available"
-        },
-        {
-          "id": "vie-17",
-          "startHour24": 17,
-          "timeRange": "5:00 p.m. – 6:00 p.m.",
-          "status": "available"
-        },
-        {
-          "id": "vie-18",
-          "startHour24": 18,
-          "timeRange": "6:00 p.m. – 7:00 p.m.",
-          "status": "available"
-        },
-        {
-          "id": "vie-20",
-          "startHour24": 20,
-          "timeRange": "8:00 p.m. – 9:00 p.m.",
-          "status": "available"
-        }
+        { "id": "vie-9", "startHour24": 9, "timeRange": "9:00 a.m. – 10:00 a.m.", "status": "available" },
+        { "id": "vie-1015", "startHour24": 10, "timeRange": "10:15 a.m. – 11:15 a.m.", "status": "available" },
+        { "id": "vie-1130", "startHour24": 11, "timeRange": "11:30 a.m. – 12:30 p.m.", "status": "available" },
+        { "id": "vie-1245", "startHour24": 12, "timeRange": "12:45 p.m. – 1:45 p.m.", "status": "available" },
+        { "id": "vie-14", "startHour24": 14, "timeRange": "2:00 p.m. – 3:00 p.m.", "status": "available" },
+        { "id": "vie-16", "startHour24": 16, "timeRange": "4:00 p.m. – 5:00 p.m.", "status": "available" },
+        { "id": "vie-1715", "startHour24": 17, "timeRange": "5:15 p.m. – 6:15 p.m.", "status": "available" },
+        { "id": "vie-1830", "startHour24": 18, "timeRange": "6:30 p.m. – 7:30 p.m.", "status": "available" },
+        { "id": "vie-1945", "startHour24": 19, "timeRange": "7:45 p.m. – 8:45 p.m.", "status": "available" }
       ]
     },
     {
@@ -256,7 +92,13 @@
       "dayShort": "Sáb",
       "dayName": "Sábado",
       "isWeekend": true,
-      "slots": []
+      "slots": [
+        { "id": "sab-9", "startHour24": 9, "timeRange": "9:00 a.m. – 10:00 a.m.", "status": "available" },
+        { "id": "sab-1015", "startHour24": 10, "timeRange": "10:15 a.m. – 11:15 a.m.", "status": "available" },
+        { "id": "sab-1130", "startHour24": 11, "timeRange": "11:30 a.m. – 12:30 p.m.", "status": "available" },
+        { "id": "sab-1245", "startHour24": 12, "timeRange": "12:45 p.m. – 1:45 p.m.", "status": "available" },
+        { "id": "sab-14", "startHour24": 14, "timeRange": "2:00 p.m. – 3:00 p.m.", "status": "available" }
+      ]
     },
     {
       "id": "dom",
