@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Check, Dog, Home, MapPin, ShieldCheck, Sparkles } from 'lucide-react';
 import { BENTO_SERVICES, SECURITY_PROTOCOL_STEPS } from '../config/constants';
+import { TiltCard } from './TiltCard';
 
 export const BentoServices: React.FC = () => {
   const getIcon = (id: string) => {
@@ -58,13 +59,13 @@ export const BentoServices: React.FC = () => {
             const isLimeCard = item.accentVariant === 'lime';
 
             return (
+              <TiltCard key={item.id} className="h-full">
               <motion.article
-                key={item.id}
                 initial={{ opacity: 0, y: 14 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-30px' }}
                 transition={{ duration: 0.35, delay: idx * 0.06 }}
-                className={`rounded-2xl p-4 sm:p-6 border shadow-card flex flex-col justify-between ${getCardStyle(
+                className={`h-full rounded-2xl p-4 sm:p-6 border shadow-card flex flex-col justify-between ${getCardStyle(
                   item.accentVariant
                 )}`}
               >
@@ -134,6 +135,7 @@ export const BentoServices: React.FC = () => {
                   <span className="text-xs font-bold">{item.metricValue}</span>
                 </div>
               </motion.article>
+              </TiltCard>
             );
           })}
         </div>

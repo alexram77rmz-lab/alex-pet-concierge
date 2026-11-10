@@ -39,7 +39,6 @@ import { CalendarDay, ServiceType, ZoneName } from '../types/concierge';
 import { ClubMemberRecord, STORAGE_KEY_CLUB_MEMBERS } from './PcsClub';
 import {
   clearAuthLockout,
-  getCloudSyncKey,
   getSecurityLockoutStatus,
   registerFailedAuthAttempt,
   sanitizeUserText,
@@ -410,7 +409,16 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
   };
 
   const handlePublishToGitHub = async () => {
-    const cleanToken = (localStorage.getItem(STORAGE_KEY_GH_TOKEN) || getCloudSyncKey()).trim();
+    // El token ya NO vive en el código. Se pide una vez por sesión y solo se guarda en sessionStorage.
+    let cleanToken = (sessionStorage.getItem(STORAGE_KEY_GH_TOKEN) || '').trim();
+    if (!cleanToken) {
+      cleanToken = (window.prompt('Pega tu token de GitHub (solo permiso Contents en este repo):') || '').trim();
+      if (!cleanToken) {
+        onShowToast('Guardado en este dispositivo. Falta el token para publicar en la nube.');
+        return;
+      }
+      sessionStorage.setItem(STORAGE_KEY_GH_TOKEN, cleanToken);
+    }
     setIsPublishingCloud(true);
 
     try {
@@ -454,6 +462,7 @@ export const PricingCalculator: React.FC<PricingCalculatorProps> = ({ onShowToas
       if (putRes.ok) {
         onShowToast('¡Horarios publicados en vivo para todos tus clientes!');
       } else {
+        if (putRes.status === 401 || putRes.status === 403) sessionStorage.removeItem(STORAGE_KEY_GH_TOKEN);
         onShowToast('Guardado en este dispositivo. Verifica tu token para publicar en la nube.');
       }
     } catch {

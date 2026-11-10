@@ -14,6 +14,7 @@ import {
   UserCheck,
 } from 'lucide-react';
 import { FOUNDER_BIO, INSTAGRAM_HANDLE, INSTAGRAM_URL } from '../config/constants';
+import { TiltCard } from './TiltCard';
 
 export const Hero: React.FC = () => {
   const [previewMode, setPreviewMode] = useState<'walk' | 'sitting'>('walk');
@@ -104,6 +105,7 @@ export const Hero: React.FC = () => {
             transition={{ duration: 0.65, delay: 0.12, ease: 'easeOut' }}
             className="lg:col-span-5"
           >
+            <TiltCard maxTilt={7}>
             <div className="rounded-3xl bg-white dark:bg-[#151B18] border border-[#E5E0D8] dark:border-white/10 shadow-luxury p-4 sm:p-6 space-y-4">
               <div className="flex items-center justify-between gap-2 pb-2.5 border-b border-[#E5E0D8]/70 dark:border-white/10">
                 <div>
@@ -218,6 +220,7 @@ export const Hero: React.FC = () => {
                 </div>
               </div>
             </div>
+            </TiltCard>
           </motion.div>
         </div>
 
